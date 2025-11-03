@@ -508,174 +508,127 @@
         
    </footer>
      <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-   <script>
-        const select = document.getElementById('channel-select');
-        const videoPlayer = document.getElementById('video-player');
-        const iframePlayer = document.getElementById('media-player');
-        const placeholder = document.getElementById('placeholder-image');
-        const loading = document.getElementById('loading');
-        const liveStamp = document.getElementById('live-stamp'); // Get the live stamp element
-      
-        let hlsInstance = null;
-        let channelsData = [];
-        let lastKnownJsonContent = null;
-      
-        // Show placeholder image by default
-        placeholder.style.display = 'block';
-        videoPlayer.style.display = 'none';
-        iframePlayer.style.display = 'none';
-        liveStamp.style.display = 'none'; // Ensure live stamp is hidden by default
-      
-        function showLoading(show) {
-          loading.style.display = show ? 'block' : 'none';
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const channelSelect = document.getElementById("channel-select");
+  const videoPlayer = document.getElementById("video-player");
+  const iframePlayer = document.getElementById("media-player");
+  const loading = document.getElementById("loading");
+  const placeholder = document.getElementById("placeholder-image");
+
+  // Hardcoded channels
+  const channels = [
+    { name: "Desi Play Tv", url: "https://desiplaylive.akamaized.net/ptnr-yupptv/v1/manifest/611d79b11b77e2f571934fd80ca1413453772ac7/vglive-sk-660691/4cf68f50-0c5e-47a6-96e3-b78797a2b6fe/1.m3u8" },
+    { name: "Colors Hindi", url: "https://kwangsoo.myeffect.net/colorshindi.html" },
+    { name: "Dangal Tv", url: "https://live-dangal.akamaized.net/liveabr/playlist.m3u8" },
+    { name: "Ptc Punjabi", url: "https://www.youtube.com/live/0vzwgfXuV3Q?si=tXBEPebQXjyEinZO" }
+  ];
+
+  // Populate dropdown
+  channels.forEach(ch => {
+    const opt = document.createElement("option");
+    opt.value = ch.url;
+    opt.textContent = ch.name;
+    channelSelect.appendChild(opt);
+  });
+
+  let hls;
+
+  // Detect stream type
+  const detectType = (url) => {
+    if (url.includes("youtube.com") || url.includes("youtu.be")) return "youtube";
+    if (url.endsWith(".m3u8") || url.includes(".m3u8?")) return "hls";
+    if (url.endsWith(".mp4")) return "mp4";
+    if (url.includes(".html") || url.startsWith("http")) return "iframe";
+    return "unknown";
+  };
+
+  // Convert YouTube URL to embeddable format
+  const toYouTubeEmbed = (url) => {
+    const match = url.match(/(?:youtube\.com\/(?:live\/|watch\?v=)|youtu\.be\/)([A-Za-z0-9_-]+)/);
+    return match ? `https://www.youtube.com/embed/${match[1]}?autoplay=1&mute=0` : url;
+  };
+
+  // Stop all media
+  const stopAll = () => {
+    // Stop HLS/video
+    if (hls) {
+      hls.destroy();
+      hls = null;
+    }
+    videoPlayer.pause();
+    videoPlayer.removeAttribute("src");
+    videoPlayer.load();
+
+    // Stop iframe (reset its src)
+    iframePlayer.src = "about:blank";
+  };
+
+  // Play selected channel
+  channelSelect.addEventListener("change", () => {
+    const url = channelSelect.value;
+    if (!url) return;
+
+    stopAll(); // stop previous media
+    placeholder.style.display = "none";
+    loading.style.display = "block";
+    iframePlayer.style.display = "none";
+    videoPlayer.style.display = "none";
+
+    const type = detectType(url);
+
+    switch (type) {
+      case "youtube":
+        iframePlayer.src = toYouTubeEmbed(url);
+        iframePlayer.style.display = "block";
+        loading.style.display = "none";
+        break;
+
+      case "iframe":
+        iframePlayer.src = url;
+        iframePlayer.style.display = "block";
+        loading.style.display = "none";
+        break;
+
+      case "hls":
+        videoPlayer.muted = false;
+        videoPlayer.style.pointerEvents = "auto";
+        videoPlayer.style.display = "block";
+        if (Hls.isSupported()) {
+          hls = new Hls();
+          hls.loadSource(url);
+          hls.attachMedia(videoPlayer);
+          hls.on(Hls.Events.MANIFEST_PARSED, () => {
+            videoPlayer.play().catch(() => {});
+            loading.style.display = "none";
+          });
+        } else if (videoPlayer.canPlayType("application/vnd.apple.mpegurl")) {
+          videoPlayer.src = url;
+          videoPlayer.addEventListener("loadedmetadata", () => {
+            videoPlayer.play().catch(() => {});
+            loading.style.display = "none";
+          });
+        } else {
+          alert("HLS not supported in this browser.");
+          loading.style.display = "none";
         }
-      
-        function stopAllPlayback() {
-          if (hlsInstance) {
-            hlsInstance.destroy();
-            hlsInstance = null;
-          }
-          videoPlayer.pause();
-          videoPlayer.removeAttribute('src');
-          videoPlayer.load();
-          videoPlayer.style.display = 'none';
-          iframePlayer.src = '';
-          iframePlayer.style.display = 'none';
-          liveStamp.style.display = 'none'; // Hide live stamp when stopping playback
-        }
-      
-        function playChannel(channel) {
-          showLoading(true);
-          placeholder.style.display = 'none';
-          stopAllPlayback();
-      
-          if (!channel || !channel.url) {
-            placeholder.style.display = 'block';
-            showLoading(false);
-            return;
-          }
-      
-          if (channel.type === 'hls') {
-            if (Hls.isSupported()) {
-              videoPlayer.style.display = 'block';
-              // videoPlayer.controls = false; // Already removed from HTML
-              videoPlayer.muted = false;
-              videoPlayer.volume = 1;
-              hlsInstance = new Hls();
-              hlsInstance.loadSource(channel.url);
-              hlsInstance.attachMedia(videoPlayer);
-              hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => {
-                videoPlayer.play();
-                showLoading(false);
-              });
-            } else if (videoPlayer.canPlayType('application/vnd.apple.mpegurl')) {
-              videoPlayer.src = channel.url;
-              videoPlayer.style.display = 'block';
-              // videoPlayer.controls = false; // Already removed from HTML
-              videoPlayer.muted = false;
-              videoPlayer.play().then(() => {
-                showLoading(false);
-              }).catch(() => {
-                placeholder.style.display = 'block';
-                showLoading(false);
-              });
-            } else {
-              placeholder.style.display = 'block';
-              showLoading(false);
-            }
-            liveStamp.style.display = 'none'; // Hide live stamp for HLS channels
-          } else if (channel.type === 'iframe') {
-            let url = channel.url;
-      
-            if (url.includes("youtube.com") || url.includes("youtu.be")) {
-              if (!url.includes("embed")) {
-                const videoId = url.includes("youtu.be")
-                  ? url.split("youtu.be/")[1]?.split("?")[0]
-                  : url.split("v=")[1]?.split("&")[0];
-                if (videoId) {
-                  url = `https://www.youtube.com/embed/${videoId}`;
-                }
-              }
-              const separator = url.includes("?") ? "&" : "?";
-              // Ensure controls=0 is always present for YouTube iframes
-              if (!url.includes("controls=0")) {
-                  url += `${separator}controls=0`;
-              }
-              // Remove other control-related parameters if they exist
-              url = url.replace(/&modestbranding=1/g, '');
-              url = url.replace(/&rel=0/g, '');
-              url = url.replace(/&fs=0/g, '');
-              url = url.replace(/&disablekb=1/g, '');
-              url = url.replace(/&showinfo=0/g, '');
-            }
-      
-            iframePlayer.src = url;
-            iframePlayer.style.display = 'block';
-            showLoading(false);
-            liveStamp.style.display = 'block'; // Show live stamp for iframe channels
-          }
-        }
-      
-        async function fetchChannelsJson() {
-          try {
-            const response = await fetch('channels2.json?t=' + Date.now());
-            if (!response.ok) throw new Error('Fetch failed');
-            const json = await response.json();
-            const jsonString = JSON.stringify(json);
-      
-            if (lastKnownJsonContent !== jsonString) {
-              lastKnownJsonContent = jsonString;
-              channelsData = json;
-              select.innerHTML = '<option value="">👉📺📺📺</option>';
-              channelsData.forEach((channel, index) => {
-                const option = document.createElement('option');
-                option.value = index;
-                option.textContent = channel.name;
-                select.appendChild(option);
-              });
-      
-              // ❌ Do NOT auto-play any channel on load — wait for user selection
-              select.value = "";
-            }
-          } catch (e) {
-            console.error('Error fetching channels.json:', e);
-          }
-        }
-      
-        select.addEventListener('change', () => {
-          const index = select.value;
-          if (index === '') {
-            playChannel(null);
-            localStorage.removeItem('lastChannelIndex');
-          } else {
-            localStorage.setItem('lastChannelIndex', index);
-            playChannel(channelsData[index]);
-          }
-        });
-      
-        fetchChannelsJson();
-        setInterval(fetchChannelsJson, 5000);
-   </script>
-     <!-- ✅ Conditional GoatCounter Script -->
-     <script>
-          const skipTracking = location.search.includes('dev=1');
-      
-          if (!skipTracking) {
-            // Load GoatCounter auto script
-            const gcScript = document.createElement('script');
-            gcScript.setAttribute('data-goatcounter', 'https://mstv.goatcounter.com/count');
-            gcScript.src = 'https://gc.zgo.at/count.js';
-            gcScript.async = true;
-            document.head.appendChild(gcScript);
-      
-            // Manual ping
-            fetch("https://mstv.goatcounter.com/count?p=" + encodeURIComponent(location.pathname))
-              .then(() => console.log("GoatCounter manual ping sent"))
-              .catch((e) => console.warn("GoatCounter failed", e));
-          } else {
-            console.log("GoatCounter tracking skipped (dev mode)");
-          }
-        
-   </script>
+        break;
+
+      case "mp4":
+        videoPlayer.muted = false;
+        videoPlayer.style.pointerEvents = "auto";
+        videoPlayer.style.display = "block";
+        videoPlayer.src = url;
+        videoPlayer.play().catch(() => {});
+        loading.style.display = "none";
+        break;
+
+      default:
+        alert("Unsupported stream format.");
+        loading.style.display = "none";
+    }
+  });
+});
+</script>
 </body>
-  </html>
+</html>
