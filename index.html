@@ -6,48 +6,58 @@
 <title>MSTV Network</title>
 
 <style>
-
-/* ===== Global Reset ===== */
-
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
 body {
   margin: 0;
-  padding: 0;
   font-family: 'Poppins', sans-serif;
-  color: #E0E0E0;
   background: #0F1115;
+  color: #E0E0E0;
 }
 
-/* ===== Fluid Title ===== */
-
+/* ===== Title ===== */
 .title-3d {
   font-size: clamp(1.8rem, 4vw, 3.5rem);
   text-align: center;
-  margin: clamp(20px, 5vh, 50px) 0 30px;
-  color: #FFFFFF;
-  letter-spacing: 2px;
+  margin: 40px 0 20px;
   font-weight: 700;
+  letter-spacing: 2px;
 }
 
-/* ===== Selector Text ===== */
+/* ===== Scrolling Text ===== */
+.scrolling-container {
+  width: 100%;
+  overflow: hidden;
+  background: #1A1D20;
+  padding: 12px 0;
+}
 
+.scrolling-content {
+  display: inline-block;
+  white-space: nowrap;
+  animation: scrollText 35s linear infinite;
+  font-size: clamp(0.9rem, 2vw, 1.2rem);
+  color: #90EE90;
+}
+
+@keyframes scrollText {
+  from { transform: translateX(100%); }
+  to { transform: translateX(-100%); }
+}
+
+/* ===== Channel Selector ===== */
 .channel-selector-text {
   text-align: center;
   font-size: clamp(1.2rem, 3vw, 1.8rem);
-  margin: 4vh 0 2vh;
+  margin: 30px 0 10px;
   font-weight: 600;
 }
-
-/* ===== Dropdown ===== */
 
 .channel-selection {
   display: flex;
   justify-content: center;
   padding: 0 15px;
-  margin-bottom: 5vh;
+  margin-bottom: 40px;
 }
 
 select {
@@ -60,43 +70,36 @@ select {
   border: 1px solid #90EE90;
   border-radius: 8px;
   text-align: center;
-  outline: none;
   cursor: pointer;
 }
 
-/* ===== Responsive Player ===== */
-
+/* ===== Player ===== */
 .player-container {
   position: relative;
   width: 95%;
   max-width: 1200px;
-  margin: 0 auto 60px;
+  margin: 0 auto 50px;
+  background: #1A1D20;
   border-radius: 12px;
   overflow: hidden;
-  background: #1A1D20;
   box-shadow: 0 8px 20px rgba(0,0,0,0.5);
 }
 
-/* 16:9 universal ratio */
 .player-container::before {
   content: "";
   display: block;
   padding-top: 56.25%;
 }
 
-/* Media fills container */
 .player-container iframe,
 .player-container video,
 #placeholder-image {
   position: absolute;
-  top: 0;
-  left: 0;
+  top: 0; left: 0;
   width: 100%;
   height: 100%;
   object-fit: contain;
 }
-
-/* ===== Live Badge ===== */
 
 .live-stamp {
   position: absolute;
@@ -111,45 +114,94 @@ select {
   z-index: 10;
 }
 
-/* ===== Loading ===== */
-
 .loading-indicator {
   position: absolute;
-  top: 50%;
-  left: 50%;
+  top: 50%; left: 50%;
   transform: translate(-50%, -50%);
   background: rgba(0,0,0,0.7);
   color: #90EE90;
   padding: 12px 25px;
   border-radius: 8px;
-  font-size: clamp(0.8rem, 2vw, 1.1rem);
   display: none;
-  z-index: 20;
 }
 
-/* ===== Large Screen Adjustment ===== */
+/* ===== Follow Section ===== */
+.facebook-follow {
+  text-align: center;
+  margin: 40px 0;
+}
 
-@media (min-width: 1600px) {
-  .player-container {
-    max-width: 1400px;
+.facebook-follow a {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: #1877F2;
+  font-weight: 600;
+  text-decoration: none;
+  font-size: 1.1rem;
+}
+
+.facebook-follow img {
+  width: 28px;
+  height: 28px;
+}
+
+/* ===== Footer ===== */
+footer {
+  background: #1A1D20;
+  padding: 40px 20px;
+  margin-top: 50px;
+}
+
+.footer-section {
+  max-width: 1200px;
+  margin: auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 30px;
+  justify-content: space-between;
+}
+
+.footer-column {
+  flex: 1 1 300px;
+}
+
+.footer-column h2,
+.footer-column h3,
+.footer-column h4 {
+  color: #FFFFFF;
+}
+
+.footer-column p {
+  color: #C0C0C0;
+  line-height: 1.6;
+}
+
+.copyright {
+  text-align: center;
+  margin-top: 30px;
+  color: #808080;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 600px) {
+  .footer-section {
+    flex-direction: column;
+    text-align: center;
   }
 }
-
-/* ===== Small Screen Adjustment ===== */
-
-@media (max-width: 480px) {
-  .player-container {
-    width: 100%;
-    border-radius: 0;
-  }
-}
-
 </style>
 </head>
 
 <body>
 
 <div class="title-3d">AAINA DTH FREE</div>
+
+<div class="scrolling-container">
+<div class="scrolling-content">
+🌍 AAINA DTH FREE – 50+ Free Channels • 24/7 Entertainment • Music • Movies • News • Kids Shows • Always Free • No Signup • No Subscription
+</div>
+</div>
 
 <div class="channel-selector-text">Select Channel</div>
 
@@ -160,28 +212,47 @@ select {
 </div>
 
 <div class="player-container">
-
-<iframe id="media-player"
-allow="autoplay; encrypted-media; picture-in-picture"
-sandbox="allow-scripts allow-same-origin allow-presentation"></iframe>
-
-<video id="video-player"
-autoplay playsinline muted
-disablePictureInPicture
-controlsList="nodownload nofullscreen noplaybackrate noremoteplayback"
-style="pointer-events:none;"></video>
-
+<iframe id="media-player" sandbox="allow-scripts allow-same-origin allow-presentation"></iframe>
+<video id="video-player" autoplay playsinline muted></video>
 <img id="placeholder-image" src="Design-Studio-2025-01-22 (1).png">
-
 <div class="live-stamp" id="live-stamp">MSTV NETWORK</div>
 <div class="loading-indicator" id="loading">Loading stream...</div>
-
 </div>
 
+<div class="facebook-follow">
+<a href="https://www.facebook.com/share/1EoKUspW9k/" target="_blank">
+<img src="https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg">
+Follow Us on Facebook
+</a>
+</div>
+
+<footer>
+<div class="footer-section">
+<div class="footer-column">
+<h2>About Us</h2>
+<p>MSTV Network is a free streaming platform offering music, movies, news, and more. We aim to deliver quality entertainment worldwide without subscription fees.</p>
+
+<h3>Disclaimer</h3>
+<p>We stream publicly available content and do not host third-party media. All rights belong to their respective owners.</p>
+
+<h4>Terms of Service</h4>
+<p>Content is for personal use only. We are not responsible for third-party stream availability.</p>
+</div>
+
+<div class="footer-column">
+<h2>Contact</h2>
+<p>Email: contact@mstvindia.com</p>
+<p>Phone: +001-305-242-4447</p>
+</div>
+</div>
+
+<div class="copyright">
+© 2025 MSTV INDIA. All rights reserved.
+</div>
+</footer>
+
 <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-
 <script>
-
 const select = document.getElementById('channel-select');
 const videoPlayer = document.getElementById('video-player');
 const iframePlayer = document.getElementById('media-player');
@@ -192,108 +263,69 @@ const liveStamp = document.getElementById('live-stamp');
 let hlsInstance = null;
 
 const channelsData = [
-{
-name: "Aaina DTH Main",
-url: "https://mstvnetwork.github.io/Aaina-Dth/",
-type: "iframe"
-},
-{
-name: "Bollywood Classic",
-url: "https://d35j504z0x2vu2.cloudfront.net/v1/manifest/0bc8e8376bd8417a1b6761138aa41c26c7309312/bollywood-classic/6b126777-7e9a-444f-9845-48fa1d4ed694/1.m3u8",
-type: "hls"
-},
-{
-name: "Zee Cinema",
-url: "https://fscott.sytes.net/zeecinema.html",
-type: "iframe"
-}
+{ name:"Aaina DTH Main", url:"https://mstvnetwork.github.io/Aaina-Dth/", type:"iframe" },
+{ name:"Bollywood Classic", url:"https://d35j504z0x2vu2.cloudfront.net/v1/manifest/0bc8e8376bd8417a1b6761138aa41c26c7309312/bollywood-classic/6b126777-7e9a-444f-9845-48fa1d4ed694/1.m3u8", type:"hls" },
+{ name:"Zee Cinema", url:"https://fscott.sytes.net/zeecinema.html", type:"iframe" }
 ];
 
-channelsData.forEach((channel, index) => {
-const option = document.createElement('option');
-option.value = index;
-option.textContent = channel.name;
+channelsData.forEach((c,i)=>{
+const option=document.createElement("option");
+option.value=i;
+option.textContent=c.name;
 select.appendChild(option);
 });
 
-placeholder.style.display = 'block';
-videoPlayer.style.display = 'none';
-iframePlayer.style.display = 'none';
-liveStamp.style.display = 'none';
-
-function showLoading(show) {
-loading.style.display = show ? 'block' : 'none';
-}
-
-function stopAllPlayback() {
-if (hlsInstance) {
-hlsInstance.destroy();
-hlsInstance = null;
-}
+function stopAll(){
+if(hlsInstance){hlsInstance.destroy();hlsInstance=null;}
 videoPlayer.pause();
-videoPlayer.removeAttribute('src');
+videoPlayer.removeAttribute("src");
 videoPlayer.load();
-videoPlayer.style.display = 'none';
-iframePlayer.src = '';
-iframePlayer.style.display = 'none';
-liveStamp.style.display = 'none';
+videoPlayer.style.display="none";
+iframePlayer.src="";
+iframePlayer.style.display="none";
+liveStamp.style.display="none";
 }
 
-function playChannel(channel) {
+function playChannel(channel){
+loading.style.display="block";
+stopAll();
+placeholder.style.display="none";
 
-showLoading(true);
-stopAllPlayback();
-placeholder.style.display = 'none';
-
-if (!channel) {
-placeholder.style.display = 'block';
-showLoading(false);
+if(!channel){
+placeholder.style.display="block";
+loading.style.display="none";
 return;
 }
 
-if (channel.type === "hls") {
-
-if (Hls.isSupported()) {
-videoPlayer.style.display = "block";
-videoPlayer.muted = false;
-
-hlsInstance = new Hls();
+if(channel.type==="hls"){
+if(Hls.isSupported()){
+videoPlayer.style.display="block";
+hlsInstance=new Hls();
 hlsInstance.loadSource(channel.url);
 hlsInstance.attachMedia(videoPlayer);
-
-hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => {
+hlsInstance.on(Hls.Events.MANIFEST_PARSED,()=>{
 videoPlayer.play();
-showLoading(false);
+loading.style.display="none";
 });
-}
-else {
-videoPlayer.src = channel.url;
-videoPlayer.style.display = "block";
+}else{
+videoPlayer.src=channel.url;
+videoPlayer.style.display="block";
 videoPlayer.play();
-showLoading(false);
+loading.style.display="none";
 }
-
-liveStamp.style.display = "none";
-}
-
-else {
-
-iframePlayer.src = channel.url;
-iframePlayer.style.display = "block";
-liveStamp.style.display = "block";
-showLoading(false);
+}else{
+iframePlayer.src=channel.url;
+iframePlayer.style.display="block";
+liveStamp.style.display="block";
+loading.style.display="none";
 }
 }
 
-select.addEventListener("change", () => {
-const index = select.value;
-if (index === "") {
-playChannel(null);
-} else {
-playChannel(channelsData[index]);
-}
+select.addEventListener("change",()=>{
+const index=select.value;
+if(index===""){playChannel(null);}
+else{playChannel(channelsData[index]);}
 });
-
 </script>
 
 </body>
