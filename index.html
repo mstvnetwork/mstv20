@@ -4,35 +4,62 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <meta name="description" content="MSTV Network offers a variety of live TV channels. Watch your favorite channels online for free.">
-    <meta name="keywords" content="live TV, MSTV Network, free TV, live channels, streaming">
+    <meta name="description" content="MSTV Network offers a variety of live TV channels including music, movies, and more. Watch your favorite channels online for free.">
+    <meta name="keywords" content="live TV, MSTV Network, free TV, live channels, streaming, music, bollywood, saga music">
     <meta name="robots" content="index, follow">
-
+    
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:title" content="MSTV Network">
     <meta property="og:description" content="Stream live TV channels including music, movies, and more on MSTV Network.">
-    <meta property="og:image" content="https://raw.githubusercontent.com/mstvnetwork/mstv/main/og-image.png">
-    <meta property="og:url" content="https://mstvnet.netlify.app/">
+    <meta property="og:image" content="https://raw.githubusercontent.com">
+    <meta property="og:url" content="https://mstvnet.netlify.app">
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="MSTV Network">
-    <meta name="twitter:description" content="Stream live TV channels on MSTV Network.">
-    <meta name="twitter:image" content="https://raw.githubusercontent.com/mstvnetwork/mstv/main/og-image.png">
+    <meta name="twitter:description" content="Stream live TV channels including music, movies, and more on MSTV Network.">
+    <meta name="twitter:image" content="https://raw.githubusercontent.com">
+    <meta name="twitter:url" content="https://mstvnet.netlify.app">
 
+    <!-- JSON-LD Schema.org -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        "name": "MSTV Network",
+        "description": "Stream live TV channels including music, movies, and more.",
+        "url": "https://mstvnet.netlify.app",
+        "publisher": {
+            "@type": "Organization",
+            "name": "MSTV Network",
+            "logo": {
+                "@type": "ImageObject",
+                "url": "https://raw.githubusercontent.com"
+            }
+        }
+    }
+    </script>
     <title>MSTV Network</title>
 
-    <link href="https://fonts.googleapis.com" rel="stylesheet">
+    <script>
+        if (!location.search.includes('dev=1')) {
+            const s = document.createElement('script');
+            s.setAttribute('data-goatcounter', 'https://mstv.goatcounter.com');
+            s.src = 'https://gc.zgo.at';
+            s.async = true;
+            document.head.appendChild(s);
+        }
+    </script>
 
     <style>
+        /* Your Original Hulu-inspired styles */
         body {
             margin: 0;
             padding: 0;
             font-family: 'Poppins', sans-serif;
             color: #E0E0E0;
             background: #0F1115;
-            overflow-x: hidden;
         }
 
         .title-3d {
@@ -96,12 +123,14 @@
             outline: none;
             width: 90%;
             max-width: 450px;
-            cursor: pointer;
+            text-align: center;
             appearance: none;
             background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2390EE90%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13.2-6.4H18.4c-6.5%200-12.3%203.8-15.8%209.7-3.5%205.9-3.2%2013.3.7%2018.9l132.4%20140.7c4.3%204.6%2010.1%207.1%2016.1%207.1s11.8-2.5%2016.1-7.1l132.4-140.7c3.9-5.6%204.2-13.1.7-18.9z%22%2F%3E%3C%2Fsvg%3E');
             background-repeat: no-repeat;
             background-position: right 1em top 50%;
             background-size: 0.65em auto;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
         }
 
         .player-container {
@@ -112,36 +141,65 @@
             margin: 0 auto 60px;
             border-radius: 12px;
             overflow: hidden;
-            background: #000;
+            background: #1A1D20;
             box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
-            transition: transform 0.3s ease;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
-        .player-container:hover {
-            transform: translateY(-5px);
+        /* CLEANUP: WATERMARK MASKS */
+        /* Top Left Mask (White text on Red) */
+        .player-container::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 180px; /* Adjust if the red area is wider */
+            height: 60px;
+            background: #000;
+            z-index: 5;
+            pointer-events: none; /* Allows clicks to pass through */
+        }
+
+        /* Bottom Right Mask (Channel Logo) */
+        .player-container::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 120px;
+            height: 60px;
+            background: #000;
+            z-index: 5;
+            pointer-events: none;
         }
 
         iframe {
             width: 100%;
             height: 100%;
             border: none;
+            background: #000;
+        }
+
+        .player-container:hover {
+            transform: translateY(-5px);
         }
     </style>
 </head>
 <body>
 
-    <h1 class="title-3d">MSTV NETWORK</h1>
+    <h1 class="title-3d">MSTV Network</h1>
 
     <div class="scrolling-container">
         <div class="scrolling-content">
-            NOW STREAMING LIVE CHANNELS • MOVIES • MUSIC • BOLLYWOOD • SAGA MUSIC • 24/7 ENTERTAINMENT
+            NOW STREAMING LIVE CHANNELS • MOVIES • MUSIC • BOLLYWOOD • 24/7 ENTERTAINMENT
         </div>
     </div>
 
     <div class="channel-selector-text">Select a Channel</div>
     
     <div class="channel-selection">
-        <select id="channelSelect" onchange="changeChannel()">
+        <select id="channelSelect" onchange="document.getElementById('videoPlayer').src = this.value;">
+            <option value="https://example.com/stream1">Select Channel...</option>
             <option value="https://example.com/stream1">Channel 1</option>
             <option value="https://example.com/stream2">Channel 2</option>
         </select>
@@ -151,21 +209,5 @@
         <iframe id="videoPlayer" src="https://example.com/stream1" allowfullscreen></iframe>
     </div>
 
-    <script>
-        function changeChannel() {
-            var select = document.getElementById("channelSelect");
-            var iframe = document.getElementById("videoPlayer");
-            iframe.src = select.value;
-        }
-
-        // GoatCounter Analytics
-        if (!location.search.includes('dev=1')) {
-            const s = document.createElement('script');
-            s.setAttribute('data-goatcounter', 'https://mstv.goatcounter.com/count');
-            s.src = 'https://gc.zgo.at/count.js';
-            s.async = true;
-            document.head.appendChild(s);
-        }
-    </script>
 </body>
 </html>
