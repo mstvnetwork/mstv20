@@ -6,9 +6,7 @@
 <title>MSTV Network</title>
 
 <style>
-
 /* ===== Global Reset ===== */
-
 * {
   box-sizing: border-box;
 }
@@ -22,18 +20,27 @@ body {
 }
 
 /* ===== Fluid Title ===== */
-
 .title-3d {
   font-size: clamp(1.8rem, 4vw, 3.5rem);
   text-align: center;
-  margin: clamp(20px, 5vh, 50px) 0 30px;
+  margin: clamp(20px, 5vh, 40px) 0 10px; /* Reduced bottom margin for marquee */
   color: #FFFFFF;
   letter-spacing: 2px;
   font-weight: 700;
 }
 
-/* ===== Selector Text ===== */
+/* 1. Scrolling Text Style */
+.scrolling-news {
+  background: #1A1D20;
+  color: #90EE90;
+  padding: 10px 0;
+  border-top: 1px solid #333;
+  border-bottom: 1px solid #333;
+  margin-bottom: 20px;
+  font-weight: 500;
+}
 
+/* ===== Selector Text ===== */
 .channel-selector-text {
   text-align: center;
   font-size: clamp(1.2rem, 3vw, 1.8rem);
@@ -42,7 +49,6 @@ body {
 }
 
 /* ===== Dropdown ===== */
-
 .channel-selection {
   display: flex;
   justify-content: center;
@@ -65,26 +71,23 @@ select {
 }
 
 /* ===== Responsive Player ===== */
-
 .player-container {
   position: relative;
   width: 95%;
   max-width: 1200px;
-  margin: 0 auto 60px;
+  margin: 0 auto 30px; /* Reduced margin for FB button */
   border-radius: 12px;
   overflow: hidden;
   background: #1A1D20;
   box-shadow: 0 8px 20px rgba(0,0,0,0.5);
 }
 
-/* 16:9 universal ratio */
 .player-container::before {
   content: "";
   display: block;
   padding-top: 56.25%;
 }
 
-/* Media fills container */
 .player-container iframe,
 .player-container video,
 #placeholder-image {
@@ -96,8 +99,58 @@ select {
   object-fit: contain;
 }
 
-/* ===== Live Badge ===== */
+/* 2. Facebook Follow Section Style */
+.fb-follow-container {
+  text-align: center;
+  margin-bottom: 60px;
+}
 
+.fb-link {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+  color: #ffffff;
+  background: #1877F2;
+  padding: 10px 20px;
+  border-radius: 50px;
+  font-weight: bold;
+  transition: transform 0.2s ease;
+}
+
+.fb-link:hover {
+  transform: scale(1.05);
+}
+
+.fb-icon {
+  width: 24px;
+  margin-right: 10px;
+}
+
+/* 3. Footer Style */
+footer {
+  background: #000000;
+  color: #888;
+  text-align: center;
+  padding: 40px 20px;
+  border-top: 1px solid #222;
+}
+
+.footer-content {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.footer-about h3 {
+  color: #fff;
+  margin-bottom: 10px;
+}
+
+.copyright {
+  font-size: 0.9rem;
+  margin-top: 20px;
+}
+
+/* ===== Live Badge ===== */
 .live-stamp {
   position: absolute;
   top: 15px;
@@ -110,8 +163,6 @@ select {
   border-radius: 6px;
   z-index: 10;
 }
-
-/* ===== Loading ===== */
 
 .loading-indicator {
   position: absolute;
@@ -127,29 +178,21 @@ select {
   z-index: 20;
 }
 
-/* ===== Large Screen Adjustment ===== */
-
-@media (min-width: 1600px) {
-  .player-container {
-    max-width: 1400px;
-  }
-}
-
-/* ===== Small Screen Adjustment ===== */
-
-@media (max-width: 480px) {
-  .player-container {
-    width: 100%;
-    border-radius: 0;
-  }
-}
+@media (min-width: 1600px) { .player-container { max-width: 1400px; } }
+@media (max-width: 480px) { .player-container { width: 100%; border-radius: 0; } }
 
 </style>
 </head>
-
 <body>
 
 <div class="title-3d">AAINA DTH FREE</div>
+
+<!-- 1. SCROLLING TEXT -->
+<div class="scrolling-news">
+    <marquee behavior="scroll" direction="left" scrollamount="6">
+        Welcome to MSTV Network - AAINA DTH FREE! Experience high-quality streaming and entertainment 24/7.
+    </marquee>
+</div>
 
 <div class="channel-selector-text">Select Channel</div>
 
@@ -160,27 +203,39 @@ select {
 </div>
 
 <div class="player-container">
-
-<iframe id="media-player"
-allow="autoplay; encrypted-media; picture-in-picture"
-sandbox="allow-scripts allow-same-origin allow-presentation"></iframe>
-
-<video id="video-player"
-autoplay playsinline muted
-disablePictureInPicture
-controlsList="nodownload nofullscreen noplaybackrate noremoteplayback"
-style="pointer-events:none;"></video>
-
-<img id="placeholder-image" src="Design-Studio-2025-01-22 (1).png">
-
-<div class="live-stamp" id="live-stamp">MSTV NETWORK</div>
-<div class="loading-indicator" id="loading">Loading stream...</div>
-
+    <iframe id="media-player" allow="autoplay; encrypted-media; picture-in-picture" sandbox="allow-scripts allow-same-origin allow-presentation"></iframe>
+    <video id="video-player" autoplay playsinline muted disablePictureInPicture controlsList="nodownload nofullscreen noplaybackrate noremoteplayback" style="pointer-events:none;"></video>
+    <img id="placeholder-image" src="Design-Studio-2025-01-22 (1).png">
+    <div class="live-stamp" id="live-stamp">MSTV NETWORK</div>
+    <div class="loading-indicator" id="loading">Loading stream...</div>
 </div>
+
+<!-- 2. FACEBOOK FOLLOW SECTION -->
+<div class="fb-follow-container">
+    <a href="https://www.facebook.com" target="_blank" class="fb-link">
+        <img src="https://upload.wikimedia.org" alt="FB" class="fb-icon">
+        Click here to follow us
+    </a>
+</div>
+
+<!-- 3. FOOTER SECTION -->
+<footer>
+    <div class="footer-content">
+        <div class="footer-about">
+            <h3>About Us</h3>
+            <p>MSTV Network is your premier destination for free digital entertainment. We bring you the best channels and live content directly to your browser with seamless integration.</p>
+        </div>
+        <div class="copyright">
+            &copy; <span id="year"></span> MSTV Network. All Rights Reserved.
+        </div>
+    </div>
+</footer>
 
 <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 
 <script>
+// Logic for Copyright Year
+document.getElementById('year').textContent = new Date().getFullYear();
 
 const select = document.getElementById('channel-select');
 const videoPlayer = document.getElementById('video-player');
@@ -240,7 +295,6 @@ liveStamp.style.display = 'none';
 }
 
 function playChannel(channel) {
-
 showLoading(true);
 stopAllPlayback();
 placeholder.style.display = 'none';
@@ -252,32 +306,24 @@ return;
 }
 
 if (channel.type === "hls") {
-
 if (Hls.isSupported()) {
 videoPlayer.style.display = "block";
 videoPlayer.muted = false;
-
 hlsInstance = new Hls();
 hlsInstance.loadSource(channel.url);
 hlsInstance.attachMedia(videoPlayer);
-
 hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => {
 videoPlayer.play();
 showLoading(false);
 });
-}
-else {
+} else {
 videoPlayer.src = channel.url;
 videoPlayer.style.display = "block";
 videoPlayer.play();
 showLoading(false);
 }
-
 liveStamp.style.display = "none";
-}
-
-else {
-
+} else {
 iframePlayer.src = channel.url;
 iframePlayer.style.display = "block";
 liveStamp.style.display = "block";
@@ -293,7 +339,6 @@ playChannel(null);
 playChannel(channelsData[index]);
 }
 });
-
 </script>
 
 </body>
