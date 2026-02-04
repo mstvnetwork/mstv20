@@ -7,19 +7,15 @@
 
 <style>
 /* ===== Global Reset ===== */
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
 body {
-  margin: 0;
-  padding: 0;
+  margin: 0; padding: 0;
   font-family: 'Poppins', sans-serif;
   color: #E0E0E0;
   background: #0F1115;
 }
 
-/* ===== Fluid Title ===== */
 .title-3d {
   font-size: clamp(1.8rem, 4vw, 3.5rem);
   text-align: center;
@@ -29,7 +25,6 @@ body {
   font-weight: 700;
 }
 
-/* Scrolling Text Style */
 .scrolling-news {
   background: #1A1D20;
   color: #90EE90;
@@ -55,34 +50,26 @@ body {
 }
 
 select {
-  width: 100%;
-  max-width: 500px;
+  width: 100%; max-width: 500px;
   padding: 12px;
   font-size: clamp(0.9rem, 2vw, 1.2rem);
-  background: #1A1D20;
-  color: #90EE90;
-  border: 1px solid #90EE90;
-  border-radius: 8px;
-  text-align: center;
-  outline: none;
-  cursor: pointer;
+  background: #1A1D20; color: #90EE90;
+  border: 1px solid #90EE90; border-radius: 8px;
+  text-align: center; outline: none; cursor: pointer;
 }
 
 /* ===== Fullscreen Wrapper & Player ===== */
 #fullscreen-wrapper {
   position: relative;
-  width: 95%;
-  max-width: 1200px;
+  width: 95%; max-width: 1200px;
   margin: 0 auto 30px;
   background: #000;
 }
 
-/* When in browser fullscreen mode, make the wrapper fill the screen */
+/* Expand to fill entire screen when in fullscreen mode */
 #fullscreen-wrapper:fullscreen {
-  width: 100vw;
-  height: 100vh;
-  max-width: none;
-  margin: 0;
+  width: 100vw; height: 100vh;
+  max-width: none; margin: 0;
 }
 
 .player-container {
@@ -94,109 +81,61 @@ select {
   box-shadow: 0 8px 20px rgba(0,0,0,0.5);
 }
 
-/* Maintain Aspect Ratio */
 .player-container::before {
-  content: "";
-  display: block;
-  padding-top: 56.25%;
+  content: ""; display: block; padding-top: 56.25%;
 }
 
-/* Reset aspect ratio when in fullscreen to fill screen */
-#fullscreen-wrapper:fullscreen .player-container::before {
-  display: none;
-}
-#fullscreen-wrapper:fullscreen .player-container {
-  height: 100%;
-}
+#fullscreen-wrapper:fullscreen .player-container::before { display: none; }
+#fullscreen-wrapper:fullscreen .player-container { height: 100%; }
 
 .player-container iframe,
 .player-container video,
 #placeholder-image {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  border: none;
+  position: absolute; top: 0; left: 0;
+  width: 100%; height: 100%;
+  object-fit: contain; border: none;
 }
 
-/* CUSTOM EXIT BUTTON */
+/* Custom Exit Button - Only visible in Fullscreen */
 #exit-fs-btn {
-  display: none; /* Hidden by default */
-  position: absolute;
-  top: 20px;
-  right: 20px;
+  display: none;
+  position: absolute; top: 20px; right: 20px;
   z-index: 9999;
-  background: rgba(229, 9, 20, 0.8);
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 5px;
-  cursor: pointer;
-  font-weight: bold;
-  font-size: 14px;
-  transition: background 0.3s;
+  background: rgba(229, 9, 20, 0.9);
+  color: white; border: none;
+  padding: 12px 24px; border-radius: 5px;
+  cursor: pointer; font-weight: bold;
 }
 
-#exit-fs-btn:hover {
-  background: #ff0000;
-}
-
-/* Only show exit button when inside fullscreen */
-#fullscreen-wrapper:fullscreen #exit-fs-btn {
-  display: block;
-}
-
-.fb-follow-container {
-  text-align: center;
-  margin-bottom: 60px;
-}
-
-.fb-link {
-  display: inline-flex;
-  align-items: center;
-  text-decoration: none;
-  color: #ffffff;
-  background: #1877F2;
-  padding: 10px 20px;
-  border-radius: 50px;
-  font-weight: bold;
-  transition: transform 0.2s ease;
-}
-
-footer {
-  background: #000000;
-  color: #888;
-  text-align: center;
-  padding: 40px 20px;
-  border-top: 1px solid #222;
-}
+#fullscreen-wrapper:fullscreen #exit-fs-btn { display: block; }
 
 .live-stamp {
-  position: absolute;
-  top: 15px;
-  left: 15px;
-  background: #E50914;
-  color: white;
-  font-weight: 700;
-  font-size: clamp(12px, 1.5vw, 18px);
-  padding: 6px 14px;
-  border-radius: 6px;
-  z-index: 10;
+  position: absolute; top: 15px; left: 15px;
+  background: #E50914; color: white;
+  font-weight: 700; padding: 6px 14px;
+  border-radius: 6px; z-index: 10; display: none;
 }
 
 .loading-indicator {
-  position: absolute;
-  top: 50%;
-  left: 50%;
+  position: absolute; top: 50%; left: 50%;
   transform: translate(-50%, -50%);
-  background: rgba(0,0,0,0.7);
-  color: #90EE90;
-  padding: 12px 25px;
-  border-radius: 8px;
-  z-index: 20;
-  display: none;
+  background: rgba(0,0,0,0.7); color: #90EE90;
+  padding: 12px 25px; border-radius: 8px;
+  z-index: 20; display: none;
+}
+
+.fb-follow-container { text-align: center; margin-bottom: 60px; }
+.fb-link {
+  display: inline-flex; align-items: center;
+  text-decoration: none; color: #ffffff;
+  background: #1877F2; padding: 10px 20px;
+  border-radius: 50px; font-weight: bold;
+}
+
+footer {
+  background: #000; color: #888;
+  text-align: center; padding: 40px 20px;
+  border-top: 1px solid #222;
 }
 </style>
 </head>
@@ -218,11 +157,10 @@ footer {
 </select>
 </div>
 
-<!-- NEW WRAPPER FOR FULLSCREEN CONTROL -->
 <div id="fullscreen-wrapper">
     <button id="exit-fs-btn" onclick="exitFullscreen()">EXIT FULLSCREEN</button>
     
-    <div class="player-container" id="main-container">
+    <div class="player-container">
         <iframe id="media-player" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" sandbox="allow-scripts allow-same-origin allow-presentation"></iframe>
         <video id="video-player" autoplay playsinline muted controlsList="nodownload"></video>
         <img id="placeholder-image" src="Design-Studio-2025-01-22 (1).png">
@@ -232,21 +170,14 @@ footer {
 </div>
 
 <div class="fb-follow-container">
-    <a href="https://www.facebook.com" target="_blank" class="fb-link">
-        Click here to follow us
-    </a>
+    <a href="https://www.facebook.com" target="_blank" class="fb-link">Click here to follow us</a>
 </div>
 
 <footer>
-    <div class="footer-content">
-        <div class="copyright">
-            &copy; <span id="year"></span> MSTV Network. All Rights Reserved.
-        </div>
-    </div>
+    <div class="footer-content">&copy; <span id="year"></span> MSTV Network. All Rights Reserved.</div>
 </footer>
 
-<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-
+<script src="https://cdn.jsdelivr.net"></script>
 <script>
 document.getElementById('year').textContent = new Date().getFullYear();
 
@@ -260,10 +191,11 @@ const fsWrapper = document.getElementById('fullscreen-wrapper');
 
 let hlsInstance = null;
 
+// CHANNEL DATA - Edit showBadge: true/false here for any channel
 const channelsData = [
-    { name: "Aaina DTH Main", url: "https://mstvnetwork.github.io/Aaina-Dth/", type: "iframe" },
-    { name: "Bollywood Classic", url: "https://d35j504z0x2vu2.cloudfront.net/v1/manifest/0bc8e8376bd8417a1b6761138aa41c26c7309312/bollywood-classic/6b126777-7e9a-444f-9845-48fa1d4ed694/1.m3u8", type: "hls" },
-    { name: "Zee Cinema", url: "https://fscott.sytes.net/zeecinema.html", type: "iframe" }
+    { name: "Aaina DTH Main", url: "https://mstvnetwork.github.io", type: "iframe", showBadge: false },
+    { name: "Bollywood Classic", url: "https://d35j504z0x2vu2.cloudfront.net", type: "hls", showBadge: false },
+    { name: "Zee Cinema", url: "https://fscott.sytes.net", type: "iframe", showBadge: true }
 ];
 
 channelsData.forEach((channel, index) => {
@@ -273,7 +205,6 @@ channelsData.forEach((channel, index) => {
     select.appendChild(option);
 });
 
-// FULLSCREEN FUNCTIONS
 function enterFullscreen() {
     if (fsWrapper.requestFullscreen) { fsWrapper.requestFullscreen(); }
     else if (fsWrapper.webkitRequestFullscreen) { fsWrapper.webkitRequestFullscreen(); }
@@ -294,7 +225,6 @@ function stopAllPlayback() {
     videoPlayer.style.display = 'none';
     iframePlayer.src = '';
     iframePlayer.style.display = 'none';
-    liveStamp.style.display = 'none';
 }
 
 function playChannel(channel) {
@@ -305,10 +235,14 @@ function playChannel(channel) {
     if (!channel) {
         placeholder.style.display = 'block';
         loading.style.display = 'none';
+        liveStamp.style.display = 'none';
         return;
     }
 
-    // Trigger Fullscreen immediately on selection
+    // Badge Logic: Controlled by array property
+    liveStamp.style.display = channel.showBadge ? "block" : "none";
+
+    // Trigger Fullscreen on Selection
     enterFullscreen();
 
     if (channel.type === "hls") {
@@ -329,7 +263,6 @@ function playChannel(channel) {
     } else {
         iframePlayer.src = channel.url;
         iframePlayer.style.display = "block";
-        liveStamp.style.display = "block";
         loading.style.display = 'none';
     }
 }
@@ -340,6 +273,5 @@ select.addEventListener("change", () => {
     else playChannel(channelsData[index]);
 });
 </script>
-
 </body>
 </html>
