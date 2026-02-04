@@ -66,7 +66,6 @@ select {
   background: #000;
 }
 
-/* Expand to fill entire screen when in fullscreen mode */
 #fullscreen-wrapper:fullscreen {
   width: 100vw; height: 100vh;
   max-width: none; margin: 0;
@@ -162,7 +161,7 @@ footer {
     
     <div class="player-container">
         <iframe id="media-player" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" sandbox="allow-scripts allow-same-origin allow-presentation"></iframe>
-        <video id="video-player" autoplay playsinline muted controlsList="nodownload"></video>
+        <video id="video-player" autoplay playsinline controlsList="nodownload"></video>
         <img id="placeholder-image" src="Design-Studio-2025-01-22 (1).png">
         <div class="live-stamp" id="live-stamp">MSTV NETWORK</div>
         <div class="loading-indicator" id="loading">Loading stream...</div>
@@ -191,7 +190,7 @@ const fsWrapper = document.getElementById('fullscreen-wrapper');
 
 let hlsInstance = null;
 
-// CHANNEL DATA - Edit showBadge: true/false here for any channel
+// CHANNEL DATA - Hardcode showBadge: true only where needed
 const channelsData = [
     { name: "Aaina DTH Main", url: "https://mstvnetwork.github.io/Aaina-Dth", type: "iframe", showBadge: false },
     { name: "Bollywood Classic", url: "https://d35j504z0x2vu2.cloudfront.net/v1/manifest/0bc8e8376bd8417a1b6761138aa41c26c7309312/bollywood-classic/6b126777-7e9a-444f-9845-48fa1d4ed694/1.m3u8", type: "hls", showBadge: false },
@@ -225,6 +224,7 @@ function stopAllPlayback() {
     videoPlayer.style.display = 'none';
     iframePlayer.src = '';
     iframePlayer.style.display = 'none';
+    liveStamp.style.display = 'none';
 }
 
 function playChannel(channel) {
@@ -235,29 +235,31 @@ function playChannel(channel) {
     if (!channel) {
         placeholder.style.display = 'block';
         loading.style.display = 'none';
-        liveStamp.style.display = 'none';
         return;
     }
 
-    // Badge Logic: Controlled by array property
+    // Badge Logic
     liveStamp.style.display = channel.showBadge ? "block" : "none";
 
-    // Trigger Fullscreen on Selection
+    // Trigger Fullscreen immediately
     enterFullscreen();
 
     if (channel.type === "hls") {
         videoPlayer.style.display = "block";
+        videoPlayer.muted = false; // Unmute for better experience in fullscreen
+        
         if (Hls.isSupported()) {
             hlsInstance = new Hls();
             hlsInstance.loadSource(channel.url);
             hlsInstance.attachMedia(videoPlayer);
             hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => {
-                videoPlayer.play();
+                videoPlayer.play().catch(e => console.log("Autoplay prevented:", e));
                 loading.style.display = 'none';
             });
-        } else {
+        } else if (videoPlayer.canPlayType('application/vnd.apple.mpegurl')) {
+            // Safari support
             videoPlayer.src = channel.url;
-            videoPlayer.play();
+            videoPlayer.play().catch(e => console.log("Autoplay prevented:", e));
             loading.style.display = 'none';
         }
     } else {
