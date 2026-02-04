@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MSTV Network</title>
 
-<!-- Load Hls.js in Head to ensure it is defined before use -->
 <script src="https://cdn.jsdelivr.net"></script>
 
 <style>
@@ -23,65 +22,45 @@ select { width: 100%; max-width: 500px; padding: 12px; font-size: clamp(0.9rem, 
 /* ===== Fullscreen Wrapper & Player ===== */
 #fullscreen-wrapper { position: relative; width: 95%; max-width: 1200px; margin: 0 auto 30px; background: #000; }
 #fullscreen-wrapper:fullscreen { width: 100vw; height: 100vh; max-width: none; margin: 0; }
-
 .player-container { position: relative; width: 100%; border-radius: 12px; overflow: hidden; background: #1A1D20; box-shadow: 0 8px 20px rgba(0,0,0,0.5); }
 .player-container::before { content: ""; display: block; padding-top: 56.25%; }
-
 #fullscreen-wrapper:fullscreen .player-container::before { display: none; }
 #fullscreen-wrapper:fullscreen .player-container { height: 100%; }
 
 .player-container iframe, .player-container video, #placeholder-image { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; border: none; }
 
-/* SLEEK BLUR OVERLAY (Instead of Text Badge) */
+/* SLEEK BLUR OVERLAY */
 #blur-overlay {
-  position: absolute;
-  top: 15px;      /* Adjust these to hit the exact logo spot */
-  left: 15px;
-  width: 120px;   /* Size of the area to blur */
-  height: 50px;
-  background: rgba(255, 255, 255, 0.05); /* Very faint tint */
-  backdrop-filter: blur(15px);           /* The secret sauce */
-  -webkit-backdrop-filter: blur(15px);
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-  z-index: 10;
-  display: none; /* Controlled via JS */
-  pointer-events: none; /* Doesn't block clicks */
+  position: absolute; top: 15px; left: 15px; width: 120px; height: 50px;
+  background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+  border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.1); z-index: 10; display: none; pointer-events: none;
 }
 
 /* SLEEK EXIT BUTTON */
 #exit-fs-btn {
-  display: none;
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  z-index: 9999;
-  background: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  color: #fff;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  padding: 10px 24px;
-  border-radius: 30px;
-  cursor: pointer;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  transition: all 0.3s ease;
+  display: none; position: absolute; top: 20px; right: 20px; z-index: 9999;
+  background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  color: #fff; border: 1px solid rgba(255, 255, 255, 0.2); padding: 10px 24px; border-radius: 30px;
+  cursor: pointer; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; transition: all 0.3s ease;
 }
-
-#exit-fs-btn:hover {
-  background: rgba(229, 9, 20, 0.8);
-  border-color: #ff4d4d;
-  box-shadow: 0 0 20px rgba(229, 9, 20, 0.4);
-  transform: translateY(-1px);
-}
-
+#exit-fs-btn:hover { background: rgba(229, 9, 20, 0.8); border-color: #ff4d4d; box-shadow: 0 0 20px rgba(229, 9, 20, 0.4); transform: translateY(-1px); }
 #fullscreen-wrapper:fullscreen #exit-fs-btn { display: block; }
 
-.loading-indicator { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.7); color: #90EE90; padding: 12px 25px; border-radius: 8px; z-index: 20; display: none; }
+/* MODERN LOADING SPINNER */
+.loader-container {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  z-index: 25; display: none; flex-direction: column; align-items: center; gap: 15px;
+}
+.spinner {
+  width: 50px; height: 50px;
+  border: 3px solid rgba(144, 238, 144, 0.1);
+  border-top: 3px solid #90EE90;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  box-shadow: 0 0 15px rgba(144, 238, 144, 0.3);
+}
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
 .fb-follow-container { text-align: center; margin-bottom: 60px; }
 .fb-link { display: inline-flex; align-items: center; text-decoration: none; color: #ffffff; background: #1877F2; padding: 10px 20px; border-radius: 50px; font-weight: bold; }
 footer { background: #000; color: #888; text-align: center; padding: 40px 20px; border-top: 1px solid #222; }
@@ -104,10 +83,12 @@ footer { background: #000; color: #888; text-align: center; padding: 40px 20px; 
         <video id="video-player" autoplay playsinline controlsList="nodownload"></video>
         <img id="placeholder-image" src="Design-Studio-2025-01-22 (1).png">
         
-        <!-- BLUR OVERLAY AREA -->
         <div id="blur-overlay"></div>
         
-        <div class="loading-indicator" id="loading">Loading stream...</div>
+        <!-- MODERN SPINNER -->
+        <div class="loader-container" id="loader">
+            <div class="spinner"></div>
+        </div>
     </div>
 </div>
 
@@ -117,11 +98,11 @@ footer { background: #000; color: #888; text-align: center; padding: 40px 20px; 
 
 <script>
 document.getElementById('year').textContent = new Date().getFullYear();
-const select = document.getElementById('channel-select'), videoPlayer = document.getElementById('video-player'), iframePlayer = document.getElementById('media-player'), placeholder = document.getElementById('placeholder-image'), loading = document.getElementById('loading'), blurOverlay = document.getElementById('blur-overlay'), fsWrapper = document.getElementById('fullscreen-wrapper');
+const select = document.getElementById('channel-select'), videoPlayer = document.getElementById('video-player'), iframePlayer = document.getElementById('media-player'), placeholder = document.getElementById('placeholder-image'), loader = document.getElementById('loader'), blurOverlay = document.getElementById('blur-overlay'), fsWrapper = document.getElementById('fullscreen-wrapper');
 
 let hlsInstance = null;
 const channelsData = [
-    { name: "Aaina DTH Main", url: "https://mstvnetwork.github.io/Aaina-Dth", type: "iframe", showBadge: false },
+    { name: "Aaina DTH Main", url: "https://mstvnetwork.github.io/ Aaina-Dth", type: "iframe", showBadge: false },
     { name: "Bollywood Classic", url: "https://d35j504z0x2vu2.cloudfront.net/v1/manifest/0bc8e8376bd8417a1b6761138aa41c26c7309312/bollywood-classic/6b126777-7e9a-444f-9845-48fa1d4ed694/1.m3u8", type: "hls", showBadge: false },
     { name: "Zee Cinema", url: "https://fscott.sytes.net/zeecinema.html", type: "iframe", showBadge: true }
 ];
@@ -146,14 +127,12 @@ function stopAllPlayback() {
 }
 
 function playChannel(channel) {
-    loading.style.display = 'block';
+    loader.style.display = 'flex';
     stopAllPlayback();
     placeholder.style.display = 'none';
-    if (!channel) { placeholder.style.display = 'block'; loading.style.display = 'none'; return; }
+    if (!channel) { placeholder.style.display = 'block'; loader.style.display = 'none'; return; }
 
-    // BLUR LOGIC: Use the same 'showBadge' flag to trigger the blur overlay
     blurOverlay.style.display = channel.showBadge ? "block" : "none";
-
     enterFullscreen();
 
     if (channel.type === "hls") {
@@ -164,17 +143,17 @@ function playChannel(channel) {
             hlsInstance.attachMedia(videoPlayer);
             hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => {
                 videoPlayer.play().catch(e => console.log("Play blocked", e));
-                loading.style.display = 'none';
+                loader.style.display = 'none';
             });
         } else if (videoPlayer.canPlayType('application/vnd.apple.mpegurl')) {
             videoPlayer.src = channel.url;
-            videoPlayer.play().catch(e => console.log("Safari error", e));
-            loading.style.display = 'none';
+            videoPlayer.play().then(() => loader.style.display = 'none').catch(e => console.log("Safari error", e));
         }
     } else {
         iframePlayer.src = channel.url;
         iframePlayer.style.display = "block";
-        loading.style.display = 'none';
+        // Iframes don't have a reliable "loaded" event for all domains, so we hide loader shortly after
+        setTimeout(() => { loader.style.display = 'none'; }, 2000);
     }
 }
 
