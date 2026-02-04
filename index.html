@@ -23,7 +23,7 @@ body {
 .title-3d {
   font-size: clamp(1.8rem, 4vw, 3.5rem);
   text-align: center;
-  margin: clamp(20px, 5vh, 40px) 0 10px; 
+  margin: clamp(20px, 5vh, 40px) 0 10px; /* Reduced bottom margin for marquee */
   color: #FFFFFF;
   letter-spacing: 2px;
   font-weight: 700;
@@ -75,7 +75,7 @@ select {
   position: relative;
   width: 95%;
   max-width: 1200px;
-  margin: 0 auto 30px; 
+  margin: 0 auto 30px; /* Reduced margin for FB button */
   border-radius: 12px;
   overflow: hidden;
   background: #1A1D20;
@@ -162,7 +162,6 @@ footer {
   padding: 6px 14px;
   border-radius: 6px;
   z-index: 10;
-  display: none; /* Hidden by default */
 }
 
 .loading-indicator {
@@ -232,7 +231,7 @@ footer {
     </div>
 </footer>
 
-<script src="https://cdn.jsdelivr.net"></script>
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 
 <script>
 // Logic for Copyright Year
@@ -250,7 +249,7 @@ let hlsInstance = null;
 const channelsData = [
 {
 name: "Aaina DTH Main",
-url: "https://mstvnetwork.github.io/Aaina-Dth",
+url: "https://mstvnetwork.github.io/Aaina-Dth/",
 type: "iframe"
 },
 {
@@ -272,7 +271,6 @@ option.textContent = channel.name;
 select.appendChild(option);
 });
 
-// Initial State
 placeholder.style.display = 'block';
 videoPlayer.style.display = 'none';
 iframePlayer.style.display = 'none';
@@ -293,7 +291,6 @@ videoPlayer.load();
 videoPlayer.style.display = 'none';
 iframePlayer.src = '';
 iframePlayer.style.display = 'none';
-// Badge stays hidden until explicitly called in playChannel
 liveStamp.style.display = 'none';
 }
 
@@ -325,12 +322,10 @@ videoPlayer.style.display = "block";
 videoPlayer.play();
 showLoading(false);
 }
-// HIDE the badge for HLS channels
 liveStamp.style.display = "none";
 } else {
 iframePlayer.src = channel.url;
 iframePlayer.style.display = "block";
-// SHOW the badge ONLY for iframe channels
 liveStamp.style.display = "block";
 showLoading(false);
 }
