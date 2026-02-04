@@ -162,7 +162,7 @@ footer {
   padding: 6px 14px;
   border-radius: 6px;
   z-index: 10;
-  display: none; 
+  display: none; /* Hidden by default */
 }
 
 .loading-indicator {
@@ -204,9 +204,8 @@ footer {
 </div>
 
 <div class="player-container">
-    <iframe id="media-player" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" sandbox="allow-scripts allow-same-origin allow-presentation allow-forms"></iframe>
-    <!-- Video element updated to allow controls and fullscreen -->
-    <video id="video-player" autoplay playsinline controls style="display:none;"></video>
+    <iframe id="media-player" allow="autoplay; encrypted-media; picture-in-picture" sandbox="allow-scripts allow-same-origin allow-presentation"></iframe>
+    <video id="video-player" autoplay playsinline muted disablePictureInPicture controlsList="nodownload nofullscreen noplaybackrate noremoteplayback" style="pointer-events:none;"></video>
     <img id="placeholder-image" src="Design-Studio-2025-01-22 (1).png">
     <div class="live-stamp" id="live-stamp">MSTV NETWORK</div>
     <div class="loading-indicator" id="loading">Loading stream...</div>
@@ -252,20 +251,17 @@ const channelsData = [
 {
 name: "Aaina DTH Main",
 url: "https://mstvnetwork.github.io/Aaina-Dth",
-type: "iframe",
-isPage: false
+type: "iframe"
 },
 {
 name: "Bollywood Classic",
 url: "https://d35j504z0x2vu2.cloudfront.net/v1/manifest/0bc8e8376bd8417a1b6761138aa41c26c7309312/bollywood-classic/6b126777-7e9a-444f-9845-48fa1d4ed694/1.m3u8",
-type: "hls",
-isPage: false
+type: "hls"
 },
 {
 name: "Zee Cinema",
 url: "https://fscott.sytes.net/zeecinema.html",
-type: "iframe",
-isPage: true
+type: "iframe"
 }
 ];
 
@@ -276,6 +272,7 @@ option.textContent = channel.name;
 select.appendChild(option);
 });
 
+// Initial State
 placeholder.style.display = 'block';
 videoPlayer.style.display = 'none';
 iframePlayer.style.display = 'none';
@@ -296,6 +293,7 @@ videoPlayer.load();
 videoPlayer.style.display = 'none';
 iframePlayer.src = '';
 iframePlayer.style.display = 'none';
+// Badge stays hidden until explicitly called in playChannel
 liveStamp.style.display = 'none';
 }
 
@@ -310,38 +308,31 @@ showLoading(false);
 return;
 }
 
-// Badge logic: Only show for items marked isPage: true
-liveStamp.style.display = channel.isPage ? "block" : "none";
-
 if (channel.type === "hls") {
-    videoPlayer.style.display = "block";
-    videoPlayer.muted = false;
-    
-    if (Hls.isSupported()) {
-        hlsInstance = new Hls({
-            // Fix for CloudFront/CORS issues
-            xhrSetup: function (xhr, url) {
-                xhr.withCredentials = false;
-            }
-        });
-        hlsInstance.loadSource(channel.url);
-        hlsInstance.attachMedia(videoPlayer);
-        hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => {
-            videoPlayer.play();
-            showLoading(false);
-        });
-        hlsInstance.on(Hls.Events.ERROR, (event, data) => {
-            if (data.fatal) showLoading(false);
-        });
-    } else if (videoPlayer.canPlayType('application/vnd.apple.mpegurl')) {
-        videoPlayer.src = channel.url;
-        videoPlayer.play();
-        showLoading(false);
-    }
+if (Hls.isSupported()) {
+videoPlayer.style.display = "block";
+videoPlayer.muted = false;
+hlsInstance = new Hls();
+hlsInstance.loadSource(channel.url);
+hlsInstance.attachMedia(videoPlayer);
+hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => {
+videoPlayer.play();
+showLoading(false);
+});
 } else {
-    iframePlayer.src = channel.url;
-    iframePlayer.style.display = "block";
-    showLoading(false);
+videoPlayer.src = channel.url;
+videoPlayer.style.display = "block";
+videoPlayer.play();
+showLoading(false);
+}
+// HIDE the badge for HLS channels
+liveStamp.style.display = "none";
+} else {
+iframePlayer.src = channel.url;
+iframePlayer.style.display = "block";
+// SHOW the badge ONLY for iframe channels
+liveStamp.style.display = "block";
+showLoading(false);
 }
 }
 
