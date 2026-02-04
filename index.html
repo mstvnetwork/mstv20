@@ -162,7 +162,7 @@ footer {
   padding: 6px 14px;
   border-radius: 6px;
   z-index: 10;
-  display: none; /* Controlled by playChannel logic */
+  display: none; 
 }
 
 .loading-indicator {
@@ -204,8 +204,9 @@ footer {
 </div>
 
 <div class="player-container">
-    <iframe id="media-player" allow="autoplay; encrypted-media; picture-in-picture" sandbox="allow-scripts allow-same-origin allow-presentation"></iframe>
-    <video id="video-player" autoplay playsinline muted disablePictureInPicture controlsList="nodownload nofullscreen noplaybackrate noremoteplayback" style="pointer-events:none;"></video>
+    <iframe id="media-player" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" sandbox="allow-scripts allow-same-origin allow-presentation allow-forms"></iframe>
+    <!-- Video element updated to allow controls and fullscreen -->
+    <video id="video-player" autoplay playsinline controls style="display:none;"></video>
     <img id="placeholder-image" src="Design-Studio-2025-01-22 (1).png">
     <div class="live-stamp" id="live-stamp">MSTV NETWORK</div>
     <div class="loading-indicator" id="loading">Loading stream...</div>
@@ -247,28 +248,24 @@ const liveStamp = document.getElementById('live-stamp');
 
 let hlsInstance = null;
 
-/**
- * Updated channelsData
- * isPage: true means "MSTV NETWORK" badge will show
- */
 const channelsData = [
 {
 name: "Aaina DTH Main",
 url: "https://mstvnetwork.github.io/Aaina-Dth",
 type: "iframe",
-isPage: false // Hides badge
+isPage: false
 },
 {
 name: "Bollywood Classic",
 url: "https://d35j504z0x2vu2.cloudfront.net/v1/manifest/0bc8e8376bd8417a1b6761138aa41c26c7309312/bollywood-classic/6b126777-7e9a-444f-9845-48fa1d4ed694/1.m3u8",
 type: "hls",
-isPage: false // Hides badge
+isPage: false
 },
 {
 name: "Zee Cinema",
 url: "https://fscott.sytes.net/zeecinema.html",
 type: "iframe",
-isPage: true // Shows badge
+isPage: true
 }
 ];
 
@@ -313,27 +310,31 @@ showLoading(false);
 return;
 }
 
-// Logic: Check if it's specifically a page embed via isPage property
-if (channel.isPage === true) {
-    liveStamp.style.display = "block";
-} else {
-    liveStamp.style.display = "none";
-}
+// Badge logic: Only show for items marked isPage: true
+liveStamp.style.display = channel.isPage ? "block" : "none";
 
 if (channel.type === "hls") {
+    videoPlayer.style.display = "block";
+    videoPlayer.muted = false;
+    
     if (Hls.isSupported()) {
-        videoPlayer.style.display = "block";
-        videoPlayer.muted = false;
-        hlsInstance = new Hls();
+        hlsInstance = new Hls({
+            // Fix for CloudFront/CORS issues
+            xhrSetup: function (xhr, url) {
+                xhr.withCredentials = false;
+            }
+        });
         hlsInstance.loadSource(channel.url);
         hlsInstance.attachMedia(videoPlayer);
         hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => {
             videoPlayer.play();
             showLoading(false);
         });
-    } else {
+        hlsInstance.on(Hls.Events.ERROR, (event, data) => {
+            if (data.fatal) showLoading(false);
+        });
+    } else if (videoPlayer.canPlayType('application/vnd.apple.mpegurl')) {
         videoPlayer.src = channel.url;
-        videoPlayer.style.display = "block";
         videoPlayer.play();
         showLoading(false);
     }
