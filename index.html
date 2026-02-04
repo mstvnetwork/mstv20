@@ -23,7 +23,7 @@ body {
 .title-3d {
   font-size: clamp(1.8rem, 4vw, 3.5rem);
   text-align: center;
-  margin: clamp(20px, 5vh, 40px) 0 10px; /* Reduced bottom margin for marquee */
+  margin: clamp(20px, 5vh, 40px) 0 10px; 
   color: #FFFFFF;
   letter-spacing: 2px;
   font-weight: 700;
@@ -75,7 +75,7 @@ select {
   position: relative;
   width: 95%;
   max-width: 1200px;
-  margin: 0 auto 30px; /* Reduced margin for FB button */
+  margin: 0 auto 30px; 
   border-radius: 12px;
   overflow: hidden;
   background: #1A1D20;
@@ -162,6 +162,7 @@ footer {
   padding: 6px 14px;
   border-radius: 6px;
   z-index: 10;
+  display: none; /* Controlled by playChannel logic */
 }
 
 .loading-indicator {
@@ -231,7 +232,7 @@ footer {
     </div>
 </footer>
 
-<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+<script src="https://cdn.jsdelivr.net"></script>
 
 <script>
 // Logic for Copyright Year
@@ -246,21 +247,28 @@ const liveStamp = document.getElementById('live-stamp');
 
 let hlsInstance = null;
 
+/**
+ * Updated channelsData
+ * isPage: true means "MSTV NETWORK" badge will show
+ */
 const channelsData = [
 {
 name: "Aaina DTH Main",
-url: "https://mstvnetwork.github.io/Aaina-Dth/",
-type: "iframe"
+url: "https://mstvnetwork.github.io/Aaina-Dth",
+type: "iframe",
+isPage: false // Hides badge
 },
 {
 name: "Bollywood Classic",
 url: "https://d35j504z0x2vu2.cloudfront.net/v1/manifest/0bc8e8376bd8417a1b6761138aa41c26c7309312/bollywood-classic/6b126777-7e9a-444f-9845-48fa1d4ed694/1.m3u8",
-type: "hls"
+type: "hls",
+isPage: false // Hides badge
 },
 {
 name: "Zee Cinema",
 url: "https://fscott.sytes.net/zeecinema.html",
-type: "iframe"
+type: "iframe",
+isPage: true // Shows badge
 }
 ];
 
@@ -305,29 +313,34 @@ showLoading(false);
 return;
 }
 
-if (channel.type === "hls") {
-if (Hls.isSupported()) {
-videoPlayer.style.display = "block";
-videoPlayer.muted = false;
-hlsInstance = new Hls();
-hlsInstance.loadSource(channel.url);
-hlsInstance.attachMedia(videoPlayer);
-hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => {
-videoPlayer.play();
-showLoading(false);
-});
+// Logic: Check if it's specifically a page embed via isPage property
+if (channel.isPage === true) {
+    liveStamp.style.display = "block";
 } else {
-videoPlayer.src = channel.url;
-videoPlayer.style.display = "block";
-videoPlayer.play();
-showLoading(false);
+    liveStamp.style.display = "none";
 }
-liveStamp.style.display = "none";
+
+if (channel.type === "hls") {
+    if (Hls.isSupported()) {
+        videoPlayer.style.display = "block";
+        videoPlayer.muted = false;
+        hlsInstance = new Hls();
+        hlsInstance.loadSource(channel.url);
+        hlsInstance.attachMedia(videoPlayer);
+        hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => {
+            videoPlayer.play();
+            showLoading(false);
+        });
+    } else {
+        videoPlayer.src = channel.url;
+        videoPlayer.style.display = "block";
+        videoPlayer.play();
+        showLoading(false);
+    }
 } else {
-iframePlayer.src = channel.url;
-iframePlayer.style.display = "block";
-liveStamp.style.display = "block";
-showLoading(false);
+    iframePlayer.src = channel.url;
+    iframePlayer.style.display = "block";
+    showLoading(false);
 }
 }
 
