@@ -59,6 +59,17 @@ select { width: 100%; max-width: 500px; padding: 12px; font-size: clamp(0.9rem, 
   animation: spin 1s linear infinite;
   box-shadow: 0 0 15px rgba(144, 238, 144, 0.3);
 }
+
+/* NEW LOADING TEXT STYLE */
+.loading-text {
+  color: #90EE90;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  text-shadow: 0 0 10px rgba(144, 238, 144, 0.5);
+}
+
 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
 .fb-follow-container { text-align: center; margin-bottom: 60px; }
@@ -85,9 +96,10 @@ footer { background: #000; color: #888; text-align: center; padding: 40px 20px; 
         
         <div id="blur-overlay"></div>
         
-        <!-- MODERN SPINNER -->
+        <!-- MODERN SPINNER WITH TEXT -->
         <div class="loader-container" id="loader">
             <div class="spinner"></div>
+            <span class="loading-text">Please Wait channel loading</span>
         </div>
     </div>
 </div>
@@ -152,14 +164,16 @@ function playChannel(channel) {
     } else {
         iframePlayer.src = channel.url;
         iframePlayer.style.display = "block";
-        // Iframes don't have a reliable "loaded" event for all domains, so we hide loader shortly after
-        setTimeout(() => { loader.style.display = 'none'; }, 2000);
+        // Hide loader when iframe finishes loading
+        iframePlayer.onload = function() {
+            loader.style.display = 'none';
+        };
     }
 }
 
-select.addEventListener("change", () => {
-    const index = select.value;
-    playChannel(index === "" ? null : channelsData[index]);
+select.addEventListener('change', (e) => {
+    const channel = channelsData[e.target.value];
+    playChannel(channel);
 });
 </script>
 </body>
