@@ -4,9 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MSTV Network</title>
+<!-- HLS Library for .m3u8 support -->
 <script src="https://cdn.jsdelivr.net"></script>
 <style>
-/* Reset & Styles */
+/* Reset & UI */
 * { box-sizing: border-box; }
 body { margin: 0; padding: 0; font-family: 'Poppins', sans-serif; color: #E0E0E0; background: #0F1115; overflow-x: hidden; }
 .title-3d { font-size: clamp(1.8rem, 4vw, 3.5rem); text-align: center; margin: 20px 0 10px; color: #FFFFFF; font-weight: 700; }
@@ -36,7 +37,7 @@ footer { background: #000; color: #888; text-align: center; padding: 20px; borde
 <body>
 
 <div class="title-3d">AAINA DTH FREE</div>
-<div class="scrolling-news"><marquee scrollamount="6">Optimized Playback: No redirects, light loading, high speed.</marquee></div>
+<div class="scrolling-news"><marquee scrollamount="6">Optimized: No Redirects | Low Bandwidth HLS | Ad-Block Enabled.</marquee></div>
 
 <div class="channel-selection">
   <select id="channel-select"><option value="">👉 Select a Channel</option></select>
@@ -45,12 +46,10 @@ footer { background: #000; color: #888; text-align: center; padding: 20px; borde
 <div id="fullscreen-wrapper">
     <button id="exit-fs-btn" onclick="exitFullscreen()">EXIT FULLSCREEN</button>
     <div class="player-container">
-        <!-- FIXED SANDBOX: Removed allow-top-navigation and allow-popups to stop redirects -->
-        <iframe id="media-player" style="display:none;" 
-                allow="autoplay; fullscreen; encrypted-media" 
-                sandbox="allow-scripts allow-same-origin allow-forms allow-presentation"
-                allowfullscreen="true"></iframe>
+        <!-- Iframe starts without sandbox; we apply it via JS to prevent HLS conflicts -->
+        <iframe id="media-player" style="display:none;" allow="autoplay; fullscreen; encrypted-media" allowfullscreen="true"></iframe>
         
+        <!-- Video tag for HLS/MP4 -->
         <video id="video-player" style="display:none;" playsinline controls preload="metadata" muted></video>
         
         <div id="blur-overlay"></div>
@@ -92,6 +91,7 @@ function stopAllPlayback() {
     videoPlayer.load();
     videoPlayer.style.display = 'none';
     iframePlayer.src = '';
+    iframePlayer.removeAttribute('sandbox'); // Clear sandbox for fresh load
     iframePlayer.style.display = 'none';
     blurOverlay.style.display = 'none';
 }
@@ -108,16 +108,32 @@ select.addEventListener('change', function() {
     if (channel.type === "hls") {
         videoPlayer.style.display = "block";
         if (typeof Hls !== 'undefined' && Hls.isSupported()) {
-            hlsInstance = new Hls({ maxBufferLength: 10, startLevel: 0 });
+            // Optimized buffer for slow networks
+            hlsInstance = new Hls({ 
+                maxBufferLength: 10, 
+                maxMaxBufferLength: 20,
+                startLevel: 0, 
+                enableWorker: true 
+            });
             hlsInstance.loadSource(channel.url);
             hlsInstance.attachMedia(videoPlayer);
             hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => {
                 loader.style.display = 'none';
-                videoPlayer.play();
+                videoPlayer.play().catch(() => { videoPlayer.muted = true; videoPlayer.play(); });
             });
+            hlsInstance.on(Hls.Events.ERROR, (event, data) => {
+                if (data.fatal) loader.style.display = 'none';
+            });
+        } else if (videoPlayer.canPlayType('application/vnd.apple.mpegurl')) {
+            videoPlayer.src = channel.url;
+            videoPlayer.play();
+            loader.style.display = 'none';
         }
     } else {
+        // IFRAME MODE (With Redirect Protection)
         iframePlayer.style.display = "block";
+        // Apply sandbox specifically to iframes to stop their ad-scripts
+        iframePlayer.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms allow-presentation');
         iframePlayer.src = channel.url;
         iframePlayer.onload = () => { loader.style.display = 'none'; };
     }
