@@ -85,13 +85,11 @@ const select = document.getElementById('channel-select'),
 let hlsInstance = null;
 
 const channelsData = [
-    { name: "Aaina DTH Main", url: "//streamcrichd.com/update/ptv.php", type: "iframe", showBadge: false },
+    { name: "Ptv Sports", url: "//streamcrichd.com/update/ptv.php", type: "iframe", showBadge: false },
     { name: "Bollywood Classic", url: "https://si.videoapne.to/bdohwq6h7bboxuzvta574dayqikkjqmdc7rnas57us4yuluq7qunuyu3q5ta/v.mp4", type: "hls", showBadge: false },
-    { name: "Zee Cinema", url: "https://fscott.sytes.net/zeecinema.html", type: "iframe", showBadge: true }
-];
-
-channelsData.forEach((ch, i) => {
-    const opt = document.createElement('option');
+    { name: "Star Sports", url: "//streamcrichd.com/update/star1hi.php", type: "iframe", showBadge: true }
+  channelsDatasData.forEach((ch, i) => {
+    const opt = docucreateElementement('option');
     opt.value = i;
     opt.textContent = ch.name;
     select.appendChild(opt);
