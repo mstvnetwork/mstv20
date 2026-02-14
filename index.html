@@ -83,11 +83,11 @@ const select = document.getElementById('channel-select'),
       blurOverlay = document.getElementById('blur-overlay');
 
 let hlsInstance = null;
-
 const channelsData = [
-    { name: "Ptv Sports", url: "//streamcrichd.com/update/ptv.php", type: "iframe", showBadge: false },
-    { name: "Bollywood Classic", url: "https://si.videoapne.to/bdohwq6h7bboxuzvta574dayqikkjqmdc7rnas57us4yuluq7qunuyu3q5ta/v.mp4", type: "hls", showBadge: false },
-    { name: "Star Sports", url: "//streamcrichd.com/update/star1hi.php", type: "iframe", showBadge: true }];
+    { name: "Aaina DTH Main", url: "https://mstvnetwork.github.io/Aaina-Dth", type: "iframe", showBadge: false },
+    { name: "Bollywood Classic", url: "https://d35j504z0x2vu2.cloudfront.net/v1/manifest/0bc8e8376bd8417a1b6761138aa41c26c7309312/bollywood-classic/6b126777-7e9a-444f-9845-48fa1d4ed694/1.m3u8", type: "hls", showBadge: false },
+    { name: "Zee Cinema", url: "https://fscott.sytes.net/zeecinema.html", type: "iframe", showBadge: true }
+];
   channelsDatasData.forEach((ch, i) => {
     const opt = docucreateElementement('option');
     opt.value = i;
