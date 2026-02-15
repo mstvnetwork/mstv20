@@ -3,107 +3,76 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MSTV Network</title>
-<!-- HLS Library -->
+<title>MSTV Network | Premium DTH</title>
 <script src="https://cdn.jsdelivr.net"></script>
 <link href="https://fonts.googleapis.com" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com">
 <style>
-/* Reset & Modern Sleek UI */
+/* Reset & UI */
 * { box-sizing: border-box; transition: all 0.3s ease; }
-body { 
-    margin: 0; padding: 0; font-family: 'Poppins', sans-serif; 
-    color: #E0E0E0; background: #0F1115; overflow-x: hidden; 
-}
+body { margin: 0; padding: 0; font-family: 'Poppins', sans-serif; color: #E0E0E0; background: #0F1115; overflow-x: hidden; }
+.title-3d { font-size: clamp(1.8rem, 4vw, 3.5rem); text-align: center; margin: 30px 0 10px; color: #FFFFFF; font-weight: 800; }
+.scrolling-news { background: #1A1D20; color: #90EE90; padding: 12px 0; border-top: 1px solid #333; border-bottom: 1px solid #333; margin-bottom: 20px; font-weight: 600; }
 
-/* Title & Ticker */
-.title-3d { 
-    font-size: clamp(1.8rem, 4vw, 3.5rem); text-align: center; 
-    margin: 30px 0 10px; color: #FFFFFF; font-weight: 800; 
-}
-.scrolling-news { 
-    background: #1A1D20; color: #90EE90; padding: 12px 0; 
-    border-top: 1px solid #333; border-bottom: 1px solid #333; 
-    margin-bottom: 20px; font-weight: 600;
-}
+/* Ribbon Navigation */
+.ribbon-wrapper { position: relative; max-width: 1000px; margin: 0 auto 30px; display: flex; align-items: center; }
+.channel-ribbon { display: flex; overflow-x: auto; overflow-y: hidden; gap: 15px; padding: 10px 5px 20px; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; flex-grow: 1; }
+.channel-ribbon::-webkit-scrollbar { display: none; }
+.nav-btn { background: rgba(26, 29, 32, 0.8); border: 1px solid #333; color: #90EE90; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 10; margin: 0 5px; }
+.nav-btn:hover { background: #90EE90; color: #1A1D20; }
 
-/* SLEEK LOGO GRID */
-.channel-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-    gap: 12px;
-    max-width: 1000px;
-    margin: 0 auto 30px;
-    padding: 0 15px;
-}
-.logo-card {
-    background: #1A1D20;
-    border: 1px solid #333;
-    border-radius: 12px;
-    padding: 10px;
-    cursor: pointer;
-    text-align: center;
-}
+/* Logo Cards */
+.logo-card { flex: 0 0 120px; background: #1A1D20; border: 1px solid #333; border-radius: 12px; padding: 10px; cursor: pointer; text-align: center; position: relative; }
 .logo-card:hover { border-color: #90EE90; transform: translateY(-3px); }
 .logo-card.active { border-color: #90EE90; background: rgba(144, 238, 144, 0.1); }
 .logo-card img { width: 100%; height: 50px; object-fit: contain; }
-.logo-card span { display: block; font-size: 10px; margin-top: 5px; color: #888; text-transform: uppercase; }
+.logo-card span { display: block; font-size: 10px; margin-top: 5px; color: #888; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-/* PLAYER CONTAINER */
-#fullscreen-wrapper { 
-    position: relative; width: 95%; max-width: 1000px; 
-    margin: 0 auto 30px; background: #000; border-radius: 12px; 
-    overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.5);
-}
+/* Live Dot Animation */
+.live-dot { position: absolute; top: 8px; right: 8px; width: 8px; height: 8px; background: #ff4b2b; border-radius: 50%; display: none; box-shadow: 0 0 8px #ff4b2b; animation: blink 1s infinite; }
+@keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+.active .live-dot { display: block; }
+
+/* Player Container */
+#fullscreen-wrapper { position: relative; width: 95%; max-width: 1000px; margin: 0 auto 30px; background: #000; border-radius: 12px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
 .player-container { position: relative; width: 100%; padding-top: 56.25%; background: #000; }
-.player-container iframe, .player-container video, #placeholder-image { 
-    position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
-    object-fit: contain; border: none; 
-}
+.player-container iframe, .player-container video, #placeholder-image { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; border: none; }
 
-/* PRECISION BLUR OVERLAY */
-#blur-overlay {
-  position: absolute; top: 8%; left: 1%; width: 40%; height: 15%;   
-  background: rgba(255, 255, 255, 0.01); 
-  backdrop-filter: blur(25px) saturate(150%); 
-  -webkit-backdrop-filter: blur(25px) saturate(150%);
-  border-radius: 4px; z-index: 10; display: none; pointer-events: none; 
-}
+#blur-overlay { position: absolute; top: 8%; left: 1%; width: 40%; height: 15%; background: rgba(255, 255, 255, 0.01); backdrop-filter: blur(25px); border-radius: 4px; z-index: 10; display: none; pointer-events: none; }
 
+/* ANIMATED HOME BUTTON (EXIT FULLSCREEN) */
 #exit-fs-btn { 
-    display: none; position: absolute; top: 20px; right: 20px; z-index: 9999; 
-    background: rgba(0,0,0,0.6); color: #fff; border: 1px solid #fff; 
-    padding: 8px 16px; border-radius: 20px; cursor: pointer; 
+    display: none; position: absolute; top: 25px; left: 25px; z-index: 10000; 
+    background: rgba(144, 238, 144, 0.9); color: #0F1115; border: none; 
+    width: 50px; height: 50px; border-radius: 50%; cursor: pointer; 
+    font-size: 20px; align-items: center; justify-content: center;
+    box-shadow: 0 0 15px rgba(144, 238, 144, 0.5);
+    animation: pulse-home 2s infinite;
 }
-#fullscreen-wrapper:fullscreen #exit-fs-btn { display: block; }
+@keyframes pulse-home {
+    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(144, 238, 144, 0.7); }
+    70% { transform: scale(1.1); box-shadow: 0 0 0 15px rgba(144, 238, 144, 0); }
+    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(144, 238, 144, 0); }
+}
+#fullscreen-wrapper:fullscreen #exit-fs-btn { display: flex; }
+#fullscreen-wrapper:-webkit-full-screen #exit-fs-btn { display: flex; }
 
-.loader-container { 
-    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); 
-    z-index: 25; display: none; 
-}
-.spinner { 
-    width: 40px; height: 40px; border: 3px solid rgba(144,238,144,0.2); 
-    border-top: 3px solid #90EE90; border-radius: 50%; 
-    animation: spin 1s linear infinite; 
-}
+.loader-container { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 25; display: none; }
+.spinner { width: 40px; height: 40px; border: 3px solid rgba(144,238,144,0.2); border-top: 3px solid #90EE90; border-radius: 50%; animation: spin 1s linear infinite; }
 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-/* FOLLOW SECTION */
-.follow-btn-container { text-align: center; margin-bottom: 40px; }
-.fb-follow-btn {
-    display: inline-flex; align-items: center; gap: 10px;
-    background: #1877F2; color: white; padding: 12px 25px;
-    border-radius: 50px; text-decoration: none; font-weight: 600;
+/* FACEBOOK BUTTON */
+.fb-container { text-align: center; margin: 40px 0; }
+.fb-follow-btn { 
+    display: inline-flex; align-items: center; gap: 12px; 
+    background: linear-gradient(45deg, #1877F2, #0056b3); color: white; 
+    padding: 14px 30px; border-radius: 50px; text-decoration: none; 
+    font-weight: 600; font-size: 1rem; box-shadow: 0 8px 20px rgba(24, 119, 242, 0.4);
 }
+.fb-follow-btn:hover { transform: translateY(-3px); box-shadow: 0 12px 25px rgba(24, 119, 242, 0.5); }
 
-/* EXPANDED FOOTER */
-footer { 
-    background: #000; color: #888; padding: 60px 20px 20px; 
-    border-top: 1px solid #222; margin-top: 50px;
-}
-.footer-about { max-width: 800px; margin: 0 auto 30px; text-align: center; }
-.footer-about h4 { color: #fff; margin-bottom: 10px; }
-.footer-about p { font-size: 0.9rem; line-height: 1.6; }
+footer { background: #000; color: #888; padding: 60px 20px; border-top: 1px solid #222; text-align: center; }
+.footer-about { max-width: 800px; margin: 0 auto; }
 </style>
 </head>
 <body>
@@ -111,11 +80,18 @@ footer {
 <div class="title-3d">AAINA DTH FREE</div>
 <div class="scrolling-news"><marquee scrollamount="6">Optimized: No Redirects | Low Bandwidth HLS | Ad-Block Enabled.</marquee></div>
 
-<!-- NEW: LOGO GRID REPLACING SELECT -->
-<div class="channel-grid" id="logo-grid"></div>
+<div class="ribbon-wrapper">
+    <button class="nav-btn" onclick="scrollRibbon(-200)"><i class="fas fa-chevron-left"></i></button>
+    <div class="channel-ribbon" id="logo-grid"></div>
+    <button class="nav-btn" onclick="scrollRibbon(200)"><i class="fas fa-chevron-right"></i></button>
+</div>
 
 <div id="fullscreen-wrapper">
-    <button id="exit-fs-btn" onclick="exitFullscreen()">EXIT FULLSCREEN</button>
+    <!-- Animated Home Button for Exit Fullscreen -->
+    <button id="exit-fs-btn" onclick="exitFullscreen()" title="Go Home">
+        <i class="fas fa-home"></i>
+    </button>
+    
     <div class="player-container">
         <iframe id="media-player" style="display:none;" allow="autoplay; fullscreen; encrypted-media" allowfullscreen="true"></iframe>
         <video id="video-player" style="display:none;" playsinline controls preload="metadata" muted></video>
@@ -125,22 +101,21 @@ footer {
     </div>
 </div>
 
-<div class="follow-btn-container">
-    <a href="YOUR_FB_URL" class="fb-follow-btn" target="_blank">
-        <i class="fab fa-facebook"></i> Click to Follow
+<div class="fb-container">
+    <a href="https://facebook.com" class="fb-follow-btn" target="_blank">
+        <i class="fab fa-facebook-f"></i> Click to follow us
     </a>
 </div>
 
 <footer>
     <div class="footer-about">
         <h4>About MSTV Network</h4>
-        <p>Your ultimate destination for high-quality, free-to-air digital television. Our platform uses advanced HLS technology and secure iframe delivery to ensure you get a buffering-free experience on any device, anywhere in the world.</p>
+        <p>Premium digital streaming with advanced anti-redirect technology. Our infrastructure ensures a secure, high-definition experience optimized for 2026 web standards.</p>
+        <p style="margin-top: 20px;">&copy; <span id="year"></span> MSTV Network. All Rights Reserved.</p>
     </div>
-    <div style="text-align:center;">&copy; <span id="year"></span> MSTV Network. All Rights Reserved.</div>
 </footer>
 
 <script>
-// RESTORED ORIGINAL LOGIC
 document.getElementById('year').textContent = new Date().getFullYear();
 const videoPlayer = document.getElementById('video-player'),
       iframePlayer = document.getElementById('media-player'),
@@ -151,7 +126,6 @@ const videoPlayer = document.getElementById('video-player'),
 
 let hlsInstance = null;
 
-// UPDATED DATA WITH LOGOS
 const channelsData = [
     { 
         name: "Star Sports", 
@@ -176,11 +150,12 @@ const channelsData = [
     }
 ];
 
-// Build Logos
+function scrollRibbon(distance) { grid.scrollBy({ left: distance, behavior: 'smooth' }); }
+
 channelsData.forEach((ch, i) => {
     const card = document.createElement('div');
     card.className = 'logo-card';
-    card.innerHTML = `<img src="${ch.logo}" alt="${ch.name}"><span>${ch.name}</span>`;
+    card.innerHTML = `<div class="live-dot"></div><img src="${ch.logo}" alt="${ch.name}"><span>${ch.name}</span>`;
     card.onclick = () => {
         document.querySelectorAll('.logo-card').forEach(c => c.classList.remove('active'));
         card.classList.add('active');
@@ -191,13 +166,8 @@ channelsData.forEach((ch, i) => {
 
 function stopAllPlayback() {
     if (hlsInstance) { hlsInstance.destroy(); hlsInstance = null; }
-    videoPlayer.pause();
-    videoPlayer.removeAttribute('src');
-    videoPlayer.load();
-    videoPlayer.style.display = 'none';
-    iframePlayer.src = '';
-    iframePlayer.removeAttribute('sandbox'); 
-    iframePlayer.style.display = 'none';
+    videoPlayer.pause(); videoPlayer.removeAttribute('src'); videoPlayer.load(); videoPlayer.style.display = 'none';
+    iframePlayer.src = ''; iframePlayer.removeAttribute('sandbox'); iframePlayer.style.display = 'none';
     blurOverlay.style.display = 'none';
 }
 
@@ -205,7 +175,6 @@ function handleSelection(index) {
     const channel = channelsData[index];
     stopAllPlayback();
     if (!channel) { placeholder.style.display = 'block'; return; }
-
     loader.style.display = 'flex';
     placeholder.style.display = 'none';
     blurOverlay.style.display = channel.showBadge ? "block" : "none";
@@ -213,12 +182,7 @@ function handleSelection(index) {
     if (channel.type === "hls") {
         videoPlayer.style.display = "block";
         if (typeof Hls !== 'undefined' && Hls.isSupported()) {
-            hlsInstance = new Hls({ 
-                maxBufferLength: 10, 
-                maxMaxBufferLength: 20,
-                startLevel: 0, 
-                enableWorker: true 
-            });
+            hlsInstance = new Hls({ maxBufferLength: 10 });
             hlsInstance.loadSource(channel.url);
             hlsInstance.attachMedia(videoPlayer);
             hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => {
@@ -226,9 +190,7 @@ function handleSelection(index) {
                 videoPlayer.play().catch(() => { videoPlayer.muted = true; videoPlayer.play(); });
             });
         } else if (videoPlayer.canPlayType('application/vnd.apple.mpegurl')) {
-            videoPlayer.src = channel.url;
-            videoPlayer.play();
-            loader.style.display = 'none';
+            videoPlayer.src = channel.url; videoPlayer.play(); loader.style.display = 'none';
         }
     } else {
         iframePlayer.style.display = "block";
