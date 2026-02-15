@@ -19,7 +19,6 @@ body { margin: 0; padding: 0; font-family: 'Poppins', sans-serif; color: #E0E0E0
 .channel-ribbon { display: flex; overflow-x: auto; overflow-y: hidden; gap: 15px; padding: 10px 5px 20px; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; flex-grow: 1; }
 .channel-ribbon::-webkit-scrollbar { display: none; }
 .nav-btn { background: rgba(26, 29, 32, 0.8); border: 1px solid #333; color: #90EE90; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 10; margin: 0 5px; }
-.nav-btn:hover { background: #90EE90; color: #1A1D20; }
 
 /* Logo Cards */
 .logo-card { flex: 0 0 120px; background: #1A1D20; border: 1px solid #333; border-radius: 12px; padding: 10px; cursor: pointer; text-align: center; position: relative; }
@@ -28,7 +27,7 @@ body { margin: 0; padding: 0; font-family: 'Poppins', sans-serif; color: #E0E0E0
 .logo-card img { width: 100%; height: 50px; object-fit: contain; }
 .logo-card span { display: block; font-size: 10px; margin-top: 5px; color: #888; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-/* Live Dot Animation */
+/* Live Dot */
 .live-dot { position: absolute; top: 8px; right: 8px; width: 8px; height: 8px; background: #ff4b2b; border-radius: 50%; display: none; box-shadow: 0 0 8px #ff4b2b; animation: blink 1s infinite; }
 @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
 .active .live-dot { display: block; }
@@ -38,15 +37,13 @@ body { margin: 0; padding: 0; font-family: 'Poppins', sans-serif; color: #E0E0E0
 .player-container { position: relative; width: 100%; padding-top: 56.25%; background: #000; }
 .player-container iframe, .player-container video, #placeholder-image { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; border: none; }
 
-#blur-overlay { position: absolute; top: 8%; left: 1%; width: 40%; height: 15%; background: rgba(255, 255, 255, 0.01); backdrop-filter: blur(25px); border-radius: 4px; z-index: 10; display: none; pointer-events: none; }
-
 /* ANIMATED HOME BUTTON (EXIT FULLSCREEN) */
 #exit-fs-btn { 
     display: none; position: absolute; top: 25px; left: 25px; z-index: 10000; 
-    background: rgba(144, 238, 144, 0.9); color: #0F1115; border: none; 
+    background: #90EE90; color: #0F1115; border: none; 
     width: 50px; height: 50px; border-radius: 50%; cursor: pointer; 
-    font-size: 20px; align-items: center; justify-content: center;
-    box-shadow: 0 0 15px rgba(144, 238, 144, 0.5);
+    align-items: center; justify-content: center; font-size: 20px;
+    box-shadow: 0 0 15px rgba(144, 238, 144, 0.6);
     animation: pulse-home 2s infinite;
 }
 @keyframes pulse-home {
@@ -54,25 +51,22 @@ body { margin: 0; padding: 0; font-family: 'Poppins', sans-serif; color: #E0E0E0
     70% { transform: scale(1.1); box-shadow: 0 0 0 15px rgba(144, 238, 144, 0); }
     100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(144, 238, 144, 0); }
 }
-#fullscreen-wrapper:fullscreen #exit-fs-btn { display: flex; }
-#fullscreen-wrapper:-webkit-full-screen #exit-fs-btn { display: flex; }
 
+#blur-overlay { position: absolute; top: 8%; left: 1%; width: 40%; height: 15%; background: rgba(255, 255, 255, 0.01); backdrop-filter: blur(25px); border-radius: 4px; z-index: 10; display: none; pointer-events: none; }
 .loader-container { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 25; display: none; }
 .spinner { width: 40px; height: 40px; border: 3px solid rgba(144,238,144,0.2); border-top: 3px solid #90EE90; border-radius: 50%; animation: spin 1s linear infinite; }
-@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
 /* FACEBOOK BUTTON */
 .fb-container { text-align: center; margin: 40px 0; }
 .fb-follow-btn { 
     display: inline-flex; align-items: center; gap: 12px; 
-    background: linear-gradient(45deg, #1877F2, #0056b3); color: white; 
-    padding: 14px 30px; border-radius: 50px; text-decoration: none; 
-    font-weight: 600; font-size: 1rem; box-shadow: 0 8px 20px rgba(24, 119, 242, 0.4);
+    background: #1877F2; color: white; padding: 14px 30px; 
+    border-radius: 50px; text-decoration: none; font-weight: 600; 
+    box-shadow: 0 8px 20px rgba(24, 119, 242, 0.4);
 }
-.fb-follow-btn:hover { transform: translateY(-3px); box-shadow: 0 12px 25px rgba(24, 119, 242, 0.5); }
+.fb-follow-btn:hover { transform: translateY(-3px); background: #166fe5; }
 
 footer { background: #000; color: #888; padding: 60px 20px; border-top: 1px solid #222; text-align: center; }
-.footer-about { max-width: 800px; margin: 0 auto; }
 </style>
 </head>
 <body>
@@ -87,11 +81,7 @@ footer { background: #000; color: #888; padding: 60px 20px; border-top: 1px soli
 </div>
 
 <div id="fullscreen-wrapper">
-    <!-- Animated Home Button for Exit Fullscreen -->
-    <button id="exit-fs-btn" onclick="exitFullscreen()" title="Go Home">
-        <i class="fas fa-home"></i>
-    </button>
-    
+    <button id="exit-fs-btn" onclick="exitFullscreen()"><i class="fas fa-home"></i></button>
     <div class="player-container">
         <iframe id="media-player" style="display:none;" allow="autoplay; fullscreen; encrypted-media" allowfullscreen="true"></iframe>
         <video id="video-player" style="display:none;" playsinline controls preload="metadata" muted></video>
@@ -108,10 +98,10 @@ footer { background: #000; color: #888; padding: 60px 20px; border-top: 1px soli
 </div>
 
 <footer>
-    <div class="footer-about">
+    <div style="max-width: 800px; margin: 0 auto;">
         <h4>About MSTV Network</h4>
-        <p>Premium digital streaming with advanced anti-redirect technology. Our infrastructure ensures a secure, high-definition experience optimized for 2026 web standards.</p>
-        <p style="margin-top: 20px;">&copy; <span id="year"></span> MSTV Network. All Rights Reserved.</p>
+        <p>Providing premium streaming with built-in anti-redirect technology. Our system ensures a secure, high-definition experience optimized for modern devices.</p>
+        <p style="margin-top: 20px;">&copy; <span id="year"></span> MSTV Network.</p>
     </div>
 </footer>
 
@@ -122,7 +112,9 @@ const videoPlayer = document.getElementById('video-player'),
       placeholder = document.getElementById('placeholder-image'),
       loader = document.getElementById('loader'),
       blurOverlay = document.getElementById('blur-overlay'),
-      grid = document.getElementById('logo-grid');
+      grid = document.getElementById('logo-grid'),
+      exitBtn = document.getElementById('exit-fs-btn'),
+      fsWrapper = document.getElementById('fullscreen-wrapper');
 
 let hlsInstance = null;
 
@@ -149,6 +141,14 @@ const channelsData = [
         showBadge: true 
     }
 ];
+
+// Robust Fullscreen Detection
+function checkFullscreen() {
+    const isFS = document.fullscreenElement || document.webkitFullscreenElement;
+    exitBtn.style.display = isFS ? 'flex' : 'none';
+}
+document.addEventListener('fullscreenchange', checkFullscreen);
+document.addEventListener('webkitfullscreenchange', checkFullscreen);
 
 function scrollRibbon(distance) { grid.scrollBy({ left: distance, behavior: 'smooth' }); }
 
@@ -207,3 +207,4 @@ function exitFullscreen() {
 </script>
 </body>
 </html>
+
