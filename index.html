@@ -119,195 +119,207 @@ const videoPlayer = document.getElementById('video-player'),
       grid = document.getElementById('logo-grid'),
       fsWrapper = document.getElementById('fullscreen-wrapper');
 
+// Message container for fullscreen
+const messageEl = document.createElement('div');
+messageEl.id = 'player-message';
+messageEl.style.cssText = `
+    position: absolute;
+    bottom: 15px;
+    width: 100%;
+    text-align: center;
+    color: #90EE90;
+    font-weight: 600;
+    font-size: 14px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s ease;
+`;
+fsWrapper.appendChild(messageEl);
+
+// Overlay controls for iframe channels
+const iframeControls = document.createElement('div');
+iframeControls.id = 'iframe-controls';
+iframeControls.style.cssText = 'position:absolute; bottom:50px; right:20px; display:none; gap:10px; z-index:9999;';
+const iframeMuteBtn = document.createElement('button');
+iframeMuteBtn.textContent = '🔊';
+iframeMuteBtn.style.cssText = 'background:rgba(0,0,0,0.6); color:white; border:none; padding:8px 12px; border-radius:6px; font-size:16px;';
+const iframeFsBtn = document.createElement('button');
+iframeFsBtn.textContent = '⛶';
+iframeFsBtn.style.cssText = iframeMuteBtn.style.cssText;
+iframeControls.appendChild(iframeMuteBtn);
+iframeControls.appendChild(iframeFsBtn);
+fsWrapper.querySelector('.player-container').appendChild(iframeControls);
+
 let hlsInstance = null;
+let autoScrollInterval, autoScrollActive = true;
+let iframeMuted = false;
 
-// =====================
-// Fullscreen Function
-// =====================
+// ================= FULLSCREEN =================
 function openFullscreen() {
-    if (fsWrapper.requestFullscreen) {
-        fsWrapper.requestFullscreen();
-    } else if (fsWrapper.webkitRequestFullscreen) {
-        fsWrapper.webkitRequestFullscreen();
-    } else if (fsWrapper.msRequestFullscreen) {
-        fsWrapper.msRequestFullscreen();
-    }
+    if (fsWrapper.requestFullscreen) fsWrapper.requestFullscreen();
+    else if (fsWrapper.webkitRequestFullscreen) fsWrapper.webkitRequestFullscreen();
 }
+function exitFullscreen() {
+    if (document.fullscreenElement) document.exitFullscreen();
+}
+iframeFsBtn.addEventListener('click', () => {
+    if (document.fullscreenElement) exitFullscreen();
+    else openFullscreen();
+});
+document.addEventListener('fullscreenchange', () => {
+    // Show/hide message in fullscreen
+    const activeChannel = document.querySelector('.logo-card.active');
+    const idx = Array.from(grid.children).indexOf(activeChannel);
+    if (idx >= 0 && channelsData[idx].message) {
+        messageEl.style.opacity = document.fullscreenElement ? 1 : 0;
+    } else {
+        messageEl.style.opacity = 0;
+    }
 
-// =====================
-// Auto Scroll Logic
-// =====================
-let autoScrollInterval;
-let autoScrollActive = true;
+    // Hide iframe controls when not fullscreen
+    iframeControls.style.display = document.fullscreenElement && document.querySelector('.logo-card.active').dataset.type==='iframe' ? 'flex' : 'none';
+});
 
+// ================= IFRAME MUTE =================
+iframeMuteBtn.addEventListener('click', () => {
+    iframeMuted = !iframeMuted;
+    iframeMuteBtn.textContent = iframeMuted ? '🔇' : '🔊';
+});
+
+// ================= AUTO SCROLL =================
 function startAutoScroll() {
     autoScrollInterval = setInterval(() => {
         if (!autoScrollActive) return;
-
         grid.scrollLeft += 1;
-
-        // Seamless loop reset
-        if (grid.scrollLeft >= grid.scrollWidth / 2) {
-            grid.scrollLeft = 0;
-        }
+        if (grid.scrollLeft >= grid.scrollWidth / 2) grid.scrollLeft = 0;
     }, 20);
 }
-
 function stopAutoScroll() {
     autoScrollActive = false;
     clearInterval(autoScrollInterval);
 }
+grid.addEventListener('mouseenter', () => clearInterval(autoScrollInterval));
+grid.addEventListener('mouseleave', () => { if (autoScrollActive) startAutoScroll(); });
 
-// Pause on hover
-grid.addEventListener("mouseenter", () => clearInterval(autoScrollInterval));
-grid.addEventListener("mouseleave", () => {
-    if (autoScrollActive) startAutoScroll();
-});
-
-// =====================
-// Channel Data
-// =====================
+// ================= CHANNEL DATA =================
 const channelsData = [
-    { 
-        name: "Star Sports", 
-        url: "https://streamcrichd.com/update/star1hi.php", 
-        type: "iframe",
-        logo: "cb2f146ca360b682048f5cdb75f557ec.jpg", 
-        showBadge: false 
-    },
-    { 
-        name: "Bollywood Classic Hd", 
-        url: "https://d35j504z0x2vu2.cloudfront.net/v1/manifest/0bc8e8376bd8417a1b6761138aa41c26c7309312/bollywood-classic/6b126777-7e9a-444f-9845-48fa1d4ed694/1.m3u8", 
-        type: "hls",
-        logo: "wlo_logo_200_200.jpg", 
-        showBadge: false 
-    },
-    { 
-        name: "Zee Cinema", 
-        url: "https://freeways.hosthampster.com/zeecinema.html", 
-        type: "iframe",
-        logo: "wlo_logo_200_200.jpg", 
-        showBadge: true 
-    }
+  { 
+    name: "Star Sports", 
+    url: "https://streamcrichd.com/update/star.php", 
+    type: "iframe",
+    logo: "cb2f146ca360b682048f5cdb75f557ec.jpg", 
+    showBadge: false,
+    message: "Enjoy live sports action in HD!"
+  },
+  { 
+    name: "Bollywood Classic HD", 
+    url: "https://d35j504z0x2vu2.cloudfront.net/v1/manifest/0bc8e8376bd8417a1b6761138aa41c26c7309312/bollywood-classic/6b126777-7e9a-444f-9845-48fa1d4ed694/1.m3u8", 
+    type: "hls",
+    logo: "wlo_logo_200_200.jpg", 
+    showBadge: false,
+    message: "Classic Bollywood movies for everyone."
+  },
+  { 
+    name: "Zee Cinema",
+    url: "https://freeways.hosthampster.com/zeecinema.html",
+    type: "iframe",
+    logo: "wlo_logo_200_200.jpg",
+    showBadge: true,
+    message: "Blockbusters for the whole family!"
+  }
 ];
 
-// =====================
-// Ribbon Scroll Buttons
-// =====================
-function scrollRibbon(distance) {
-    grid.scrollBy({ left: distance, behavior: 'smooth' });
-}
+// ================= BUILD CHANNEL RIBBON =================
+function scrollRibbon(distance) { grid.scrollBy({ left: distance, behavior: 'smooth' }); }
 
-// =====================
-// Build Channel Logos
-// =====================
-channelsData.forEach((ch, i) => {
+channelsData.forEach((ch,i) => {
     const card = document.createElement('div');
     card.className = 'logo-card';
-    card.innerHTML = `<div class="live-dot"></div>
-                      <img src="${ch.logo}" alt="${ch.name}">
-                      <span>${ch.name}</span>`;
-
+    card.dataset.type = ch.type; // store type for fullscreen logic
+    card.innerHTML = `<div class="live-dot"></div><img src="${ch.logo}"><span>${ch.name}</span>`;
     card.onclick = () => {
         stopAutoScroll();
         document.querySelectorAll('.logo-card').forEach(c => c.classList.remove('active'));
         card.classList.add('active');
-
         handleSelection(i);
-        openFullscreen(); // 🔥 Auto fullscreen
+        openFullscreen();
     };
-
     grid.appendChild(card);
 });
 
 // Clone logos for seamless infinite loop
 function makeRibbonLoop() {
     const cards = Array.from(grid.children);
-    cards.forEach(c => {
-        const clone = c.cloneNode(true);
-        clone.onclick = c.onclick; // preserve click
-        grid.appendChild(clone);
-    });
+    cards.forEach(c => { const clone = c.cloneNode(true); clone.onclick = c.onclick; grid.appendChild(clone); });
 }
-
 makeRibbonLoop();
 
-// =====================
-// Stop Playback
-// =====================
+// ================= STOP PLAYBACK =================
 function stopAllPlayback() {
-    if (hlsInstance) { 
-        hlsInstance.destroy(); 
-        hlsInstance = null; 
-    }
-
-    videoPlayer.pause();
-    videoPlayer.removeAttribute('src');
-    videoPlayer.load();
-    videoPlayer.style.display = 'none';
-
-    iframePlayer.src = '';
-    iframePlayer.removeAttribute('sandbox');
-    iframePlayer.style.display = 'none';
-
-    blurOverlay.style.display = 'none';
+    if (hlsInstance) { hlsInstance.destroy(); hlsInstance=null; }
+    videoPlayer.pause(); videoPlayer.removeAttribute('src'); videoPlayer.load(); videoPlayer.style.display='none';
+    iframePlayer.src=''; iframePlayer.style.display='none';
+    iframeControls.style.display='none';
+    blurOverlay.style.display='none';
+    messageEl.style.opacity = 0;
 }
 
-// =====================
-// Handle Channel Selection
-// =====================
+// ================= HANDLE CHANNEL SELECTION =================
 function handleSelection(index) {
     const channel = channelsData[index];
-
     stopAllPlayback();
+    if (!channel) { placeholder.style.display='block'; return; }
+    loader.style.display='flex';
+    placeholder.style.display='none';
+    blurOverlay.style.display = channel.showBadge ? 'block' : 'none';
 
-    if (!channel) {
-        placeholder.style.display = 'block';
-        return;
-    }
+    // Show message if in fullscreen
+    if (channel.message && document.fullscreenElement) messageEl.style.opacity = 1;
+    messageEl.textContent = channel.message || '';
 
-    loader.style.display = 'flex';
-    placeholder.style.display = 'none';
-    blurOverlay.style.display = channel.showBadge ? "block" : "none";
-
-    if (channel.type === "hls") {
-        videoPlayer.style.display = "block";
-
-        if (typeof Hls !== 'undefined' && Hls.isSupported()) {
-            hlsInstance = new Hls({ maxBufferLength: 10 });
+    if (channel.type==='hls') {
+        videoPlayer.style.display='block';
+        if (typeof Hls !=='undefined' && Hls.isSupported()) {
+            hlsInstance = new Hls({maxBufferLength:10});
             hlsInstance.loadSource(channel.url);
             hlsInstance.attachMedia(videoPlayer);
-
-            hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => {
-                loader.style.display = 'none';
-                videoPlayer.play().catch(() => {
-                    videoPlayer.muted = true;
-                    videoPlayer.play();
-                });
+            hlsInstance.on(Hls.Events.MANIFEST_PARSED,()=>{
+                loader.style.display='none';
+                videoPlayer.muted=false;
+                videoPlayer.play().catch(()=>{ videoPlayer.muted=true; videoPlayer.play(); });
             });
-
         } else if (videoPlayer.canPlayType('application/vnd.apple.mpegurl')) {
-            videoPlayer.src = channel.url;
+            videoPlayer.src=channel.url;
+            videoPlayer.muted=false;
             videoPlayer.play();
-            loader.style.display = 'none';
+            loader.style.display='none';
         }
-
     } else {
-        iframePlayer.style.display = "block";
-        iframePlayer.setAttribute('sandbox', 
-            'allow-scripts allow-same-origin allow-forms allow-presentation'
-        );
-
-        iframePlayer.src = channel.url;
-
-        iframePlayer.onload = () => {
-            loader.style.display = 'none';
-        };
+        iframePlayer.style.display='block';
+        iframePlayer.setAttribute('sandbox','allow-scripts allow-same-origin allow-forms allow-presentation');
+        iframePlayer.src=channel.url;
+        iframeControls.style.display = document.fullscreenElement ? 'flex' : 'none';
+        iframePlayer.onload=()=>{ loader.style.display='none'; };
     }
 }
 
-// Start auto-scroll
+// ================= START AUTO SCROLL =================
 startAutoScroll();
 </script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+https://streamcrichd.com/update/star.php
+
+https://d35j504z0x2vu2.cloudfront.net/v1/manifest/0bc8e8376bd8417a1b6761138aa41c26c7309312/bollywood-classic/6b126777-7e9a-444f-9845-48fa1d4ed694/1.m3u8
+
+https://freeways.hosthampster.com/zeecinema.html
