@@ -108,7 +108,6 @@ All content featured on Aaina DTH Free is sourced from publicly available platfo
         <p style="margin-top: 20px;">&copy; <span id="year"></span> MSTV Network.</p>
     </div>
 </footer>
-
 <script>
 document.getElementById('year').textContent = new Date().getFullYear();
 
@@ -122,41 +121,52 @@ const videoPlayer = document.getElementById('video-player'),
 
 let hlsInstance = null;
 
-/* ========= FULLSCREEN HELPERS ========= */
-
+// =====================
+// Fullscreen Function
+// =====================
 function openFullscreen() {
-    if (!document.fullscreenElement) {
-        fsWrapper.requestFullscreen().then(() => {
-            if (screen.orientation && screen.orientation.lock) {
-                screen.orientation.lock('landscape').catch(() => {});
-            }
-        }).catch(() => {});
+    if (fsWrapper.requestFullscreen) {
+        fsWrapper.requestFullscreen();
+    } else if (fsWrapper.webkitRequestFullscreen) {
+        fsWrapper.webkitRequestFullscreen();
+    } else if (fsWrapper.msRequestFullscreen) {
+        fsWrapper.msRequestFullscreen();
     }
 }
 
-function exitFullscreen() {
-    if (document.fullscreenElement) {
-        document.exitFullscreen();
-    }
-}
+// =====================
+// Auto Scroll Logic
+// =====================
+let autoScrollInterval;
+let autoScrollActive = true;
 
-document.addEventListener("fullscreenchange", () => {
-    if (!document.fullscreenElement) {
-        if (screen.orientation && screen.orientation.unlock) {
-            screen.orientation.unlock();
+function startAutoScroll() {
+    autoScrollInterval = setInterval(() => {
+        if (!autoScrollActive) return;
+
+        grid.scrollLeft += 1;
+
+        // Seamless loop reset
+        if (grid.scrollLeft >= grid.scrollWidth / 2) {
+            grid.scrollLeft = 0;
         }
-    }
+    }, 20);
+}
+
+function stopAutoScroll() {
+    autoScrollActive = false;
+    clearInterval(autoScrollInterval);
+}
+
+// Pause on hover
+grid.addEventListener("mouseenter", () => clearInterval(autoScrollInterval));
+grid.addEventListener("mouseleave", () => {
+    if (autoScrollActive) startAutoScroll();
 });
 
-/* Tap video to exit fullscreen */
-videoPlayer.addEventListener("click", () => {
-    if (document.fullscreenElement) {
-        exitFullscreen();
-    }
-});
-
-/* ========= CHANNEL DATA ========= */
-
+// =====================
+// Channel Data
+// =====================
 const channelsData = [
     { 
         name: "Star Sports", 
@@ -181,34 +191,54 @@ const channelsData = [
     }
 ];
 
-/* ========= RIBBON ========= */
-
+// =====================
+// Ribbon Scroll Buttons
+// =====================
 function scrollRibbon(distance) {
     grid.scrollBy({ left: distance, behavior: 'smooth' });
 }
 
+// =====================
+// Build Channel Logos
+// =====================
 channelsData.forEach((ch, i) => {
     const card = document.createElement('div');
     card.className = 'logo-card';
-    card.innerHTML = `
-        <div class="live-dot"></div>
-        <img src="${ch.logo}" alt="${ch.name}">
-        <span>${ch.name}</span>
-    `;
+    card.innerHTML = `<div class="live-dot"></div>
+                      <img src="${ch.logo}" alt="${ch.name}">
+                      <span>${ch.name}</span>`;
+
     card.onclick = () => {
+        stopAutoScroll();
         document.querySelectorAll('.logo-card').forEach(c => c.classList.remove('active'));
         card.classList.add('active');
+
         handleSelection(i);
+        openFullscreen(); // 🔥 Auto fullscreen
     };
+
     grid.appendChild(card);
 });
 
-/* ========= PLAYBACK ========= */
+// Clone logos for seamless infinite loop
+function makeRibbonLoop() {
+    const cards = Array.from(grid.children);
+    cards.forEach(c => {
+        const clone = c.cloneNode(true);
+        clone.onclick = c.onclick; // preserve click
+        grid.appendChild(clone);
+    });
+}
 
+makeRibbonLoop();
+
+// =====================
+// Stop Playback
+// =====================
 function stopAllPlayback() {
-    if (hlsInstance) {
-        hlsInstance.destroy();
-        hlsInstance = null;
+    if (hlsInstance) { 
+        hlsInstance.destroy(); 
+        hlsInstance = null; 
     }
 
     videoPlayer.pause();
@@ -223,9 +253,12 @@ function stopAllPlayback() {
     blurOverlay.style.display = 'none';
 }
 
+// =====================
+// Handle Channel Selection
+// =====================
 function handleSelection(index) {
-
     const channel = channelsData[index];
+
     stopAllPlayback();
 
     if (!channel) {
@@ -238,39 +271,30 @@ function handleSelection(index) {
     blurOverlay.style.display = channel.showBadge ? "block" : "none";
 
     if (channel.type === "hls") {
-
         videoPlayer.style.display = "block";
 
         if (typeof Hls !== 'undefined' && Hls.isSupported()) {
-
             hlsInstance = new Hls({ maxBufferLength: 10 });
             hlsInstance.loadSource(channel.url);
             hlsInstance.attachMedia(videoPlayer);
 
             hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => {
                 loader.style.display = 'none';
-                videoPlayer.play().then(() => {
-                    openFullscreen();
-                }).catch(() => {
+                videoPlayer.play().catch(() => {
                     videoPlayer.muted = true;
-                    videoPlayer.play().then(() => openFullscreen());
+                    videoPlayer.play();
                 });
             });
 
         } else if (videoPlayer.canPlayType('application/vnd.apple.mpegurl')) {
-
             videoPlayer.src = channel.url;
-            videoPlayer.play().then(() => {
-                loader.style.display = 'none';
-                openFullscreen();
-            });
+            videoPlayer.play();
+            loader.style.display = 'none';
         }
 
     } else {
-
         iframePlayer.style.display = "block";
-        iframePlayer.setAttribute(
-            'sandbox',
+        iframePlayer.setAttribute('sandbox', 
             'allow-scripts allow-same-origin allow-forms allow-presentation'
         );
 
@@ -278,10 +302,12 @@ function handleSelection(index) {
 
         iframePlayer.onload = () => {
             loader.style.display = 'none';
-            openFullscreen();
         };
     }
 }
+
+// Start auto-scroll
+startAutoScroll();
 </script>
 </body>
 </html>
