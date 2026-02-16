@@ -121,19 +121,21 @@ const videoPlayer = document.getElementById('video-player'),
 
 // Message container for fullscreen
 const messageEl = document.createElement('div');
-messageEl.id = 'player-message';
 messageEl.style.cssText = `
     position: absolute;
-    bottom: 15px;
+    top: 100%;       /* places it just below the player container */
+    left: 0;
     width: 100%;
     text-align: center;
     color: #90EE90;
     font-weight: 600;
     font-size: 14px;
+    margin-top: 12px; /* 1/2 inch spacing */
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.5s ease;
 `;
+
 fsWrapper.appendChild(messageEl);
 
 // Overlay controls for iframe channels
@@ -308,18 +310,3 @@ startAutoScroll();
 </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-https://streamcrichd.com/update/star.php
-
-https://d35j504z0x2vu2.cloudfront.net/v1/manifest/0bc8e8376bd8417a1b6761138aa41c26c7309312/bollywood-classic/6b126777-7e9a-444f-9845-48fa1d4ed694/1.m3u8
-
-https://freeways.hosthampster.com/zeecinema.html
