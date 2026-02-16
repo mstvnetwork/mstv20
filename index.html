@@ -13,6 +13,14 @@
 body { margin: 0; padding: 0; font-family: 'Poppins', sans-serif; color: #E0E0E0; background: #0F1115; overflow-x: hidden; }
 .title-3d { font-size: clamp(1.8rem, 4vw, 3.5rem); text-align: center; margin: 30px 0 10px; color: #FFFFFF; font-weight: 800; }
 .scrolling-news { background: #1A1D20; color: #90EE90; padding: 12px 0; border-top: 1px solid #333; border-bottom: 1px solid #333; margin-bottom: 20px; font-weight: 600; }
+.channel-heading {
+    text-align: center;
+    font-size: 14px;
+    color: #90EE90;
+    font-weight: 600;
+    margin-bottom: 15px;
+    letter-spacing: 0.5px;
+}
 
 /* Ribbon Navigation */
 .ribbon-wrapper { position: relative; max-width: 1000px; margin: 0 auto 30px; display: flex; align-items: center; }
@@ -36,22 +44,6 @@ body { margin: 0; padding: 0; font-family: 'Poppins', sans-serif; color: #E0E0E0
 .player-container { position: relative; width: 100%; padding-top: 56.25%; background: #000; }
 .player-container iframe, .player-container video, #placeholder-image { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; border: none; }
 
-/* ANIMATED HOME BUTTON */
-#exit-fs-btn { 
-    display: none; position: absolute; top: 30px; left: 30px; 
-    z-index: 2147483647; /* Highest possible z-index to stay above video */
-    background: #90EE90; color: #0F1115; border: none; 
-    width: 55px; height: 55px; border-radius: 50%; cursor: pointer; 
-    align-items: center; justify-content: center; font-size: 24px;
-    box-shadow: 0 0 20px rgba(144, 238, 144, 0.7);
-    animation: pulse-home 2s infinite;
-}
-@keyframes pulse-home {
-    0% { transform: scale(1); opacity: 0.9; }
-    50% { transform: scale(1.15); opacity: 1; }
-    100% { transform: scale(1); opacity: 0.9; }
-}
-
 /* FB BUTTON & LOGO */
 .fb-container { text-align: center; margin: 40px 0; }
 .fb-follow-btn { 
@@ -71,16 +63,26 @@ footer { background: #000; color: #888; padding: 60px 20px; border-top: 1px soli
 <body>
 
 <div class="title-3d">AAINA DTH FREE</div>
-<div class="scrolling-news"><marquee scrollamount="6">Optimized: No Redirects | Low Bandwidth HLS | Ad-Block Enabled.</marquee></div>
+<div class="scrolling-news">
+    <marquee scrollamount="6">
+        Aaina DTH Free | Ad-Free Streaming | TV Channels with Entertainment for All Ages
+
+    </marquee>
+</div>
+
+<div class="channel-heading">
+    Scroll ➡️ 🔙 to select channels
+</div>
 
 <div class="ribbon-wrapper">
-    <button class="nav-btn" onclick="scrollRibbon(-200)"><i class="fas fa-chevron-left"></i></button>
+   <button class="nav-btn" onclick="scrollRibbon(-200)">⬅️</button>
+
     <div class="channel-ribbon" id="logo-grid"></div>
-    <button class="nav-btn" onclick="scrollRibbon(200)"><i class="fas fa-chevron-right"></i></button>
+    <button class="nav-btn" onclick="scrollRibbon(200)">➡️</button>
+
 </div>
 
 <div id="fullscreen-wrapper">
-    <button id="exit-fs-btn" onclick="exitFullscreen()"><i class="fas fa-home"></i></button>
     <div class="player-container">
         <iframe id="media-player" style="display:none;" allow="autoplay; fullscreen; encrypted-media" allowfullscreen="true"></iframe>
         <video id="video-player" style="display:none;" playsinline controls preload="metadata" muted></video>
@@ -99,24 +101,73 @@ footer { background: #000; color: #888; padding: 60px 20px; border-top: 1px soli
 <footer>
     <div style="max-width: 800px; margin: 0 auto;">
         <h4>About MSTV Network</h4>
-        <p>Providing premium streaming with built-in anti-redirect technology. Our system ensures a secure, high-definition experience optimized for modern devices.</p>
+        <p>Non for profit organisation, Our platform Works best on Android devices and Windows desktop or laptop systems.
+
+All content featured on Aaina DTH Free is sourced from publicly available platforms on the internet. We do not host or stream any content directly.
+</p>
         <p style="margin-top: 20px;">&copy; <span id="year"></span> MSTV Network.</p>
     </div>
 </footer>
 
 <script>
 document.getElementById('year').textContent = new Date().getFullYear();
+
 const videoPlayer = document.getElementById('video-player'),
       iframePlayer = document.getElementById('media-player'),
       placeholder = document.getElementById('placeholder-image'),
       loader = document.getElementById('loader'),
       blurOverlay = document.getElementById('blur-overlay'),
       grid = document.getElementById('logo-grid'),
-      exitBtn = document.getElementById('exit-fs-btn'),
       fsWrapper = document.getElementById('fullscreen-wrapper');
 
 let hlsInstance = null;
 
+// =====================
+// Fullscreen Function
+// =====================
+function openFullscreen() {
+    if (fsWrapper.requestFullscreen) {
+        fsWrapper.requestFullscreen();
+    } else if (fsWrapper.webkitRequestFullscreen) {
+        fsWrapper.webkitRequestFullscreen();
+    } else if (fsWrapper.msRequestFullscreen) {
+        fsWrapper.msRequestFullscreen();
+    }
+}
+
+// =====================
+// Auto Scroll Logic
+// =====================
+let autoScrollInterval;
+let autoScrollActive = true;
+
+function startAutoScroll() {
+    autoScrollInterval = setInterval(() => {
+        if (!autoScrollActive) return;
+
+        grid.scrollLeft += 1;
+
+        // Seamless loop reset
+        if (grid.scrollLeft >= grid.scrollWidth / 2) {
+            grid.scrollLeft = 0;
+        }
+    }, 20);
+}
+
+function stopAutoScroll() {
+    autoScrollActive = false;
+    clearInterval(autoScrollInterval);
+}
+
+// Pause on hover
+grid.addEventListener("mouseenter", () => clearInterval(autoScrollInterval));
+grid.addEventListener("mouseleave", () => {
+    if (autoScrollActive) startAutoScroll();
+});
+
+// =====================
+// Channel Data
+// =====================
 const channelsData = [
     { 
         name: "Star Sports", 
@@ -141,68 +192,121 @@ const channelsData = [
     }
 ];
 
-// Force button visibility in fullscreen
-function checkFullscreen() {
-    const isFS = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement;
-    exitBtn.style.display = isFS ? 'flex' : 'none';
+// =====================
+// Ribbon Scroll Buttons
+// =====================
+function scrollRibbon(distance) {
+    grid.scrollBy({ left: distance, behavior: 'smooth' });
 }
-document.addEventListener('fullscreenchange', checkFullscreen);
-document.addEventListener('webkitfullscreenchange', checkFullscreen);
 
-function scrollRibbon(distance) { grid.scrollBy({ left: distance, behavior: 'smooth' }); }
-
+// =====================
+// Build Channel Logos
+// =====================
 channelsData.forEach((ch, i) => {
     const card = document.createElement('div');
     card.className = 'logo-card';
-    card.innerHTML = `<div class="live-dot"></div><img src="${ch.logo}" alt="${ch.name}"><span>${ch.name}</span>`;
+    card.innerHTML = `<div class="live-dot"></div>
+                      <img src="${ch.logo}" alt="${ch.name}">
+                      <span>${ch.name}</span>`;
+
     card.onclick = () => {
+        stopAutoScroll();
         document.querySelectorAll('.logo-card').forEach(c => c.classList.remove('active'));
         card.classList.add('active');
+
         handleSelection(i);
+        openFullscreen(); // 🔥 Auto fullscreen
     };
+
     grid.appendChild(card);
 });
 
+// Clone logos for seamless infinite loop
+function makeRibbonLoop() {
+    const cards = Array.from(grid.children);
+    cards.forEach(c => {
+        const clone = c.cloneNode(true);
+        clone.onclick = c.onclick; // preserve click
+        grid.appendChild(clone);
+    });
+}
+
+makeRibbonLoop();
+
+// =====================
+// Stop Playback
+// =====================
 function stopAllPlayback() {
-    if (hlsInstance) { hlsInstance.destroy(); hlsInstance = null; }
-    videoPlayer.pause(); videoPlayer.removeAttribute('src'); videoPlayer.load(); videoPlayer.style.display = 'none';
-    iframePlayer.src = ''; iframePlayer.removeAttribute('sandbox'); iframePlayer.style.display = 'none';
+    if (hlsInstance) { 
+        hlsInstance.destroy(); 
+        hlsInstance = null; 
+    }
+
+    videoPlayer.pause();
+    videoPlayer.removeAttribute('src');
+    videoPlayer.load();
+    videoPlayer.style.display = 'none';
+
+    iframePlayer.src = '';
+    iframePlayer.removeAttribute('sandbox');
+    iframePlayer.style.display = 'none';
+
     blurOverlay.style.display = 'none';
 }
 
+// =====================
+// Handle Channel Selection
+// =====================
 function handleSelection(index) {
     const channel = channelsData[index];
+
     stopAllPlayback();
-    if (!channel) { placeholder.style.display = 'block'; return; }
+
+    if (!channel) {
+        placeholder.style.display = 'block';
+        return;
+    }
+
     loader.style.display = 'flex';
     placeholder.style.display = 'none';
     blurOverlay.style.display = channel.showBadge ? "block" : "none";
 
     if (channel.type === "hls") {
         videoPlayer.style.display = "block";
+
         if (typeof Hls !== 'undefined' && Hls.isSupported()) {
             hlsInstance = new Hls({ maxBufferLength: 10 });
             hlsInstance.loadSource(channel.url);
             hlsInstance.attachMedia(videoPlayer);
+
             hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => {
                 loader.style.display = 'none';
-                videoPlayer.play().catch(() => { videoPlayer.muted = true; videoPlayer.play(); });
+                videoPlayer.play().catch(() => {
+                    videoPlayer.muted = true;
+                    videoPlayer.play();
+                });
             });
+
         } else if (videoPlayer.canPlayType('application/vnd.apple.mpegurl')) {
-            videoPlayer.src = channel.url; videoPlayer.play(); loader.style.display = 'none';
+            videoPlayer.src = channel.url;
+            videoPlayer.play();
+            loader.style.display = 'none';
         }
+
     } else {
         iframePlayer.style.display = "block";
-        iframePlayer.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms allow-presentation');
+        iframePlayer.setAttribute('sandbox', 
+            'allow-scripts allow-same-origin allow-forms allow-presentation'
+        );
+
         iframePlayer.src = channel.url;
-        iframePlayer.onload = () => { loader.style.display = 'none'; };
+
+        iframePlayer.onload = () => {
+            loader.style.display = 'none';
+        };
     }
 }
 
-function exitFullscreen() { 
-    if (document.exitFullscreen) { document.exitFullscreen(); } 
-    else if (document.webkitExitFullscreen) { document.webkitExitFullscreen(); }
-}
+// Start auto-scroll
+startAutoScroll();
 </script>
-</body>
-</html>
