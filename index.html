@@ -64,7 +64,14 @@ Aaina DTH Free | Ad-Free Streaming | TV Channels with Entertainment for All Ages
 
 <div id="fullscreen-wrapper">
     <div class="player-container">
-        <iframe id="media-player" style="display:none;" allow="autoplay; fullscreen; encrypted-media" allowfullscreen></iframe>
+        <iframe 
+    id="media-player" 
+    style="display:none;" 
+    allow="autoplay; fullscreen; encrypted-media" 
+    allowfullscreen 
+    sandbox="allow-scripts allow-same-origin allow-forms allow-presentation">
+</iframe>
+
         <video id="video-player" style="display:none;" playsinline controls preload="metadata"></video>
         <img id="placeholder-image" src="Design-Studio-2025-01-22 (1).png" alt="Select Channel">
         <div class="loader-container" id="loader"><div class="spinner"></div></div>
