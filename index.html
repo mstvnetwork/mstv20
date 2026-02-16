@@ -119,26 +119,25 @@ const videoPlayer = document.getElementById('video-player'),
       grid = document.getElementById('logo-grid'),
       fsWrapper = document.getElementById('fullscreen-wrapper');
 
-// Message container for fullscreen
+// ====================
+// Message container (below player)
+// ====================
 const messageEl = document.createElement('div');
+messageEl.id = 'player-message';
 messageEl.style.cssText = `
-    position: absolute;
-    top: 100%;       /* places it just below the player container */
-    left: 0;
-    width: 100%;
     text-align: center;
     color: #90EE90;
     font-weight: 600;
     font-size: 14px;
     margin-top: 12px; /* 1/2 inch spacing */
     opacity: 0;
-    pointer-events: none;
     transition: opacity 0.5s ease;
 `;
-
 fsWrapper.appendChild(messageEl);
 
+// ====================
 // Overlay controls for iframe channels
+// ====================
 const iframeControls = document.createElement('div');
 iframeControls.id = 'iframe-controls';
 iframeControls.style.cssText = 'position:absolute; bottom:50px; right:20px; display:none; gap:10px; z-index:9999;';
@@ -156,7 +155,9 @@ let hlsInstance = null;
 let autoScrollInterval, autoScrollActive = true;
 let iframeMuted = false;
 
-// ================= FULLSCREEN =================
+// ====================
+// FULLSCREEN FUNCTIONS
+// ====================
 function openFullscreen() {
     if (fsWrapper.requestFullscreen) fsWrapper.requestFullscreen();
     else if (fsWrapper.webkitRequestFullscreen) fsWrapper.webkitRequestFullscreen();
@@ -169,7 +170,6 @@ iframeFsBtn.addEventListener('click', () => {
     else openFullscreen();
 });
 document.addEventListener('fullscreenchange', () => {
-    // Show/hide message in fullscreen
     const activeChannel = document.querySelector('.logo-card.active');
     const idx = Array.from(grid.children).indexOf(activeChannel);
     if (idx >= 0 && channelsData[idx].message) {
@@ -178,17 +178,20 @@ document.addEventListener('fullscreenchange', () => {
         messageEl.style.opacity = 0;
     }
 
-    // Hide iframe controls when not fullscreen
-    iframeControls.style.display = document.fullscreenElement && document.querySelector('.logo-card.active').dataset.type==='iframe' ? 'flex' : 'none';
+    iframeControls.style.display = document.fullscreenElement && activeChannel.dataset.type==='iframe' ? 'flex' : 'none';
 });
 
-// ================= IFRAME MUTE =================
+// ====================
+// IFRAME MUTE BUTTON
+// ====================
 iframeMuteBtn.addEventListener('click', () => {
     iframeMuted = !iframeMuted;
     iframeMuteBtn.textContent = iframeMuted ? '🔇' : '🔊';
 });
 
-// ================= AUTO SCROLL =================
+// ====================
+// AUTO SCROLL RIBBON
+// ====================
 function startAutoScroll() {
     autoScrollInterval = setInterval(() => {
         if (!autoScrollActive) return;
@@ -203,7 +206,9 @@ function stopAutoScroll() {
 grid.addEventListener('mouseenter', () => clearInterval(autoScrollInterval));
 grid.addEventListener('mouseleave', () => { if (autoScrollActive) startAutoScroll(); });
 
-// ================= CHANNEL DATA =================
+// ====================
+// CHANNEL DATA
+// ====================
 const channelsData = [
   { 
     name: "Star Sports", 
@@ -231,13 +236,15 @@ const channelsData = [
   }
 ];
 
-// ================= BUILD CHANNEL RIBBON =================
+// ====================
+// BUILD CHANNEL RIBBON
+// ====================
 function scrollRibbon(distance) { grid.scrollBy({ left: distance, behavior: 'smooth' }); }
 
 channelsData.forEach((ch,i) => {
     const card = document.createElement('div');
     card.className = 'logo-card';
-    card.dataset.type = ch.type; // store type for fullscreen logic
+    card.dataset.type = ch.type;
     card.innerHTML = `<div class="live-dot"></div><img src="${ch.logo}"><span>${ch.name}</span>`;
     card.onclick = () => {
         stopAutoScroll();
@@ -249,14 +256,16 @@ channelsData.forEach((ch,i) => {
     grid.appendChild(card);
 });
 
-// Clone logos for seamless infinite loop
+// Clone logos for infinite loop
 function makeRibbonLoop() {
     const cards = Array.from(grid.children);
     cards.forEach(c => { const clone = c.cloneNode(true); clone.onclick = c.onclick; grid.appendChild(clone); });
 }
 makeRibbonLoop();
 
-// ================= STOP PLAYBACK =================
+// ====================
+// STOP PLAYBACK
+// ====================
 function stopAllPlayback() {
     if (hlsInstance) { hlsInstance.destroy(); hlsInstance=null; }
     videoPlayer.pause(); videoPlayer.removeAttribute('src'); videoPlayer.load(); videoPlayer.style.display='none';
@@ -266,7 +275,9 @@ function stopAllPlayback() {
     messageEl.style.opacity = 0;
 }
 
-// ================= HANDLE CHANNEL SELECTION =================
+// ====================
+// HANDLE CHANNEL SELECTION
+// ====================
 function handleSelection(index) {
     const channel = channelsData[index];
     stopAllPlayback();
@@ -276,8 +287,8 @@ function handleSelection(index) {
     blurOverlay.style.display = channel.showBadge ? 'block' : 'none';
 
     // Show message if in fullscreen
-    if (channel.message && document.fullscreenElement) messageEl.style.opacity = 1;
     messageEl.textContent = channel.message || '';
+    if (document.fullscreenElement) messageEl.style.opacity = 1;
 
     if (channel.type==='hls') {
         videoPlayer.style.display='block';
@@ -305,7 +316,9 @@ function handleSelection(index) {
     }
 }
 
-// ================= START AUTO SCROLL =================
+// ====================
+// START AUTO SCROLL
+// ====================
 startAutoScroll();
 </script>
 </body>
