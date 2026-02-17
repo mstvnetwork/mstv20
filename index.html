@@ -1,314 +1,217 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MSTV Network | Premium DTH</title>
-
 <style>
-* { box-sizing: border-box; transition: all 0.3s ease; }
-body { margin: 0; padding: 0; font-family: Arial, sans-serif; color: #E0E0E0; background: #0F1115; overflow-x: hidden; }
-
-.title-3d { font-size: clamp(1.8rem, 4vw, 3.5rem); text-align: center; margin: 30px 0 10px; color: #FFFFFF; font-weight: 800; }
-
-.scrolling-news {
-  background: #1A1D20;
-  color: #90EE90;
-  padding: 12px 0;
-  border-top: 1px solid #333;
-  border-bottom: 1px solid #333;
-  margin-bottom: 20px;
-  font-weight: 600;
-}
-
-.channel-heading { text-align: center; font-size: 14px; color: #90EE90; font-weight: 600; margin-bottom: 15px; }
-
-.ribbon-wrapper {
-  position: relative;
-  max-width: 1000px;
-  margin: 0 auto 30px;
-  display: flex;
-  align-items: center;
-}
-
-.channel-ribbon {
-  display: flex;
-  overflow-x: auto;
-  overflow-y: hidden;
-  gap: 15px;
-  padding: 10px 5px 20px;
-  flex-grow: 1;
-}
-.channel-ribbon::-webkit-scrollbar { display: none; }
-
-.nav-btn {
-  background: rgba(26, 29, 32, 0.8);
-  border: 1px solid #333;
-  color: #90EE90;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  cursor: pointer;
-}
-
-.logo-card {
-  flex: 0 0 120px;
-  background: #1A1D20;
-  border: 1px solid #333;
-  border-radius: 12px;
-  padding: 10px;
-  cursor: pointer;
-  text-align: center;
-  position: relative;
-}
-.logo-card.active { border-color: #90EE90; background: rgba(144, 238, 144, 0.1); }
-.logo-card img { width: 100%; height: 50px; object-fit: contain; }
-.logo-card span { display: block; font-size: 10px; margin-top: 5px; color: #888; font-weight: 600; }
-
-.live-dot {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  width: 8px;
-  height: 8px;
-  background: #ff4b2b;
-  border-radius: 50%;
-  display: none;
-  animation: blink 1s infinite;
-}
-@keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
-.active .live-dot { display: block; }
-
-#fullscreen-wrapper {
-  position: relative;
-  width: 95%;
-  max-width: 1000px;
-  margin: 0 auto 10px;
-  background: #000;
-  border-radius: 12px;
-  overflow: hidden;
-}
-
-.player-container { position: relative; width: 100%; padding-top: 56.25%; background: #000; }
-
-.player-container iframe,
-.player-container video,
-#placeholder-image {
-  position: absolute;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  object-fit: contain;
-  border: none;
-}
-
-#blur-overlay {
-  position: absolute;
-  top: 8%;
-  left: 2%;      /* changed from right:2% to left:2% */
-  width: 40%;
-  height: 15%;
-  background: rgba(255,255,255,0.01);
-  backdrop-filter: blur(25px);
-  border-radius: 4px;
-  z-index: 10;
-  display: none;
-}
-
-
-#player-message {
-  text-align: center;
-  color: #90EE90;
-  font-weight: 600;
-  font-size: 14px;
-  margin-bottom: 20px;
-  min-height: 20px;
-  transition: opacity 0.3s ease;
-  opacity: 1;
-}
-
-footer {
-  background: #000;
-  color: #888;
-  padding: 60px 20px;
-  border-top: 1px solid #222;
-  text-align: center;
-}
+body{margin:0;font-family:Arial,sans-serif;color:#E0E0E0;background:#0F1115;overflow-x:hidden;}
+.title-3d{font-size:clamp(1.8rem,4vw,3.5rem);text-align:center;margin:30px 0 10px;color:#FFF;font-weight:800;}
+.scrolling-news{background:#1A1D20;color:#90EE90;padding:12px 0;border-top:1px solid #333;border-bottom:1px solid #333;margin-bottom:20px;font-weight:600;}
+.channel-heading{text-align:center;font-size:14px;color:#90EE90;font-weight:600;margin-bottom:15px;}
+.ribbon-wrapper{position:relative;max-width:1000px;margin:0 auto 30px;display:flex;align-items:center;gap:10px;}
+.channel-ribbon{overflow:hidden;position:relative;width:100%;height:80px;}
+.channel-ribbon-inner{display:flex;flex-wrap:nowrap;gap:15px;will-change:transform;position:absolute;top:0;left:0;}
+.nav-btn{background:rgba(26,29,32,.8);border:1px solid #333;color:#90EE90;width:40px;height:40px;border-radius:50%;cursor:pointer;}
+.logo-card{flex:0 0 120px;background:#1A1D20;border:1px solid #333;border-radius:12px;padding:10px;text-align:center;cursor:pointer;position:relative;}
+.logo-card.active{border-color:#90EE90;background:rgba(144,238,144,.1);}
+.logo-card img{width:100%;height:50px;object-fit:contain;display:block;}
+.logo-card span{display:block;font-size:10px;margin-top:5px;color:#888;font-weight:600;}
+.live-dot{position:absolute;top:8px;right:8px;width:8px;height:8px;background:#ff4b2b;border-radius:50%;display:none;animation:blink 1s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.active .live-dot{display:block;}
+#fullscreen-wrapper{position:relative;width:95%;max-width:1000px;margin:0 auto 10px;background:#000;border-radius:12px;overflow:hidden;}
+.player-container{position:relative;width:100%;padding-top:56.25%;background:#000;}
+.player-container video,#iframe-player,#placeholder-image{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;text-align:center;}
+#placeholder-image{background:linear-gradient(135deg,#0d0d2b 0%,#1a1d40 50%,#0f1115 100%);flex-direction:column;z-index:5;}
+.placeholder-content{max-width:90%;}
+.placeholder-arrow{font-size:2.5rem;color:#90EE90;margin-bottom:15px;}
+.placeholder-title{font-size:clamp(1.8rem,4vw,3rem);font-weight:800;color:#fff;letter-spacing:2px;margin-bottom:10px;}
+.placeholder-sub{font-size:clamp(.9rem,2vw,1.2rem);color:#90EE90;font-weight:600;}
+#channel-messages-container{max-width:1000px;margin:10px auto;display:flex;flex-direction:column;gap:6px;color:#90EE90;font-weight:600;font-size:14px;text-align:center;position:relative;z-index:20;}
+.channel-message{background:rgba(26,29,32,.8);padding:6px 12px;border-radius:6px;box-shadow:0 0 4px rgba(144,238,144,.5);opacity:0;transition:opacity .3s ease;}
+#player-message{text-align:center;color:#90EE90;font-weight:600;font-size:14px;margin-top:10px;opacity:0;transition:opacity .3s;}
+#blur-overlay{position:absolute;top:8%;left:2%;width:40%;height:15%;background:rgba(255,255,255,0.01);backdrop-filter:blur(25px);border-radius:4px;z-index:15;display:none;}
+.loader-container{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);display:none;z-index:20;}
+.spinner{width:40px;height:40px;border:3px solid rgba(144,238,144,.2);border-top:3px solid #90EE90;border-radius:50%;animation:spin 1s linear infinite;}
+@keyframes spin{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
+footer{background:#0F1115;border-top:2px solid #90EE90;padding:60px 20px;text-align:center;}
+footer h4{color:#90EE90;font-size:18px;margin-bottom:12px;font-weight:700;text-shadow:0 0 4px rgba(144,238,144,.5);}
+footer p{color:#ccc;line-height:1.6;font-size:14px;}
+footer p span{color:#90EE90;font-weight:600;}
 </style>
 </head>
 <body>
 
 <div class="title-3d">AAINA DTH FREE</div>
-
-<div class="scrolling-news">
-<marquee scrollamount="6">
-Aaina DTH Free | Ad-Free Streaming | TV Channels with Entertainment for All Ages
-</marquee>
-</div>
-
+<div class="scrolling-news"><marquee scrollamount="6">Aaina DTH Free | Ad-Free Streaming | TV Channels with Entertainment for All Ages</marquee></div>
 <div class="channel-heading">Scroll to select channels</div>
 
 <div class="ribbon-wrapper">
-<button class="nav-btn" onclick="scrollRibbon(-200)">⬅️</button>
-<div class="channel-ribbon" id="logo-grid"></div>
-<button class="nav-btn" onclick="scrollRibbon(200)">➡️</button>
+  <button class="nav-btn" onclick="scrollRibbon(-200)">⬅️</button>
+  <div class="channel-ribbon"><div class="channel-ribbon-inner" id="ribbon-inner"></div></div>
+  <button class="nav-btn" onclick="scrollRibbon(200)">➡️</button>
 </div>
 
 <div id="fullscreen-wrapper">
   <div class="player-container">
-    <iframe id="media-player" style="display:none;" allow="autoplay; fullscreen; encrypted-media" allowfullscreen></iframe>
-    <video id="video-player" style="display:none;" playsinline controls preload="metadata"></video>
-    <img id="placeholder-image" src="Design-Studio-2025-01-22 (1).png" alt="Select Channel">
+    <video id="video-player" playsinline muted controls preload="metadata" style="display:none;"></video>
+    <iframe id="iframe-player" style="display:none;width:100%;height:100%;" allow="autoplay; fullscreen; encrypted-media" sandbox="allow-scripts allow-same-origin allow-forms allow-presentation"></iframe>
+    <div id="placeholder-image">
+      <div class="placeholder-content">
+        <div class="placeholder-arrow">⬆️</div>
+        <div class="placeholder-title">MSTV NETWORK</div>
+        <div class="placeholder-sub">Click on channel icon to watch</div>
+      </div>
+    </div>
+    <div class="loader-container" id="loader"><div class="spinner"></div></div>
     <div id="blur-overlay"></div>
   </div>
+  <div id="channel-messages-container"></div>
 </div>
-
-<!-- Channel-specific message below player container -->
-<div id="player-message"></div>
 
 <footer>
 <div style="max-width:800px;margin:0 auto;">
 <h4>About MSTV Network</h4>
-<p>
-Non for profit organisation. Our platform works best on Android devices and Windows desktop or laptop systems.
-All content featured on Aaina DTH Free is sourced from publicly available platforms on the internet.
-We do not host or stream any content directly.
-</p>
+<p>Non-profit organisation. Platform works best on Android and Windows. Content sourced from publicly available platforms. No hosting or direct streaming.</p>
 <p style="margin-top:20px;">© <span id="year"></span> MSTV Network</p>
 </div>
 </footer>
 
-<script>
-document.getElementById('year').textContent = new Date().getFullYear();
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest" defer></script>
+<script defer>
+document.getElementById('year').textContent=new Date().getFullYear();
 
-const videoPlayer = document.getElementById('video-player');
-const iframePlayer = document.getElementById('media-player');
-const grid = document.getElementById('logo-grid');
-const fsWrapper = document.getElementById('fullscreen-wrapper');
-const messageEl = document.getElementById('player-message');
-const blurOverlay = document.getElementById('blur-overlay');
+const videoPlayer=document.getElementById('video-player');
+const iframePlayer=document.getElementById('iframe-player');
+const loader=document.getElementById('loader');
+const placeholder=document.getElementById('placeholder-image');
+const ribbonInner=document.getElementById('ribbon-inner');
+const channelMessagesContainer=document.getElementById('channel-messages-container');
+const blurOverlay=document.getElementById('blur-overlay');
+let hlsInstance=null;
+let currentChannelIndex=null;
 
-let autoScrollInterval;
-let currentChannelIndex = null;
-
-// FULLSCREEN
-function openFullscreen() {
-  if (fsWrapper.requestFullscreen) fsWrapper.requestFullscreen();
-  else if (fsWrapper.webkitRequestFullscreen) fsWrapper.webkitRequestFullscreen();
-}
-
-// CONTINUOUS AUTO SCROLL
-function startAutoScroll() {
-  autoScrollInterval = setInterval(() => {
-    grid.scrollLeft += 1;
-    if (grid.scrollLeft >= grid.scrollWidth / 2) grid.scrollLeft = 0;
-  }, 20);
-}
-
-function scrollRibbon(distance) {
-  grid.scrollBy({ left: distance });
-}
-
-// CHANNEL DATA
-const channelsData = [
-{
-name: "Star Sports",
-url: "https://streamcrichd.com/update/star.php",
-type: "iframe",
-logo: "cb2f146ca360b682048f5cdb75f557ec.jpg",
-message: "Enjoy live sports action in HD!",
-showBadge: false
-},
-{
-name: "Bollywood Classic HD",
-url: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8",
-type: "hls",
-logo: "wlo_logo_200_200.jpg",
-message: "Classic Bollywood movies for everyone.",
-showBadge: false
-},
-{
-name: "Zee Cinema",
-url: "https://freeways.hosthampster.com/zeecinema.html?autoplay=1",
-type: "iframe",
-logo: "wlo_logo_200_200.jpg",
-message: "Blockbusters for the whole family!",
-showBadge: true
-}
+// Channel data with multiple messages
+const channelsData=[
+  {name:"Star Sports",type:"iframe",url:"https://streamcrichd.com/update/star.php",logo:"cb2f146ca360b682048f5cdb75f557ec.jpg",messages:["Double tap to 🔈🔇","Rotate device for fullscreen"]},
+  {name:"Bollywood Classic HD",type:"hls",url:"https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8",logo:"wlo_logo_200_200.jpg",messages:["Low latency HLS","Click fullscreen to view info"]},
+  {name:"Zee Cinema",type:"iframe",url:"https://freeways.hosthampster.com/zeecinema.html?autoplay=1",logo:"wlo_logo_200_200.jpg",messages:["Cinema classics","Double tap to mute/unmute"]}
 ];
 
-// BUILD CHANNEL RIBBON
-channelsData.forEach((ch,i)=>{
-  const card = document.createElement('div');
-  card.className='logo-card';
-  card.dataset.type = ch.type;
-  card.innerHTML = `<div class="live-dot"></div><img src="${ch.logo}"><span>${ch.name}</span>`;
-  card.onclick = () => handleSelection(i);
-  grid.appendChild(card);
-});
-
-// DUPLICATE FOR INFINITE LOOP
-function makeRibbonLoop(){
-  const cards = Array.from(grid.children);
-  cards.forEach(c => {
-    const clone = c.cloneNode(true);
-    clone.onclick = c.onclick;
-    grid.appendChild(clone);
+// Build ribbon
+function buildRibbon(){
+  ribbonInner.innerHTML='';
+  channelsData.forEach((ch,i)=>{
+    const card=document.createElement('div');
+    card.className='logo-card';
+    card.innerHTML=`<div class="live-dot"></div><img loading="lazy" src="${ch.logo}"><span>${ch.name}</span>`;
+    card.onclick=()=>handleSelection(i);
+    ribbonInner.appendChild(card);
+  });
+  channelsData.forEach((ch,i)=>{
+    const clone=ribbonInner.children[i].cloneNode(true);
+    clone.onclick=ribbonInner.children[i].onclick;
+    ribbonInner.appendChild(clone);
   });
 }
-makeRibbonLoop();
+buildRibbon();
 
-// STOP PLAYBACK
-function stopAllPlayback(){
-  if(videoPlayer) {
-    videoPlayer.pause();
-    videoPlayer.removeAttribute('src');
-    videoPlayer.load();
-    videoPlayer.style.display='none';
-  }
-  iframePlayer.src='';
-  iframePlayer.style.display='none';
+// Smooth infinite scroll
+let scrollX=0;
+function animateRibbon(){
+  scrollX-=1;
+  if(Math.abs(scrollX)>=ribbonInner.scrollWidth/2) scrollX=0;
+  ribbonInner.style.transform=`translateX(${scrollX}px)`;
+  requestAnimationFrame(animateRibbon);
+}
+requestAnimationFrame(animateRibbon);
+
+function scrollRibbon(distance){
+  const style=getComputedStyle(ribbonInner);
+  const matrix=style.transform.match(/matrix.*\((.+)\)/);
+  let x=matrix?parseFloat(matrix[1].split(',')[4]):0;
+  x+=distance;
+  ribbonInner.style.transform=`translateX(${x}px)`;
 }
 
-// HANDLE SELECTION
+// Fullscreen helper
+function openFullscreen(){
+  const fsWrapper=document.getElementById('fullscreen-wrapper');
+  if(fsWrapper.requestFullscreen) fsWrapper.requestFullscreen();
+  else if(fsWrapper.webkitRequestFullscreen) fsWrapper.webkitRequestFullscreen();
+  else if(fsWrapper.msRequestFullscreen) fsWrapper.msRequestFullscreen();
+}
+
+// Stop playback
+function stopAllPlayback(){
+  videoPlayer.pause(); videoPlayer.removeAttribute('src'); videoPlayer.load(); videoPlayer.style.display='none';
+  iframePlayer.src=''; iframePlayer.style.display='none';
+  if(hlsInstance){ hlsInstance.destroy(); hlsInstance=null; }
+}
+
+// Show channel messages only in fullscreen
+function showChannelMessages(index){
+  channelMessagesContainer.innerHTML='';
+  if(!document.fullscreenElement) return;
+  const channel=channelsData[index];
+  if(channel.messages && channel.messages.length>0){
+    channel.messages.forEach(msg=>{
+      const div=document.createElement('div');
+      div.className='channel-message';
+      div.textContent=msg;
+      channelMessagesContainer.appendChild(div);
+      setTimeout(()=>{div.style.opacity=1;},50);
+    });
+  }
+}
+
+// Update messages on fullscreen change
+function updateMessageVisibility(){ showChannelMessages(currentChannelIndex); }
+document.addEventListener('fullscreenchange', updateMessageVisibility);
+document.addEventListener('webkitfullscreenchange', updateMessageVisibility);
+document.addEventListener('msfullscreenchange', updateMessageVisibility);
+
+// Handle selection
 function handleSelection(index){
-  const channel = channelsData[index];
-  currentChannelIndex = index;
+  const channel=channelsData[index];
+  currentChannelIndex=index;
   stopAllPlayback();
-
+  placeholder.style.display='none';
+  loader.style.display='flex';
   document.querySelectorAll('.logo-card').forEach(c=>c.classList.remove('active'));
-  if(grid.children[index]) grid.children[index].classList.add('active');
+  ribbonInner.children[index].classList.add('active');
 
-  // Display channel message immediately below player
-  messageEl.textContent = channel.message || '';
+  // Show stacked messages
+  showChannelMessages(index);
 
-  // Toggle blur overlay for channels that need it
-  blurOverlay.style.display = channel.showBadge ? 'block' : 'none';
+  // Show blur overlay only for Zee Cinema
+  blurOverlay.style.display=(channel.name==="Zee Cinema")?'block':'none';
+
+  setTimeout(()=>{ if(!document.fullscreenElement) openFullscreen(); },300);
 
   if(channel.type==='hls'){
     videoPlayer.style.display='block';
-    videoPlayer.src = channel.url;
-    videoPlayer.muted=false;
-    videoPlayer.play().catch(()=>{
-      videoPlayer.muted=true;
-      videoPlayer.play();
-    });
-  } else {
+    if(Hls.isSupported()){
+      hlsInstance=new Hls({maxBufferLength:3,maxMaxBufferLength:6});
+      hlsInstance.loadSource(channel.url);
+      hlsInstance.attachMedia(videoPlayer);
+      hlsInstance.on(Hls.Events.MANIFEST_PARSED,()=>{
+        loader.style.display='none';
+        videoPlayer.play().catch(()=>{videoPlayer.muted=true;videoPlayer.play();});
+      });
+    }else if(videoPlayer.canPlayType('application/vnd.apple.mpegurl')){
+      videoPlayer.src=channel.url;
+      videoPlayer.play().finally(()=>loader.style.display='none');
+    }
+  }else{
     iframePlayer.style.display='block';
-    iframePlayer.src = channel.url;
-    // Attempt autoplay for iframe after 1s
-    setTimeout(()=>{
-      iframePlayer.contentWindow?.postMessage('{"event":"command","func":"playVideo","args":""}','*');
-    },1000);
+    iframePlayer.src=channel.url;
+    const timeout=setTimeout(()=>loader.style.display='none',5000);
+    iframePlayer.onload=()=>{clearTimeout(timeout);loader.style.display='none';};
   }
-
-  // Trigger fullscreen slightly after selection for mobile reliability
-  setTimeout(()=>{
-    if(!document.fullscreenElement) openFullscreen();
-  },300);
 }
-
-// START AUTO SCROLL
-startAutoScroll();
 </script>
 </body>
 </html>
