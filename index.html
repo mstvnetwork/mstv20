@@ -7,45 +7,134 @@
 
 <style>
 * { box-sizing: border-box; transition: all 0.3s ease; }
-body { margin: 0; font-family: 'Poppins', sans-serif; color: #E0E0E0; background: #0F1115; overflow-x: hidden; }
+body { margin: 0; padding: 0; font-family: Arial, sans-serif; color: #E0E0E0; background: #0F1115; overflow-x: hidden; }
 
-.title-3d { font-size: clamp(1.8rem, 4vw, 3.5rem); text-align: center; margin: 30px 0 10px; font-weight: 800; }
+.title-3d { font-size: clamp(1.8rem, 4vw, 3.5rem); text-align: center; margin: 30px 0 10px; color: #FFFFFF; font-weight: 800; }
 
-.scrolling-news { background: #1A1D20; color: #90EE90; padding: 12px 0; border-top: 1px solid #333; border-bottom: 1px solid #333; margin-bottom: 20px; font-weight: 600; }
+.scrolling-news {
+  background: #1A1D20;
+  color: #90EE90;
+  padding: 12px 0;
+  border-top: 1px solid #333;
+  border-bottom: 1px solid #333;
+  margin-bottom: 20px;
+  font-weight: 600;
+}
 
 .channel-heading { text-align: center; font-size: 14px; color: #90EE90; font-weight: 600; margin-bottom: 15px; }
 
-/* Ribbon */
-.ribbon-wrapper { position: relative; max-width: 1000px; margin: 0 auto 30px; display: flex; align-items: center; }
-.channel-ribbon { display: flex; overflow-x: auto; overflow-y: hidden; gap: 15px; padding: 10px 5px 20px; scroll-behavior: smooth; flex-grow: 1; }
+.ribbon-wrapper {
+  position: relative;
+  max-width: 1000px;
+  margin: 0 auto 30px;
+  display: flex;
+  align-items: center;
+}
+
+.channel-ribbon {
+  display: flex;
+  overflow-x: auto;
+  overflow-y: hidden;
+  gap: 15px;
+  padding: 10px 5px 20px;
+  flex-grow: 1;
+}
 .channel-ribbon::-webkit-scrollbar { display: none; }
 
-/* Logo Cards */
-.logo-card { flex: 0 0 120px; background: #1A1D20; border: 1px solid #333; border-radius: 12px; padding: 10px; cursor: pointer; text-align: center; position: relative; }
-.logo-card.active { border-color: #90EE90; background: rgba(144,238,144,0.1); }
+.nav-btn {
+  background: rgba(26, 29, 32, 0.8);
+  border: 1px solid #333;
+  color: #90EE90;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.logo-card {
+  flex: 0 0 120px;
+  background: #1A1D20;
+  border: 1px solid #333;
+  border-radius: 12px;
+  padding: 10px;
+  cursor: pointer;
+  text-align: center;
+  position: relative;
+}
+.logo-card.active { border-color: #90EE90; background: rgba(144, 238, 144, 0.1); }
 .logo-card img { width: 100%; height: 50px; object-fit: contain; }
 .logo-card span { display: block; font-size: 10px; margin-top: 5px; color: #888; font-weight: 600; }
 
-.live-dot { position: absolute; top: 8px; right: 8px; width: 8px; height: 8px; background: #ff4b2b; border-radius: 50%; display: none; animation: blink 1s infinite; }
-@keyframes blink { 0%{opacity:1;} 50%{opacity:0.3;} 100%{opacity:1;} }
+.live-dot {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 8px;
+  height: 8px;
+  background: #ff4b2b;
+  border-radius: 50%;
+  display: none;
+  animation: blink 1s infinite;
+}
+@keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
 .active .live-dot { display: block; }
 
-/* Player */
-#fullscreen-wrapper { position: relative; width: 95%; max-width: 1000px; margin: 0 auto 30px; background: #000; border-radius: 12px; overflow: hidden; }
-.player-container { position: relative; width: 100%; padding-top: 56.25%; }
+#fullscreen-wrapper {
+  position: relative;
+  width: 95%;
+  max-width: 1000px;
+  margin: 0 auto 10px;
+  background: #000;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.player-container { position: relative; width: 100%; padding-top: 56.25%; background: #000; }
 
 .player-container iframe,
 .player-container video,
-#placeholder-image { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; border: none; }
+#placeholder-image {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  object-fit: contain;
+  border: none;
+}
 
-.loader-container { position: absolute; top:50%; left:50%; transform:translate(-50%,-50%); display:none; }
-.spinner { width:40px; height:40px; border:3px solid rgba(144,238,144,0.2); border-top:3px solid #90EE90; border-radius:50%; animation: spin 1s linear infinite; }
-@keyframes spin { to { transform:rotate(360deg); } }
+#blur-overlay {
+  position: absolute;
+  top: 8%;
+  left: 2%;      /* changed from right:2% to left:2% */
+  width: 40%;
+  height: 15%;
+  background: rgba(255,255,255,0.01);
+  backdrop-filter: blur(25px);
+  border-radius: 4px;
+  z-index: 10;
+  display: none;
+}
 
-footer { background:#000; color:#888; padding:40px 20px; text-align:center; }
+
+#player-message {
+  text-align: center;
+  color: #90EE90;
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 20px;
+  min-height: 20px;
+  transition: opacity 0.3s ease;
+  opacity: 1;
+}
+
+footer {
+  background: #000;
+  color: #888;
+  padding: 60px 20px;
+  border-top: 1px solid #222;
+  text-align: center;
+}
 </style>
 </head>
-
 <body>
 
 <div class="title-3d">AAINA DTH FREE</div>
@@ -59,146 +148,168 @@ Aaina DTH Free | Ad-Free Streaming | TV Channels with Entertainment for All Ages
 <div class="channel-heading">Scroll to select channels</div>
 
 <div class="ribbon-wrapper">
-    <div class="channel-ribbon" id="logo-grid"></div>
+<button class="nav-btn" onclick="scrollRibbon(-200)">⬅️</button>
+<div class="channel-ribbon" id="logo-grid"></div>
+<button class="nav-btn" onclick="scrollRibbon(200)">➡️</button>
 </div>
 
 <div id="fullscreen-wrapper">
-    <div class="player-container">
-        <iframe 
-    id="media-player" 
-    style="display:none;" 
-    allow="autoplay; fullscreen; encrypted-media" 
-    allowfullscreen 
-    sandbox="allow-scripts allow-same-origin allow-forms allow-presentation">
-</iframe>
-
-        <video id="video-player" style="display:none;" playsinline controls preload="metadata"></video>
-        <img id="placeholder-image" src="Design-Studio-2025-01-22 (1).png" alt="Select Channel">
-        <div class="loader-container" id="loader"><div class="spinner"></div></div>
-    </div>
+  <div class="player-container">
+    <iframe id="media-player" style="display:none;" allow="autoplay; fullscreen; encrypted-media" allowfullscreen></iframe>
+    <video id="video-player" style="display:none;" playsinline controls preload="metadata"></video>
+    <img id="placeholder-image" src="Design-Studio-2025-01-22 (1).png" alt="Select Channel">
+    <div id="blur-overlay"></div>
+  </div>
 </div>
 
+<!-- Channel-specific message below player container -->
+<div id="player-message"></div>
+
 <footer>
-<p>&copy; <span id="year"></span> MSTV Network</p>
+<div style="max-width:800px;margin:0 auto;">
+<h4>About MSTV Network</h4>
+<p>
+Non for profit organisation. Our platform works best on Android devices and Windows desktop or laptop systems.
+All content featured on Aaina DTH Free is sourced from publicly available platforms on the internet.
+We do not host or stream any content directly.
+</p>
+<p style="margin-top:20px;">© <span id="year"></span> MSTV Network</p>
+</div>
 </footer>
 
 <script>
 document.getElementById('year').textContent = new Date().getFullYear();
 
-const videoPlayer = document.getElementById('video-player'),
-      iframePlayer = document.getElementById('media-player'),
-      placeholder = document.getElementById('placeholder-image'),
-      loader = document.getElementById('loader'),
-      fsWrapper = document.getElementById('fullscreen-wrapper'),
-      grid = document.getElementById('logo-grid');
+const videoPlayer = document.getElementById('video-player');
+const iframePlayer = document.getElementById('media-player');
+const grid = document.getElementById('logo-grid');
+const fsWrapper = document.getElementById('fullscreen-wrapper');
+const messageEl = document.getElementById('player-message');
+const blurOverlay = document.getElementById('blur-overlay');
 
-let hlsInstance = null;
 let autoScrollInterval;
-let autoScrollActive = true;
+let currentChannelIndex = null;
 
-/* Fullscreen */
+// FULLSCREEN
 function openFullscreen() {
-    if (fsWrapper.requestFullscreen) fsWrapper.requestFullscreen();
+  if (fsWrapper.requestFullscreen) fsWrapper.requestFullscreen();
+  else if (fsWrapper.webkitRequestFullscreen) fsWrapper.webkitRequestFullscreen();
 }
 
-/* Channel Data */
+// CONTINUOUS AUTO SCROLL
+function startAutoScroll() {
+  autoScrollInterval = setInterval(() => {
+    grid.scrollLeft += 1;
+    if (grid.scrollLeft >= grid.scrollWidth / 2) grid.scrollLeft = 0;
+  }, 20);
+}
+
+function scrollRibbon(distance) {
+  grid.scrollBy({ left: distance });
+}
+
+// CHANNEL DATA
 const channelsData = [
-  { 
-    name: "Star Sports", 
-    url: "https://streamcrichd.com/update/star.php", 
-    type: "iframe",
-    logo: "cb2f146ca360b682048f5cdb75f557ec.jpg", 
-    showBadge: false,
-    message: "Enjoy live sports action in HD!"
-  },
-  { 
-    name: "Bollywood Classic HD", 
-    url: "https://d35j504z0x2vu2.cloudfront.net/v1/manifest/0bc8e8376bd8417a1b6761138aa41c26c7309312/bollywood-classic/6b126777-7e9a-444f-9845-48fa1d4ed694/1.m3u8", 
-    type: "hls",
-    logo: "wlo_logo_200_200.jpg", 
-    showBadge: false,
-    message: "Classic Bollywood movies for everyone."
-  },
-  { 
-    name: "Zee Cinema",
-    url: "https://freeways.hosthampster.com/zeecinema.html",
-    type: "iframe",
-    logo: "wlo_logo_200_200.jpg",
-    showBadge: true,
-    message: "Blockbusters for the whole family!"
-  }
+{
+name: "Star Sports",
+url: "https://streamcrichd.com/update/star.php",
+type: "iframe",
+logo: "cb2f146ca360b682048f5cdb75f557ec.jpg",
+message: "Enjoy live sports action in HD!",
+showBadge: false
+},
+{
+name: "Bollywood Classic HD",
+url: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8",
+type: "hls",
+logo: "wlo_logo_200_200.jpg",
+message: "Classic Bollywood movies for everyone.",
+showBadge: false
+},
+{
+name: "Zee Cinema",
+url: "https://freeways.hosthampster.com/zeecinema.html?autoplay=1",
+type: "iframe",
+logo: "wlo_logo_200_200.jpg",
+message: "Blockbusters for the whole family!",
+showBadge: true
+}
 ];
-/* Create Card */
-function createCard(ch,index){
-    const card=document.createElement('div');
-    card.className='logo-card';
-    card.dataset.index=index;
-    card.innerHTML=`<div class="live-dot"></div><img src="${ch.logo}"><span>${ch.name}</span>`;
-    card.addEventListener('click',function(){
-        stopAutoScroll();
-        document.querySelectorAll('.logo-card').forEach(c=>c.classList.remove('active'));
-        this.classList.add('active');
-        handleSelection(parseInt(this.dataset.index));
-        openFullscreen();
-    });
-    return card;
+
+// BUILD CHANNEL RIBBON
+channelsData.forEach((ch,i)=>{
+  const card = document.createElement('div');
+  card.className='logo-card';
+  card.dataset.type = ch.type;
+  card.innerHTML = `<div class="live-dot"></div><img src="${ch.logo}"><span>${ch.name}</span>`;
+  card.onclick = () => handleSelection(i);
+  grid.appendChild(card);
+});
+
+// DUPLICATE FOR INFINITE LOOP
+function makeRibbonLoop(){
+  const cards = Array.from(grid.children);
+  cards.forEach(c => {
+    const clone = c.cloneNode(true);
+    clone.onclick = c.onclick;
+    grid.appendChild(clone);
+  });
 }
+makeRibbonLoop();
 
-/* Build Original + Clone */
-channelsData.forEach((ch,i)=>grid.appendChild(createCard(ch,i)));
-channelsData.forEach((ch,i)=>grid.appendChild(createCard(ch,i))); // duplicate once
-
-/* Auto Scroll */
-function startAutoScroll(){
-    autoScrollInterval=setInterval(()=>{
-        if(!autoScrollActive) return;
-        grid.scrollLeft+=1;
-
-        if(grid.scrollLeft >= (grid.scrollWidth / 2)){
-            grid.scrollLeft=0;
-        }
-    },20);
-}
-
-function stopAutoScroll(){
-    autoScrollActive=false;
-    clearInterval(autoScrollInterval);
-}
-
-grid.addEventListener('mouseenter',()=>clearInterval(autoScrollInterval));
-grid.addEventListener('mouseleave',()=>{ if(autoScrollActive) startAutoScroll(); });
-
-startAutoScroll();
-
-/* Playback */
+// STOP PLAYBACK
 function stopAllPlayback(){
-    if(hlsInstance){hlsInstance.destroy();hlsInstance=null;}
+  if(videoPlayer) {
     videoPlayer.pause();
     videoPlayer.removeAttribute('src');
     videoPlayer.load();
     videoPlayer.style.display='none';
-    iframePlayer.src='';
-    iframePlayer.style.display='none';
+  }
+  iframePlayer.src='';
+  iframePlayer.style.display='none';
 }
 
+// HANDLE SELECTION
 function handleSelection(index){
-    const channel=channelsData[index];
-    stopAllPlayback();
-    loader.style.display='flex';
-    placeholder.style.display='none';
+  const channel = channelsData[index];
+  currentChannelIndex = index;
+  stopAllPlayback();
 
-    if(channel.type==='hls'){
-        videoPlayer.style.display='block';
-        videoPlayer.src=channel.url;
-        videoPlayer.play();
-        loader.style.display='none';
-    } else {
-        iframePlayer.style.display='block';
-        iframePlayer.src=channel.url;
-        iframePlayer.onload=()=>loader.style.display='none';
-    }
+  document.querySelectorAll('.logo-card').forEach(c=>c.classList.remove('active'));
+  if(grid.children[index]) grid.children[index].classList.add('active');
+
+  // Display channel message immediately below player
+  messageEl.textContent = channel.message || '';
+
+  // Toggle blur overlay for channels that need it
+  blurOverlay.style.display = channel.showBadge ? 'block' : 'none';
+
+  if(channel.type==='hls'){
+    videoPlayer.style.display='block';
+    videoPlayer.src = channel.url;
+    videoPlayer.muted=false;
+    videoPlayer.play().catch(()=>{
+      videoPlayer.muted=true;
+      videoPlayer.play();
+    });
+  } else {
+    iframePlayer.style.display='block';
+    iframePlayer.src = channel.url;
+    // Attempt autoplay for iframe after 1s
+    setTimeout(()=>{
+      iframePlayer.contentWindow?.postMessage('{"event":"command","func":"playVideo","args":""}','*');
+    },1000);
+  }
+
+  // Trigger fullscreen slightly after selection for mobile reliability
+  setTimeout(()=>{
+    if(!document.fullscreenElement) openFullscreen();
+  },300);
 }
-</script>
 
+// START AUTO SCROLL
+startAutoScroll();
+</script>
 </body>
 </html>
+
