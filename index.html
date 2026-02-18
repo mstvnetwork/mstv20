@@ -119,9 +119,9 @@ function buildRibbon(){
 buildRibbon();
 
 // Smooth infinite scroll
-let scrollX=3;
+let scrollX=0;
 function animateRibbon(){
-  scrollX-=1;
+  scrollX-=0.3;
   if(Math.abs(scrollX)>=ribbonInner.scrollWidth/2) scrollX=0;
   ribbonInner.style.transform=`translateX(${scrollX}px)`;
   requestAnimationFrame(animateRibbon);
