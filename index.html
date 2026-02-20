@@ -4,13 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<!-- SEO & GOOGLE VERIFICATION -->
+<!-- SEO & GOOGLE VERIFICATION (PERMANENT) -->
 <title>MSTV Network | Premium DTH Streaming</title>
 <meta name="description" content="Watch Bollywood Classics and Premium Sports for free. Ad-Free DTH streaming.">
 <link rel="canonical" href="https://mstvnet.netlify.app" />
 <meta name="google-site-verification" content="google36a9620cce1db39f" />
 
-<!-- FIXED HLS LIBRARY: Loading synchronously to ensure it's ready -->
+<!-- STABLE HLS LIBRARY (No defer to ensure HLS triggers instantly) -->
 <script src="https://cdnjs.cloudflare.com"></script>
 
 <style>
@@ -31,7 +31,7 @@ body{margin:0;font-family:Arial,sans-serif;color:#E0E0E0;background:#0F1115;over
 .active .live-dot{display:block;}
 #fullscreen-wrapper{position:relative;width:95%;max-width:1000px;margin:0 auto 10px;background:#000;border-radius:12px;overflow:hidden;}
 .player-container{position:relative;width:100%;padding-top:56.25%;background:#000;}
-#video-player,#iframe-player,#placeholder-image{position:absolute;top:0;left:0;width:100%;height:100%;}
+#video-player,#iframe-player,#placeholder-image{position:absolute;top:0;left:0;width:100%;height:100%;border:none;}
 #placeholder-image{background:linear-gradient(135deg,#0d0d2b 0%,#1a1d40 50%,#0f1115 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:5;}
 .placeholder-content{text-align:center;max-width:90%;}
 .placeholder-arrow{font-size:2.5rem;color:#90EE90;margin-bottom:15px;}
@@ -63,7 +63,15 @@ footer p{color:#ccc;font-size:14px;}
 <div id="fullscreen-wrapper">
   <div class="player-container">
     <video id="video-player" playsinline muted controls style="display:none;"></video>
-    <iframe id="iframe-player" style="display:none;width:100%;height:100%;" allow="autoplay; fullscreen" sandbox="allow-scripts allow-same-origin allow-forms allow-presentation"></iframe>
+    
+    <!-- RESTORED IFRAME SETTINGS FOR UNMUTED AUTOPLAY -->
+    <iframe id="iframe-player" 
+            style="display:none;" 
+            allow="autoplay; fullscreen; encrypted-media; picture-in-picture" 
+            sandbox="allow-scripts allow-same-origin allow-forms allow-presentation allow-popups" 
+            referrerpolicy="no-referrer">
+    </iframe>
+
     <div id="placeholder-image">
       <div class="placeholder-content">
         <div class="placeholder-arrow">⬆️</div>
@@ -98,12 +106,12 @@ const blurOverlay=document.getElementById('blur-overlay');
 let hlsInstance=null;
 let currentChannelIndex=null;
 
+// HARDCODED CHANNELS FOR SEO
 const channelsData=[
- {name:"Bollywood Classics Hd",type:"hls",url:"https://d35j504z0x2vu2.cloudfront.net/v1/manifest/0bc8e8376bd8417a1b6761138aa41c26c7309312/bollywood-classic/6b126777-7e9a-444f-9845-48fa1d4ed694/1.m3u8",logo:"images (1).jpeg",messages:["Please wait channel will load"]},
+{name:"Bollywood Classics Hd",type:"hls",url:"https://d35j504z0x2vu2.cloudfront.net/v1/manifest/0bc8e8376bd8417a1b6761138aa41c26c7309312/bollywood-classic/6b126777-7e9a-444f-9845-48fa1d4ed694/1.m3u8",logo:"images (1).jpeg",messages:["Please wait channel will load"]},
   {name:"Zee Cinema",type:"iframe",url:"https://freeways.hosthampster.com/zeecinema.html?autoplay=1",logo:"images.jpeg",messages:[]},
   {name:"Colors Hd", type:"iframe", url:"//cdn.stmify.com/embed-free/v1/colors-hd-in-jw", logo:"images (3).jpeg", messages:["Please wait channel to load"]}
 ];
-
 function buildRibbon(){
   ribbonInner.innerHTML='';
   channelsData.forEach((ch,i)=>{
@@ -144,12 +152,9 @@ function openFullscreen(){
 }
 
 function stopAllPlayback(){
-  if(hlsInstance){
-    hlsInstance.destroy();
-    hlsInstance = null;
-  }
+  if(hlsInstance){ hlsInstance.destroy(); hlsInstance = null; }
   videoPlayer.pause();
-  videoPlayer.src = "";
+  videoPlayer.removeAttribute('src');
   videoPlayer.load();
   videoPlayer.style.display='none';
   iframePlayer.src='';
@@ -192,7 +197,6 @@ function handleSelection(index){
 
   if(channel.type==='hls'){
     videoPlayer.style.display='block';
-    // Use the official library object name: Hls
     if(typeof Hls !== 'undefined' && Hls.isSupported()){
       hlsInstance = new Hls();
       hlsInstance.loadSource(channel.url);
@@ -211,13 +215,13 @@ function handleSelection(index){
   } else {
     iframePlayer.style.display='block';
     iframePlayer.src=channel.url;
-    const timeout=setTimeout(()=>loader.style.display='none', 6000);
+    // Faster loader dismissal for iframes
+    const timeout=setTimeout(()=>loader.style.display='none', 4000);
     iframePlayer.onload=()=>{clearTimeout(timeout); loader.style.display='none';};
   }
 }
 </script>
 
-<!-- GoatCounter Analytics -->
 <script data-goatcounter="https://mstv20.goatcounter.com" async src="//gc.zgo.at/count.js"></script>
 
 </body>
