@@ -10,6 +10,9 @@
 <link rel="canonical" href="https://mstvnet.netlify.app" />
 <meta name="google-site-verification" content="google36a9620cce1db39f" />
 
+<!-- Load HLS Library in Head for stability -->
+<script src="https://cdn.jsdelivr.net"></script>
+
 <style>
 body{margin:0;font-family:Arial,sans-serif;color:#E0E0E0;background:#0F1115;overflow-x:hidden;}
 .title-3d{font-size:clamp(1.8rem,4vw,3.5rem);text-align:center;margin:30px 0 10px;color:#FFF;font-weight:800;}
@@ -82,7 +85,6 @@ footer p{color:#ccc;font-size:14px;}
 </div>
 </footer>
 
-<script src="https://cdn.jsdelivr.net"></script>
 <script>
 document.getElementById('year').textContent=new Date().getFullYear();
 
@@ -97,7 +99,7 @@ let hlsInstance=null;
 let currentChannelIndex=null;
 
 const channelsData=[
-{name:"Star Sports",type:"iframe",url:"https://streamcrichd.com/update/star.php",logo:"channels4-profile.jpg",messages:["🔃🔃 Rotate device for fullscreen", "Double tap to 🔈🔇"]},
+  {name:"Star Sports",type:"iframe",url:"https://streamcrichd.com/update/star.php",logo:"channels4-profile.jpg",messages:["🔃🔃 Rotate device for fullscreen", "Double tap to 🔈🔇"]},
   {name:"Star Sports Hindi",type:"iframe",url:"//streamcrichd.com/update/star1hi.php",logo:"cb2f146ca360b682048f5cdb75f557ec.jpg",messages:["Low latency HLS","Click fullscreen to view info"]},
   {name:"Sky Sports Cricket",type:"iframe",url:"//streamcrichd.com/update/skys2.php",logo:"images (2).jpeg",messages:["Please wait channel will load"]},
   {name:"Ptv Sports",type:"hls",url:"https://customer-srcoca74emay36mm.cloudflarestream.com/bd7d60876c18078823c39fdc067432d7/manifest/video.m3u8",logo:"PTV_Sports.png",messages:["🔃🔃 Rotate device for fullscreen", "Double tap to 🔈🔇"]},
@@ -108,7 +110,6 @@ const channelsData=[
   {name:"Colors Hd", type:"iframe", url:"//cdn.stmify.com/embed-free/v1/colors-hd-in-jw", logo:"images (3).jpeg", messages:["Please wait channel to load"]}
 ];
 
-
 function buildRibbon(){
   ribbonInner.innerHTML='';
   channelsData.forEach((ch,i)=>{
@@ -118,7 +119,6 @@ function buildRibbon(){
     card.onclick=()=>handleSelection(i);
     ribbonInner.appendChild(card);
   });
-  // Cloning for infinite effect
   const total = channelsData.length;
   for(let j=0; j<total; j++){
     const clone = ribbonInner.children[j].cloneNode(true);
@@ -130,7 +130,7 @@ buildRibbon();
 
 let scrollX=0;
 function animateRibbon(){
-  scrollX-=0.4; // Slightly faster
+  scrollX-=0.4;
   if(Math.abs(scrollX)>=ribbonInner.scrollWidth/2) scrollX=0;
   ribbonInner.style.transform=`translateX(${scrollX}px)`;
   requestAnimationFrame(animateRibbon);
@@ -139,7 +139,6 @@ requestAnimationFrame(animateRibbon);
 
 function scrollRibbon(distance){
     scrollX += distance;
-    // Bounds check for manual scroll
     if(scrollX > 0) scrollX = -(ribbonInner.scrollWidth/2);
     if(Math.abs(scrollX) >= ribbonInner.scrollWidth/2) scrollX = 0;
     ribbonInner.style.transform=`translateX(${scrollX}px)`;
@@ -147,19 +146,21 @@ function scrollRibbon(distance){
 
 function openFullscreen(){
   const fsWrapper=document.getElementById('fullscreen-wrapper');
-  try {
-    if(fsWrapper.requestFullscreen) fsWrapper.requestFullscreen();
-    else if(fsWrapper.webkitRequestFullscreen) fsWrapper.webkitRequestFullscreen();
-  } catch(e) { console.warn("Fullscreen blocked"); }
+  if(fsWrapper.requestFullscreen) fsWrapper.requestFullscreen();
+  else if(fsWrapper.webkitRequestFullscreen) fsWrapper.webkitRequestFullscreen();
 }
 
 function stopAllPlayback(){
-  if(hlsInstance){ hlsInstance.destroy(); hlsInstance=null; }
-  videoPlayer.pause(); 
-  videoPlayer.src = "";
-  videoPlayer.load(); 
+  if(hlsInstance){
+    hlsInstance.detachMedia();
+    hlsInstance.destroy();
+    hlsInstance = null;
+  }
+  videoPlayer.pause();
+  videoPlayer.removeAttribute('src');
+  videoPlayer.load();
   videoPlayer.style.display='none';
-  iframePlayer.src=''; 
+  iframePlayer.src='';
   iframePlayer.style.display='none';
 }
 
@@ -195,27 +196,24 @@ function handleSelection(index){
   showChannelMessages(index);
   blurOverlay.style.display=(channel.name==="Zee Cinema")?'block':'none';
 
-  // Mobile optimization for Fullscreen
   setTimeout(openFullscreen, 400);
 
   if(channel.type==='hls'){
     videoPlayer.style.display='block';
+    // RE-INIT HLS.JS TO ENSURE TRIGGER
     if(Hls.isSupported()){
-      hlsInstance=new Hls({
-          maxBufferLength: 10,
-          capLevelToPlayerSize: true
+      hlsInstance = new Hls({
+          enableWorker: true,
+          lowLatencyMode: true
       });
       hlsInstance.loadSource(channel.url);
       hlsInstance.attachMedia(videoPlayer);
-      hlsInstance.on(Hls.Events.MANIFEST_PARSED,()=>{
-        loader.style.display='none';
-        videoPlayer.play().catch(()=>{
-            videoPlayer.muted=true;
-            videoPlayer.play();
-        });
-      });
-      hlsInstance.on(Hls.Events.ERROR, function (event, data) {
-          if (data.fatal) { loader.style.display='none'; }
+      hlsInstance.on(Hls.Events.MANIFEST_PARSED, function() {
+          loader.style.display='none';
+          videoPlayer.play().catch(() => {
+              videoPlayer.muted = true;
+              videoPlayer.play();
+          });
       });
     } else if(videoPlayer.canPlayType('application/vnd.apple.mpegurl')){
       videoPlayer.src=channel.url;
