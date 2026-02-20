@@ -3,13 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- SEO & GOOGLE VERIFICATION -->
 <title>MSTV Network | Premium DTH Streaming</title>
 <meta name="description" content="Watch Bollywood Classics and Premium Sports for free. Ad-Free DTH streaming.">
 <link rel="canonical" href="https://mstvnet.netlify.app" />
 <meta name="google-site-verification" content="google36a9620cce1db39f" />
 
-<!-- HLS Library in Head -->
-<script src="https://cdn.jsdelivr.net"></script>
+<!-- FIXED HLS LIBRARY: Loading synchronously to ensure it's ready -->
+<script src="https://cdnjs.cloudflare.com"></script>
 
 <style>
 body{margin:0;font-family:Arial,sans-serif;color:#E0E0E0;background:#0F1115;overflow-x:hidden;}
@@ -59,7 +61,7 @@ footer p{color:#ccc;font-size:14px;}
 </div>
 
 <div id="fullscreen-wrapper">
-  <div class="player-container" id="player-target">
+  <div class="player-container">
     <video id="video-player" playsinline muted controls style="display:none;"></video>
     <iframe id="iframe-player" style="display:none;width:100%;height:100%;" allow="autoplay; fullscreen" sandbox="allow-scripts allow-same-origin allow-forms allow-presentation"></iframe>
     <div id="placeholder-image">
@@ -97,17 +99,10 @@ let hlsInstance=null;
 let currentChannelIndex=null;
 
 const channelsData=[
-{name:"Star Sports",type:"iframe",url:"https://streamcrichd.com/update/star.php",logo:"channels4-profile.jpg",messages:["🔃🔃 Rotate device for fullscreen", "Double tap to 🔈🔇"]},
-  {name:"Star Sports Hindi",type:"iframe",url:"//streamcrichd.com/update/star1hi.php",logo:"cb2f146ca360b682048f5cdb75f557ec.jpg",messages:["Low latency HLS","Click fullscreen to view info"]},
-  {name:"Sky Sports Cricket",type:"iframe",url:"//streamcrichd.com/update/skys2.php",logo:"images (2).jpeg",messages:["Please wait channel will load"]},
-  
-  {name:"Willow Cricket Hindi",type:"hls",url:"https://restream-live.realiptv.to/live/ALEX/sg5ng25ikf/3973.m3u8",logo:"WILLOW-2.jpg",messages:["Please wait channel will load","Click fullscreen to view info"]},
-  {name:"Willow Cricket",type:"iframe",url:"//streamcrichd.com/update/willowcricket.php",logo:"wlo_logo_200_200.jpg",messages:["Please wait channel will load"]},
-  {name:"Bollywood Classics Hd",type:"hls",url:"https://d35j504z0x2vu2.cloudfront.net/v1/manifest/0bc8e8376bd8417a1b6761138aa41c26c7309312/bollywood-classic/6b126777-7e9a-444f-9845-48fa1d4ed694/1.m3u8",logo:"images (1).jpeg",messages:["Please wait channel will load"]},
+ {name:"Bollywood Classics Hd",type:"hls",url:"https://d35j504z0x2vu2.cloudfront.net/v1/manifest/0bc8e8376bd8417a1b6761138aa41c26c7309312/bollywood-classic/6b126777-7e9a-444f-9845-48fa1d4ed694/1.m3u8",logo:"images (1).jpeg",messages:["Please wait channel will load"]},
   {name:"Zee Cinema",type:"iframe",url:"https://freeways.hosthampster.com/zeecinema.html?autoplay=1",logo:"images.jpeg",messages:[]},
   {name:"Colors Hd", type:"iframe", url:"//cdn.stmify.com/embed-free/v1/colors-hd-in-jw", logo:"images (3).jpeg", messages:["Please wait channel to load"]}
 ];
-
 
 function buildRibbon(){
   ribbonInner.innerHTML='';
@@ -197,9 +192,9 @@ function handleSelection(index){
 
   if(channel.type==='hls'){
     videoPlayer.style.display='block';
-    if(Hls.isSupported()){
-      // FORCE CLEAN INITIALIZATION
-      hlsInstance = new Hls({ enableWorker: true });
+    // Use the official library object name: Hls
+    if(typeof Hls !== 'undefined' && Hls.isSupported()){
+      hlsInstance = new Hls();
       hlsInstance.loadSource(channel.url);
       hlsInstance.attachMedia(videoPlayer);
       hlsInstance.on(Hls.Events.MANIFEST_PARSED, function() {
@@ -209,7 +204,6 @@ function handleSelection(index){
               videoPlayer.play();
           });
       });
-      hlsInstance.on(Hls.Events.ERROR, (e, data) => { if(data.fatal) loader.style.display='none'; });
     } else if(videoPlayer.canPlayType('application/vnd.apple.mpegurl')){
       videoPlayer.src=channel.url;
       videoPlayer.onloadedmetadata = () => { loader.style.display='none'; videoPlayer.play(); };
@@ -223,7 +217,7 @@ function handleSelection(index){
 }
 </script>
 
-<!-- GoatCounter -->
+<!-- GoatCounter Analytics -->
 <script data-goatcounter="https://mstv20.goatcounter.com" async src="//gc.zgo.at/count.js"></script>
 
 </body>
