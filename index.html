@@ -4,9 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<!-- SEO & GOOGLE VERIFICATION (DO NOT REMOVE) -->
-<title>MSTV Network | Premium DTH & Ad-Free Streaming</title>
-<meta name="description" content="Watch Star Sports, PTV Sports, and Bollywood Classics for free on MSTV Network. Ad-free premium DTH streaming service.">
+<!-- SEO & GOOGLE VERIFICATION -->
+<title>MSTV Network | Premium DTH Streaming</title>
+<meta name="description" content="Watch Star Sports, PTV Sports, and Bollywood Classics. Premium Ad-Free DTH streaming.">
 <link rel="canonical" href="https://mstvnet.netlify.app" />
 <meta name="google-site-verification" content="google36a9620cce1db39f" />
 
@@ -15,7 +15,7 @@ body{margin:0;font-family:Arial,sans-serif;color:#E0E0E0;background:#0F1115;over
 .title-3d{font-size:clamp(1.8rem,4vw,3.5rem);text-align:center;margin:30px 0 10px;color:#FFF;font-weight:800;}
 .scrolling-news{background:#1A1D20;color:#90EE90;padding:12px 0;border-top:1px solid #333;border-bottom:1px solid #333;margin-bottom:20px;font-weight:600;}
 .channel-heading{text-align:center;font-size:14px;color:#90EE90;font-weight:600;margin-bottom:15px;}
-.ribbon-wrapper{position:relative;max-width:1000px;margin:0 auto 30px;display:flex;align-items:center;gap:10px;}
+.ribbon-wrapper{position:relative;max-width:1000px;margin:0 auto 30px;display:flex;align-items:center;gap:10px;padding:0 10px;}
 .channel-ribbon{overflow:hidden;position:relative;width:100%;height:100px;}
 .channel-ribbon-inner{display:flex;flex-wrap:nowrap;gap:15px;will-change:transform;position:absolute;top:0;left:0;}
 .nav-btn{background:rgba(26,29,32,.8);border:1px solid #333;color:#90EE90;width:40px;height:40px;border-radius:50%;cursor:pointer;z-index:10;}
@@ -48,7 +48,7 @@ footer p{color:#ccc;font-size:14px;}
 <body>
 
 <div class="title-3d">MSTV NETWORK</div>
-<div class="scrolling-news"><marquee scrollamount="6">Aaina DTH Free | Ad-Free Streaming | Premium Channels for All Ages | Sourced from Public Domains</marquee></div>
+<div class="scrolling-news"><marquee scrollamount="6">Aaina DTH Free | Premium Ad-Free Streaming | Sourced from Public Domains</marquee></div>
 <div class="channel-heading">⬇️ CLICK TO PLAY ⬇️</div>
 
 <div class="ribbon-wrapper">
@@ -77,7 +77,7 @@ footer p{color:#ccc;font-size:14px;}
 <footer>
 <div style="max-width:800px;margin:0 auto;">
 <h4>About MSTV Network</h4>
-<p>Non-profit educational platform. Best on Android and Windows Chrome. Content sourced publicly.</p>
+<p>Non-profit platform. Best on Android & Windows Chrome. Content sourced publicly.</p>
 <p style="margin-top:20px;">© <span id="year"></span> MSTV Network</p>
 </div>
 </footer>
@@ -96,7 +96,6 @@ const blurOverlay=document.getElementById('blur-overlay');
 let hlsInstance=null;
 let currentChannelIndex=null;
 
-// HARDCODED CHANNELS (Fixes JSON Error & Boosts SEO)
 const channelsData=[
 {name:"Star Sports",type:"iframe",url:"https://streamcrichd.com/update/star.php",logo:"channels4-profile.jpg",messages:["🔃🔃 Rotate device for fullscreen", "Double tap to 🔈🔇"]},
   {name:"Star Sports Hindi",type:"iframe",url:"//streamcrichd.com/update/star1hi.php",logo:"cb2f146ca360b682048f5cdb75f557ec.jpg",messages:["Low latency HLS","Click fullscreen to view info"]},
@@ -109,6 +108,7 @@ const channelsData=[
   {name:"Colors Hd", type:"iframe", url:"//cdn.stmify.com/embed-free/v1/colors-hd-in-jw", logo:"images (3).jpeg", messages:["Please wait channel to load"]}
 ];
 
+
 function buildRibbon(){
   ribbonInner.innerHTML='';
   channelsData.forEach((ch,i)=>{
@@ -118,17 +118,19 @@ function buildRibbon(){
     card.onclick=()=>handleSelection(i);
     ribbonInner.appendChild(card);
   });
-  channelsData.forEach((ch,i)=>{
-    const clone=ribbonInner.children[i].cloneNode(true);
-    clone.onclick=ribbonInner.children[i].onclick;
+  // Cloning for infinite effect
+  const total = channelsData.length;
+  for(let j=0; j<total; j++){
+    const clone = ribbonInner.children[j].cloneNode(true);
+    clone.onclick = ribbonInner.children[j].onclick;
     ribbonInner.appendChild(clone);
-  });
+  }
 }
 buildRibbon();
 
 let scrollX=0;
 function animateRibbon(){
-  scrollX-=0.3;
+  scrollX-=0.4; // Slightly faster
   if(Math.abs(scrollX)>=ribbonInner.scrollWidth/2) scrollX=0;
   ribbonInner.style.transform=`translateX(${scrollX}px)`;
   requestAnimationFrame(animateRibbon);
@@ -136,30 +138,36 @@ function animateRibbon(){
 requestAnimationFrame(animateRibbon);
 
 function scrollRibbon(distance){
-  const style=getComputedStyle(ribbonInner);
-  const matrix=style.transform.match(/matrix.*\((.+)\)/);
-  let x=matrix?parseFloat(matrix[1].split(',')[4]):0;
-  x+=distance;
-  ribbonInner.style.transform=`translateX(${x}px)`;
+    scrollX += distance;
+    // Bounds check for manual scroll
+    if(scrollX > 0) scrollX = -(ribbonInner.scrollWidth/2);
+    if(Math.abs(scrollX) >= ribbonInner.scrollWidth/2) scrollX = 0;
+    ribbonInner.style.transform=`translateX(${scrollX}px)`;
 }
 
 function openFullscreen(){
   const fsWrapper=document.getElementById('fullscreen-wrapper');
-  if(fsWrapper.requestFullscreen) fsWrapper.requestFullscreen();
-  else if(fsWrapper.webkitRequestFullscreen) fsWrapper.webkitRequestFullscreen();
+  try {
+    if(fsWrapper.requestFullscreen) fsWrapper.requestFullscreen();
+    else if(fsWrapper.webkitRequestFullscreen) fsWrapper.webkitRequestFullscreen();
+  } catch(e) { console.warn("Fullscreen blocked"); }
 }
 
 function stopAllPlayback(){
-  videoPlayer.pause(); videoPlayer.removeAttribute('src'); videoPlayer.load(); videoPlayer.style.display='none';
-  iframePlayer.src=''; iframePlayer.style.display='none';
   if(hlsInstance){ hlsInstance.destroy(); hlsInstance=null; }
+  videoPlayer.pause(); 
+  videoPlayer.src = "";
+  videoPlayer.load(); 
+  videoPlayer.style.display='none';
+  iframePlayer.src=''; 
+  iframePlayer.style.display='none';
 }
 
 function showChannelMessages(index){
   channelMessagesContainer.innerHTML='';
-  if(!document.fullscreenElement) return;
+  if(!document.fullscreenElement && !document.webkitFullscreenElement) return;
   const channel=channelsData[index];
-  if(channel.messages){
+  if(channel && channel.messages){
     channel.messages.forEach(msg=>{
       const div=document.createElement('div');
       div.className='channel-message';
@@ -171,6 +179,7 @@ function showChannelMessages(index){
 }
 
 document.addEventListener('fullscreenchange', ()=>showChannelMessages(currentChannelIndex));
+document.addEventListener('webkitfullscreenchange', ()=>showChannelMessages(currentChannelIndex));
 
 function handleSelection(index){
   const channel=channelsData[index];
@@ -178,38 +187,54 @@ function handleSelection(index){
   stopAllPlayback();
   placeholder.style.display='none';
   loader.style.display='flex';
-  document.querySelectorAll('.logo-card').forEach(c=>c.classList.remove('active'));
-  ribbonInner.children[index].classList.add('active');
+  
+  document.querySelectorAll('.logo-card').forEach((c, i)=> {
+      c.classList.toggle('active', i === index || i === index + channelsData.length);
+  });
 
   showChannelMessages(index);
   blurOverlay.style.display=(channel.name==="Zee Cinema")?'block':'none';
 
-  setTimeout(()=>{ if(!document.fullscreenElement) openFullscreen(); },300);
+  // Mobile optimization for Fullscreen
+  setTimeout(openFullscreen, 400);
 
   if(channel.type==='hls'){
     videoPlayer.style.display='block';
     if(Hls.isSupported()){
-      hlsInstance=new Hls({maxBufferLength:3,maxMaxBufferLength:6});
+      hlsInstance=new Hls({
+          maxBufferLength: 10,
+          capLevelToPlayerSize: true
+      });
       hlsInstance.loadSource(channel.url);
       hlsInstance.attachMedia(videoPlayer);
       hlsInstance.on(Hls.Events.MANIFEST_PARSED,()=>{
         loader.style.display='none';
-        videoPlayer.play().catch(()=>{videoPlayer.muted=true;videoPlayer.play();});
+        videoPlayer.play().catch(()=>{
+            videoPlayer.muted=true;
+            videoPlayer.play();
+        });
+      });
+      hlsInstance.on(Hls.Events.ERROR, function (event, data) {
+          if (data.fatal) { loader.style.display='none'; }
       });
     } else if(videoPlayer.canPlayType('application/vnd.apple.mpegurl')){
       videoPlayer.src=channel.url;
-      videoPlayer.play().finally(()=>loader.style.display='none');
+      videoPlayer.onloadedmetadata = () => {
+          loader.style.display='none';
+          videoPlayer.play();
+      };
     }
-  }else{
+  } else {
     iframePlayer.style.display='block';
     iframePlayer.src=channel.url;
-    const timeout=setTimeout(()=>loader.style.display='none',5000);
-    iframePlayer.onload=()=>{clearTimeout(timeout);loader.style.display='none';};
+    const timeout=setTimeout(()=>loader.style.display='none', 6000);
+    iframePlayer.onload=()=>{clearTimeout(timeout); loader.style.display='none';};
   }
 }
 </script>
 
-<script data-goatcounter="https://mstv20.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+<!-- Analytics -->
+<script data-goatcounter="https://mstv20.goatcounter.com" async src="//gc.zgo.at/count.js"></script>
 
 </body>
 </html>
