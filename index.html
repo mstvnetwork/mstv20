@@ -3,52 +3,49 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<!-- SEO & GOOGLE VERIFICATION -->
-<title>MSTV Network | Premium DTH Streaming</title>
-<meta name="description" content="Watch Bollywood Classics, Colors TV, and Premium Sports for free. Ad-Free DTH streaming.">
-<link rel="canonical" href="https://mstvnet.netlify.app" />
-<meta name="google-site-verification" content="google36a9620cce1db39f" />
-
-<!-- HLS Library -->
-<script src="https://cdnjs.cloudflare.com"></script>
-
+<title>MSTV Network | Premium DTH</title>
 <style>
 body{margin:0;font-family:Arial,sans-serif;color:#E0E0E0;background:#0F1115;overflow-x:hidden;}
 .title-3d{font-size:clamp(1.8rem,4vw,3.5rem);text-align:center;margin:30px 0 10px;color:#FFF;font-weight:800;}
 .scrolling-news{background:#1A1D20;color:#90EE90;padding:12px 0;border-top:1px solid #333;border-bottom:1px solid #333;margin-bottom:20px;font-weight:600;}
 .channel-heading{text-align:center;font-size:14px;color:#90EE90;font-weight:600;margin-bottom:15px;}
-.ribbon-wrapper{position:relative;max-width:1000px;margin:0 auto 30px;display:flex;align-items:center;gap:10px;padding:0 10px;}
-.channel-ribbon{overflow:hidden;position:relative;width:100%;height:100px;}
+.ribbon-wrapper{position:relative;max-width:1000px;margin:0 auto 30px;display:flex;align-items:center;gap:10px;}
+.channel-ribbon{overflow:hidden;position:relative;width:100%;height:80px;}
 .channel-ribbon-inner{display:flex;flex-wrap:nowrap;gap:15px;will-change:transform;position:absolute;top:0;left:0;}
-.nav-btn{background:rgba(26,29,32,.8);border:1px solid #333;color:#90EE90;width:40px;height:40px;border-radius:50%;cursor:pointer;z-index:10;}
+.nav-btn{background:rgba(26,29,32,.8);border:1px solid #333;color:#90EE90;width:40px;height:40px;border-radius:50%;cursor:pointer;}
 .logo-card{flex:0 0 120px;background:#1A1D20;border:1px solid #333;border-radius:12px;padding:10px;text-align:center;cursor:pointer;position:relative;}
 .logo-card.active{border-color:#90EE90;background:rgba(144,238,144,.1);}
 .logo-card img{width:100%;height:50px;object-fit:contain;display:block;}
 .logo-card span{display:block;font-size:10px;margin-top:5px;color:#888;font-weight:600;}
+.live-dot{position:absolute;top:8px;right:8px;width:8px;height:8px;background:#ff4b2b;border-radius:50%;display:none;animation:blink 1s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.active .live-dot{display:block;}
 #fullscreen-wrapper{position:relative;width:95%;max-width:1000px;margin:0 auto 10px;background:#000;border-radius:12px;overflow:hidden;}
 .player-container{position:relative;width:100%;padding-top:56.25%;background:#000;}
-#video-player,#iframe-player,#placeholder-image{position:absolute;top:0;left:0;width:100%;height:100%;border:none;}
-#placeholder-image{background:linear-gradient(135deg,#0d0d2b 0%,#1a1d40 50%,#0f1115 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:5;}
-.placeholder-content{text-align:center;max-width:90%;}
+.player-container video,#iframe-player,#placeholder-image{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;text-align:center;}
+#placeholder-image{background:linear-gradient(135deg,#0d0d2b 0%,#1a1d40 50%,#0f1115 100%);flex-direction:column;z-index:5;}
+.placeholder-content{max-width:90%;}
 .placeholder-arrow{font-size:2.5rem;color:#90EE90;margin-bottom:15px;}
-.placeholder-title{font-size:clamp(1.8rem,4vw,3rem);font-weight:800;color:#fff;letter-spacing:2px;}
+.placeholder-title{font-size:clamp(1.8rem,4vw,3rem);font-weight:800;color:#fff;letter-spacing:2px;margin-bottom:10px;}
 .placeholder-sub{font-size:clamp(.9rem,2vw,1.2rem);color:#90EE90;font-weight:600;}
-#channel-messages-container{max-width:1000px;margin:10px auto;display:flex;flex-direction:column;gap:6px;color:#90EE90;font-weight:600;font-size:14px;text-align:center;min-height:30px;}
-.channel-message{background:rgba(26,29,32,.8);padding:6px 12px;border-radius:6px;opacity:0;transition:opacity .3s ease;}
+#channel-messages-container{max-width:1000px;margin:10px auto;display:flex;flex-direction:column;gap:6px;color:#90EE90;font-weight:600;font-size:14px;text-align:center;position:relative;z-index:20;}
+.channel-message{background:rgba(26,29,32,.8);padding:6px 12px;border-radius:6px;box-shadow:0 0 4px rgba(144,238,144,.5);opacity:0;transition:opacity .3s ease;}
+#player-message{text-align:center;color:#90EE90;font-weight:600;font-size:14px;margin-top:10px;opacity:0;transition:opacity .3s;}
+#blur-overlay{position:absolute;top:8%;left:2%;width:40%;height:15%;background:rgba(255,255,255,0.01);backdrop-filter:blur(25px);border-radius:4px;z-index:15;display:none;}
 .loader-container{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);display:none;z-index:20;}
 .spinner{width:40px;height:40px;border:3px solid rgba(144,238,144,.2);border-top:3px solid #90EE90;border-radius:50%;animation:spin 1s linear infinite;}
 @keyframes spin{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
-footer{background:#0F1115;border-top:2px solid #90EE90;padding:40px 20px;text-align:center;}
-footer h4{color:#90EE90;margin-bottom:12px;}
-footer p{color:#ccc;font-size:14px;}
+footer{background:#0F1115;border-top:2px solid #90EE90;padding:60px 20px;text-align:center;}
+footer h4{color:#90EE90;font-size:18px;margin-bottom:12px;font-weight:700;text-shadow:0 0 4px rgba(144,238,144,.5);}
+footer p{color:#ccc;line-height:1.6;font-size:14px;}
+footer p span{color:#90EE90;font-weight:600;}
 </style>
 </head>
 <body>
 
-<div class="title-3d">MSTV NETWORK</div>
-<div class="scrolling-news"><marquee scrollamount="6">Aaina DTH Free | Premium Ad-Free Streaming | Sourced from Public Domains</marquee></div>
-<div class="channel-heading">⬇️ CLICK TO PLAY ⬇️</div>
+<div class="title-3d">AAINA DTH FREE</div>
+<div class="scrolling-news"><marquee scrollamount="6">Aaina DTH Free | Ad-Free Streaming | TV Channels with Entertainment for All Ages</marquee></div>
+<div class="channel-heading">⬇️⬇️Click and play</div>
 
 <div class="ribbon-wrapper">
   <button class="nav-btn" onclick="scrollRibbon(-200)">⬅️</button>
@@ -58,24 +55,17 @@ footer p{color:#ccc;font-size:14px;}
 
 <div id="fullscreen-wrapper">
   <div class="player-container">
-    <video id="video-player" playsinline muted controls style="display:none;"></video>
-    
-    <!-- IFRAME WITH PERMISSIONS FOR COLORS TV -->
-    <iframe id="iframe-player" 
-            style="display:none;" 
-            allow="autoplay; fullscreen; encrypted-media" 
-            sandbox="allow-scripts allow-same-origin allow-forms allow-presentation allow-popups" 
-            referrerpolicy="no-referrer">
-    </iframe>
-
+    <video id="video-player" playsinline muted controls preload="metadata" style="display:none;"></video>
+    <iframe id="iframe-player" style="display:none;width:100%;height:100%;" allow="autoplay; fullscreen; encrypted-media" sandbox="allow-scripts allow-same-origin allow-forms allow-presentation"></iframe>
     <div id="placeholder-image">
       <div class="placeholder-content">
         <div class="placeholder-arrow">⬆️</div>
         <div class="placeholder-title">MSTV NETWORK</div>
-        <div class="placeholder-sub">Select a channel to watch live</div>
+        <div class="placeholder-sub">Click on channel icon to watch</div>
       </div>
     </div>
     <div class="loader-container" id="loader"><div class="spinner"></div></div>
+    <div id="blur-overlay"></div>
   </div>
   <div id="channel-messages-container"></div>
 </div>
@@ -83,12 +73,13 @@ footer p{color:#ccc;font-size:14px;}
 <footer>
 <div style="max-width:800px;margin:0 auto;">
 <h4>About MSTV Network</h4>
-<p>Non-profit platform. Best on Android & Windows Chrome. Content sourced publicly.</p>
-<p>© <span id="year"></span> MSTV Network</p>
+<p>Non-profit organisation. Platform works best on Android and Windows. Content sourced from publicly available platforms. No hosting or direct streaming.</p>
+<p style="margin-top:20px;">© <span id="year"></span> MSTV Network</p>
 </div>
 </footer>
 
-<script>
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest" defer></script>
+<script defer>
 document.getElementById('year').textContent=new Date().getFullYear();
 
 const videoPlayer=document.getElementById('video-player');
@@ -97,36 +88,45 @@ const loader=document.getElementById('loader');
 const placeholder=document.getElementById('placeholder-image');
 const ribbonInner=document.getElementById('ribbon-inner');
 const channelMessagesContainer=document.getElementById('channel-messages-container');
+const blurOverlay=document.getElementById('blur-overlay');
 let hlsInstance=null;
 let currentChannelIndex=null;
 
+// Channel data with multiple messages
 const channelsData=[
+  {name:"Star Sports",type:"iframe",url:"https://streamcrichd.com/update/star.php",logo:"channels4-profile.jpg",messages:["🔃🔃 Rotate device for fullscreen", "Double tap to 🔈🔇"]},
+  {name:"Star Sports Hindi",type:"iframe",url:"//streamcrichd.com/update/star1hi.php",logo:"cb2f146ca360b682048f5cdb75f557ec.jpg",messages:["Low latency HLS","Click fullscreen to view info"]},
+  {name:"Sky Sports Cricket",type:"iframe",url:"//streamcrichd.com/update/skys2.php",logo:"images (2).jpeg",messages:["Please wait channel will load"]},
+  {name:"Ptv Sports",type:"hls",url:"https://customer-srcoca74emay36mm.cloudflarestream.com/bd7d60876c18078823c39fdc067432d7/manifest/video.m3u8",logo:"PTV_Sports.png",messages:["🔃🔃 Rotate device for fullscreen", "Double tap to 🔈🔇"]},
+  {name:"Willow Cricket Hindi",type:"hls",url:"https://restream-live.realiptv.to/live/ALEX/sg5ng25ikf/3973.m3u8",logo:"WILLOW-2.jpg",messages:["Please wait channel will load","Click fullscreen to view info"]},
+  {name:"Willow Cricket",type:"iframe",url:"//streamcrichd.com/update/willowcricket.php",logo:"wlo_logo_200_200.jpg",messages:["Please wait channel will load"]},
   {name:"Bollywood Classics Hd",type:"hls",url:"https://d35j504z0x2vu2.cloudfront.net/v1/manifest/0bc8e8376bd8417a1b6761138aa41c26c7309312/bollywood-classic/6b126777-7e9a-444f-9845-48fa1d4ed694/1.m3u8",logo:"images (1).jpeg",messages:["Please wait channel will load"]},
   {name:"Zee Cinema",type:"iframe",url:"https://freeways.hosthampster.com/zeecinema.html?autoplay=1",logo:"images.jpeg",messages:[]},
   {name:"Colors Hd", type:"iframe", url:"//cdn.stmify.com/embed-free/v1/colors-hd-in-jw", logo:"images (3).jpeg", messages:["Please wait channel to load"]}
 ];
 
-
+// Build ribbon
 function buildRibbon(){
   ribbonInner.innerHTML='';
   channelsData.forEach((ch,i)=>{
     const card=document.createElement('div');
     card.className='logo-card';
-    card.innerHTML=`<img loading="lazy" src="${ch.logo}"><span>${ch.name}</span>`;
+    card.innerHTML=`<div class="live-dot"></div><img loading="lazy" src="${ch.logo}"><span>${ch.name}</span>`;
     card.onclick=()=>handleSelection(i);
     ribbonInner.appendChild(card);
   });
-  for(let j=0; j<channelsData.length; j++){
-    const clone = ribbonInner.children[j].cloneNode(true);
-    clone.onclick = ribbonInner.children[j].onclick;
+  channelsData.forEach((ch,i)=>{
+    const clone=ribbonInner.children[i].cloneNode(true);
+    clone.onclick=ribbonInner.children[i].onclick;
     ribbonInner.appendChild(clone);
-  }
+  });
 }
 buildRibbon();
 
+// Smooth infinite scroll
 let scrollX=0;
 function animateRibbon(){
-  scrollX-=0.4;
+  scrollX-=0.3;
   if(Math.abs(scrollX)>=ribbonInner.scrollWidth/2) scrollX=0;
   ribbonInner.style.transform=`translateX(${scrollX}px)`;
   requestAnimationFrame(animateRibbon);
@@ -134,65 +134,93 @@ function animateRibbon(){
 requestAnimationFrame(animateRibbon);
 
 function scrollRibbon(distance){
-    scrollX += distance;
-    if(scrollX > 0) scrollX = -(ribbonInner.scrollWidth/2);
-    if(Math.abs(scrollX) >= ribbonInner.scrollWidth/2) scrollX = 0;
-    ribbonInner.style.transform=`translateX(${scrollX}px)`;
+  const style=getComputedStyle(ribbonInner);
+  const matrix=style.transform.match(/matrix.*\((.+)\)/);
+  let x=matrix?parseFloat(matrix[1].split(',')[4]):0;
+  x+=distance;
+  ribbonInner.style.transform=`translateX(${x}px)`;
 }
 
+// Fullscreen helper
 function openFullscreen(){
   const fsWrapper=document.getElementById('fullscreen-wrapper');
   if(fsWrapper.requestFullscreen) fsWrapper.requestFullscreen();
   else if(fsWrapper.webkitRequestFullscreen) fsWrapper.webkitRequestFullscreen();
+  else if(fsWrapper.msRequestFullscreen) fsWrapper.msRequestFullscreen();
 }
 
+// Stop playback
 function stopAllPlayback(){
-  if(hlsInstance){ hlsInstance.destroy(); hlsInstance = null; }
-  videoPlayer.pause();
-  videoPlayer.removeAttribute('src');
-  videoPlayer.load();
-  videoPlayer.style.display='none';
-  iframePlayer.src='';
-  iframePlayer.style.display='none';
+  videoPlayer.pause(); videoPlayer.removeAttribute('src'); videoPlayer.load(); videoPlayer.style.display='none';
+  iframePlayer.src=''; iframePlayer.style.display='none';
+  if(hlsInstance){ hlsInstance.destroy(); hlsInstance=null; }
 }
 
+// Show channel messages only in fullscreen
+function showChannelMessages(index){
+  channelMessagesContainer.innerHTML='';
+  if(!document.fullscreenElement) return;
+  const channel=channelsData[index];
+  if(channel.messages && channel.messages.length>0){
+    channel.messages.forEach(msg=>{
+      const div=document.createElement('div');
+      div.className='channel-message';
+      div.textContent=msg;
+      channelMessagesContainer.appendChild(div);
+      setTimeout(()=>{div.style.opacity=1;},50);
+    });
+  }
+}
+
+// Update messages on fullscreen change
+function updateMessageVisibility(){ showChannelMessages(currentChannelIndex); }
+document.addEventListener('fullscreenchange', updateMessageVisibility);
+document.addEventListener('webkitfullscreenchange', updateMessageVisibility);
+document.addEventListener('msfullscreenchange', updateMessageVisibility);
+
+// Handle selection
 function handleSelection(index){
   const channel=channelsData[index];
   currentChannelIndex=index;
   stopAllPlayback();
   placeholder.style.display='none';
   loader.style.display='flex';
-  
-  document.querySelectorAll('.logo-card').forEach((c, i)=> {
-      c.classList.toggle('active', i === index || i === index + channelsData.length);
-  });
+  document.querySelectorAll('.logo-card').forEach(c=>c.classList.remove('active'));
+  ribbonInner.children[index].classList.add('active');
 
-  setTimeout(openFullscreen, 400);
+  // Show stacked messages
+  showChannelMessages(index);
+
+  // Show blur overlay only for Zee Cinema
+  blurOverlay.style.display=(channel.name==="Zee Cinema")?'block':'none';
+
+  setTimeout(()=>{ if(!document.fullscreenElement) openFullscreen(); },300);
 
   if(channel.type==='hls'){
     videoPlayer.style.display='block';
-    if(typeof Hls !== 'undefined' && Hls.isSupported()){
-      hlsInstance = new Hls();
+    if(Hls.isSupported()){
+      hlsInstance=new Hls({maxBufferLength:3,maxMaxBufferLength:6});
       hlsInstance.loadSource(channel.url);
       hlsInstance.attachMedia(videoPlayer);
-      hlsInstance.on(Hls.Events.MANIFEST_PARSED, function() {
-          loader.style.display='none';
-          videoPlayer.play().catch(() => { videoPlayer.muted = true; videoPlayer.play(); });
+      hlsInstance.on(Hls.Events.MANIFEST_PARSED,()=>{
+        loader.style.display='none';
+        videoPlayer.play().catch(()=>{videoPlayer.muted=true;videoPlayer.play();});
       });
-    } else if(videoPlayer.canPlayType('application/vnd.apple.mpegurl')){
+    }else if(videoPlayer.canPlayType('application/vnd.apple.mpegurl')){
       videoPlayer.src=channel.url;
-      videoPlayer.onloadedmetadata = () => { loader.style.display='none'; videoPlayer.play(); };
+      videoPlayer.play().finally(()=>loader.style.display='none');
     }
-  } else {
+  }else{
     iframePlayer.style.display='block';
     iframePlayer.src=channel.url;
-    const timeout=setTimeout(()=>loader.style.display='none', 5000);
-    iframePlayer.onload=()=>{clearTimeout(timeout); loader.style.display='none';};
+    const timeout=setTimeout(()=>loader.style.display='none',5000);
+    iframePlayer.onload=()=>{clearTimeout(timeout);loader.style.display='none';};
   }
 }
-</script>
+  </script>   <!-- this closes your main JS block -->
 
-<script data-goatcounter="https://mstv20.goatcounter.com" async src="//gc.zgo.at/count.js"></script>
+<script data-goatcounter="https://mstv20.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
 
 </body>
 </html>
