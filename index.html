@@ -2,252 +2,150 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MSTV Network</title>
 
+<!-- HLS.js for HLS playback -->
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+
 <style>
-*{box-sizing:border-box}
-html,body{
-  margin:0;
-  padding:0;
-  width:100%;
-  min-height:100%;
-  font-family:system-ui,-apple-system,BlinkMacSystemFont,sans-serif;
-  background:#0F1115;
-  color:#E0E0E0
+body {
+  margin: 0; padding: 0;
+  font-family: sans-serif;
+  background: #0F1115;
+  color: #E0E0E0;
+  display: flex; flex-direction: column; align-items: center;
 }
-body{display:flex;flex-direction:column;align-items:center}
-.container{
-  flex:1;
-  width:95%;
-  max-width:1200px;
-  padding:2vh 2vw;
-  display:flex;
-  flex-direction:column;
-  align-items:center
+.container {
+  width: 95%; max-width: 1200px;
+  padding: 2vh 2vw;
+  display: flex; flex-direction: column; align-items: center;
 }
-.title-3d{
-  font-size:clamp(2rem,6vw,3.5rem);
-  font-weight:800;
-  margin:4vh 0 2vh;
-  color:#00FFC8;
-  text-align:center
+select {
+  padding: 0.8em 1.5em;
+  font-size: 1.2em;
+  background: #1A1D20;
+  color: #00FFC8;
+  border: 2px solid #00FFC8;
+  border-radius: 12px;
+  cursor: pointer;
 }
-.channel-selector-text{
-  font-size:clamp(1.4rem,4vw,2rem);
-  margin-bottom:2vh
+.player-container {
+  position: relative;
+  width: 90%; max-width: 1100px;
+  aspect-ratio: 16/9;
+  background: #000;
+  margin: 2vh 0;
+  border-radius: 12px;
+  overflow: hidden;
 }
-select{
-  padding:0.8em 1.5em;
-  font-size:1.1em;
-  background:#1A1D20;
-  color:#00FFC8;
-  border:2px solid #00FFC8;
-  border-radius:12px;
-  width:90%;
-  max-width:400px
+iframe, video {
+  width: 100%; height: 100%;
+  position: absolute; top: 0; left: 0;
+  display: none; background: black;
 }
-.player-container{
-  position:relative;
-  width:90%;
-  max-width:1100px;
-  aspect-ratio:16/9;
-  margin-bottom:2vh;
-  border-radius:16px;
-  overflow:hidden;
-  background:#1A1D20
+.loading {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  color: #00FFC8;
+  font-size: 1.3em;
+  display: none;
 }
-.player-container iframe,
-.player-container video{
-  position:absolute;
-  width:100%;
-  height:100%;
-  top:0;
-  left:0;
-  display:none;
-  background:black
-}
-#placeholder-image{
-  position:absolute;
-  width:100%;
-  height:100%;
-  object-fit:cover
-}
-.loading-indicator{
-  position:absolute;
-  top:50%;
-  left:50%;
-  transform:translate(-50%,-50%);
-  background:rgba(0,0,0,0.7);
-  padding:12px 24px;
-  border-radius:8px;
-  display:none
-}
-.live-stamp{
-  position:absolute;
-  top:10px;
-  left:10px;
-  background:#E50914;
-  color:white;
-  padding:6px 12px;
-  font-size:14px;
-  border-radius:6px;
-  display:none
-}
-#channel-message{
-  margin-top:12px;
-  font-size:14px;
-  text-align:center;
-  color:#00FFC8
+.message-box {
+  color: #FFD700;
+  margin-top: 1vh;
+  font-size: 1.1em;
+  text-align: center;
 }
 </style>
 </head>
 <body>
 
 <div class="container">
-  <div class="title-3d">AAINA DTH FREE</div>
+  <h1>MSTV Network</h1>
+  <select id="channel-select"><option value="">Select Channel</option></select>
 
-  <div class="channel-selector-text">Select Channel</div>
-
-  <select id="channel-select">
-    <option value="">👉 Select Channel</option>
-  </select>
-
-  <div class="player-container" id="player-container">
-    <iframe id="media-player" allow="autoplay; encrypted-media; picture-in-picture"
-      sandbox="allow-scripts allow-same-origin allow-presentation"></iframe>
-
-    <video id="video-player" playsinline muted></video>
-
-    <img id="placeholder-image" src="Design-Studio-2025-01-22%20(1).png" alt="Stream Placeholder">
-
-    <div class="live-stamp" id="live-stamp">LIVE</div>
-    <div class="loading-indicator" id="loading">Loading stream...</div>
+  <div class="player-container">
+    <iframe id="iframe-player" sandbox="allow-scripts allow-same-origin allow-presentation"></iframe>
+    <video id="video-player" playsinline controls></video>
+    <div class="loading" id="loading">Loading...</div>
   </div>
 
-  <div id="channel-message"></div>
+  <div class="message-box" id="message-box"></div>
 </div>
 
 <script>
-const select = document.getElementById('channel-select');
-const videoPlayer = document.getElementById('video-player');
-const iframePlayer = document.getElementById('media-player');
-const placeholder = document.getElementById('placeholder-image');
-const loading = document.getElementById('loading');
-const liveStamp = document.getElementById('live-stamp');
-const messageBox = document.getElementById('channel-message');
+const WORKER_URL = "https://zee5.mchoudhry482.workers.dev";
 
-let hlsInstance = null;
+const select = document.getElementById("channel-select");
+const iframePlayer = document.getElementById("iframe-player");
+const videoPlayer = document.getElementById("video-player");
+const loading = document.getElementById("loading");
+const messageBox = document.getElementById("message-box");
+let hls;
 let channelsData = [];
 
-const JSON_URL = "./channels.json";
+function showLoading(val) { loading.style.display = val ? "block" : "none"; }
 
-function showLoading(show){
-  loading.style.display = show ? 'block' : 'none';
-}
-
-function stopAllPlayback(){
-  if(hlsInstance){
-    hlsInstance.destroy();
-    hlsInstance = null;
-  }
+function stopPlayback(){
+  iframePlayer.style.display = "none";
+  iframePlayer.src = "";
+  if(hls){ hls.destroy(); hls = null; }
   videoPlayer.pause();
-  videoPlayer.removeAttribute('src');
-  videoPlayer.load();
-  videoPlayer.style.display = 'none';
-
-  iframePlayer.src = '';
-  iframePlayer.style.display = 'none';
-
-  liveStamp.style.display = 'none';
+  videoPlayer.style.display = "none";
 }
 
-let hlsScriptLoaded = false;
+function playChannel(channel){
+  stopPlayback();
+  messageBox.textContent = channel.message || "";
+  showLoading(true);
 
-function loadHlsScript(){
-  return new Promise(resolve=>{
-    if(hlsScriptLoaded) return resolve();
-    const script=document.createElement('script');
-    script.src="https://cdn.jsdelivr.net/npm/hls.js@latest";
-    script.onload=()=>{
-      hlsScriptLoaded=true;
-      resolve();
-    };
-    document.body.appendChild(script);
+  const streamEndpoint = `${WORKER_URL}/stream?id=${channel.id}`;
+
+  if(channel.type === "iframe"){
+    iframePlayer.src = streamEndpoint;
+    iframePlayer.style.display = "block";
+    showLoading(false);
+  } else if(channel.type === "hls"){
+    videoPlayer.style.display = "block";
+    if(Hls.isSupported()){
+      hls = new Hls();
+      hls.loadSource(streamEndpoint);
+      hls.attachMedia(videoPlayer);
+      hls.on(Hls.Events.MANIFEST_PARSED, () => {
+        videoPlayer.play();
+        showLoading(false);
+      });
+    } else {
+      videoPlayer.src = streamEndpoint;
+      videoPlayer.play();
+      showLoading(false);
+    }
+  } else { // fallback for DASH or unknown
+    iframePlayer.src = streamEndpoint;
+    iframePlayer.style.display = "block";
+    showLoading(false);
+  }
+}
+
+async function loadChannels(){
+  const res = await fetch(`${WORKER_URL}/channels`);
+  channelsData = await res.json();
+  channelsData.forEach((ch, i) => {
+    const opt = document.createElement("option");
+    opt.value = i;
+    opt.textContent = ch.name;
+    select.appendChild(opt);
   });
 }
 
-async function playChannel(channel){
-  stopAllPlayback();
-  placeholder.style.display='none';
-  showLoading(true);
-
-  if(!channel){
-    placeholder.style.display='block';
-    showLoading(false);
-    messageBox.textContent='';
-    return;
-  }
-
-  messageBox.textContent = channel.message || '';
-
-  if(channel.type==='hls'){
-    videoPlayer.style.display='block';
-    videoPlayer.controls=true;
-    videoPlayer.muted=true;
-    videoPlayer.autoplay=true;
-
-    if(videoPlayer.canPlayType('application/vnd.apple.mpegurl')){
-      videoPlayer.src=channel.url;
-      videoPlayer.play().then(()=>{
-        showLoading(false);
-        liveStamp.style.display='block';
-      }).catch(()=>showLoading(false));
-    }else{
-      await loadHlsScript();
-      hlsInstance=new Hls({enableWorker:true,lowLatencyMode:true});
-      hlsInstance.loadSource(channel.url);
-      hlsInstance.attachMedia(videoPlayer);
-      hlsInstance.on(Hls.Events.MANIFEST_PARSED,()=>{
-        videoPlayer.play().then(()=>{
-          showLoading(false);
-          liveStamp.style.display='block';
-        }).catch(()=>showLoading(false));
-      });
-    }
-  }
-  else if(channel.type==='iframe'){
-    iframePlayer.src=channel.url;
-    iframePlayer.style.display='block';
-    showLoading(false);
-    liveStamp.style.display='block';
-  }
-}
-
-async function fetchChannelsJson(){
-  try{
-    const response=await fetch(JSON_URL);
-    if(!response.ok) throw new Error();
-    channelsData=await response.json();
-
-    select.innerHTML='<option value="">👉 Select Channel</option>';
-    channelsData.forEach((ch,i)=>{
-      const opt=document.createElement('option');
-      opt.value=i;
-      opt.textContent=ch.name;
-      select.appendChild(opt);
-    });
-  }catch(e){
-    console.error('JSON load error',e);
-  }
-}
-
-select.addEventListener('change',()=>{
-  const index=select.value;
-  playChannel(index===''?null:channelsData[index]);
+select.addEventListener("change", e => {
+  const idx = e.target.value;
+  if(idx !== "") playChannel(channelsData[idx]);
 });
 
-fetchChannelsJson();
+loadChannels();
 </script>
 
 </body>
