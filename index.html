@@ -3,61 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MSTV Network</title>
-
-<!-- HLS.js for HLS playback -->
+<title>MSTV Network - Zee TV</title>
 <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-
 <style>
-body {
-  margin: 0; padding: 0;
-  font-family: sans-serif;
-  background: #0F1115;
-  color: #E0E0E0;
-  display: flex; flex-direction: column; align-items: center;
-}
-.container {
-  width: 95%; max-width: 1200px;
-  padding: 2vh 2vw;
-  display: flex; flex-direction: column; align-items: center;
-}
-select {
-  padding: 0.8em 1.5em;
-  font-size: 1.2em;
-  background: #1A1D20;
-  color: #00FFC8;
-  border: 2px solid #00FFC8;
-  border-radius: 12px;
-  cursor: pointer;
-}
-.player-container {
-  position: relative;
-  width: 90%; max-width: 1100px;
-  aspect-ratio: 16/9;
-  background: #000;
-  margin: 2vh 0;
-  border-radius: 12px;
-  overflow: hidden;
-}
-iframe, video {
-  width: 100%; height: 100%;
-  position: absolute; top: 0; left: 0;
-  display: none; background: black;
-}
-.loading {
-  position: absolute;
-  top: 50%; left: 50%;
-  transform: translate(-50%, -50%);
-  color: #00FFC8;
-  font-size: 1.3em;
-  display: none;
-}
-.message-box {
-  color: #FFD700;
-  margin-top: 1vh;
-  font-size: 1.1em;
-  text-align: center;
-}
+body{margin:0;padding:0;font-family:sans-serif;background:#0F1115;color:#E0E0E0;display:flex;flex-direction:column;align-items:center}
+.container{width:95%;max-width:1200px;padding:2vh 2vw;display:flex;flex-direction:column;align-items:center}
+select{padding:0.8em 1.5em;font-size:1.2em;background:#1A1D20;color:#00FFC8;border:2px solid #00FFC8;border-radius:12px;cursor:pointer}
+.player-container{position:relative;width:90%;max-width:1100px;aspect-ratio:16/9;background:#000;margin:2vh 0;border-radius:12px;overflow:hidden}
+iframe,video{width:100%;height:100%;position:absolute;top:0;left:0;display:none;background:black}
+.loading{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:#00FFC8;font-size:1.3em;display:none}
+.message-box{color:#FFD700;margin-top:1vh;font-size:1.1em;text-align:center}
 </style>
 </head>
 <body>
@@ -86,63 +41,57 @@ const messageBox = document.getElementById("message-box");
 let hls;
 let channelsData = [];
 
-function showLoading(val) { loading.style.display = val ? "block" : "none"; }
-
+function showLoading(val){ loading.style.display = val ? "block" : "none"; }
 function stopPlayback(){
-  iframePlayer.style.display = "none";
-  iframePlayer.src = "";
-  if(hls){ hls.destroy(); hls = null; }
+  iframePlayer.style.display="none";
+  iframePlayer.src="";
+  if(hls){ hls.destroy(); hls=null; }
   videoPlayer.pause();
-  videoPlayer.style.display = "none";
+  videoPlayer.style.display="none";
 }
 
-function playChannel(channel){
+async function playChannel(channel){
   stopPlayback();
   messageBox.textContent = channel.message || "";
   showLoading(true);
 
-  const streamEndpoint = `${WORKER_URL}/stream?id=${channel.id}`;
+  const streamUrl = `${WORKER_URL}/stream?id=${channel.id}`;
 
   if(channel.type === "iframe"){
-    iframePlayer.src = streamEndpoint;
-    iframePlayer.style.display = "block";
+    iframePlayer.src = streamUrl;
+    iframePlayer.style.display="block";
     showLoading(false);
-  } else if(channel.type === "hls"){
-    videoPlayer.style.display = "block";
+  } else {
+    videoPlayer.style.display="block";
     if(Hls.isSupported()){
       hls = new Hls();
-      hls.loadSource(streamEndpoint);
+      hls.loadSource(streamUrl);
       hls.attachMedia(videoPlayer);
       hls.on(Hls.Events.MANIFEST_PARSED, () => {
         videoPlayer.play();
         showLoading(false);
       });
     } else {
-      videoPlayer.src = streamEndpoint;
+      videoPlayer.src = streamUrl;
       videoPlayer.play();
       showLoading(false);
     }
-  } else { // fallback for DASH or unknown
-    iframePlayer.src = streamEndpoint;
-    iframePlayer.style.display = "block";
-    showLoading(false);
   }
 }
 
 async function loadChannels(){
   const res = await fetch(`${WORKER_URL}/channels`);
   channelsData = await res.json();
-  channelsData.forEach((ch, i) => {
+  channelsData.forEach((ch,i)=>{
     const opt = document.createElement("option");
-    opt.value = i;
-    opt.textContent = ch.name;
+    opt.value = i; opt.textContent = ch.name;
     select.appendChild(opt);
   });
 }
 
-select.addEventListener("change", e => {
+select.addEventListener("change", e=>{
   const idx = e.target.value;
-  if(idx !== "") playChannel(channelsData[idx]);
+  if(idx!=="") playChannel(channelsData[idx]);
 });
 
 loadChannels();
