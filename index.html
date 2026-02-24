@@ -281,22 +281,7 @@ select:hover {
   </div>
 </footer>
 
-        option.textContent = channel.name;
-        select.appendChild(option);
-      });
-    }
-  } catch (e) { console.error('JSON Error:', e); }
-}
-
-// Channel change handler
-select.addEventListener('change', () => {
-  triggerFullscreen(playerContainer);
-  const index = select.value;
-  playChannel(index === '' ? null : channelsData[index]);
-});
-
-fetchChannelsJson();
-setInterval(fetchChannelsJson, 15000);
+   
 </script>
 </body>
 </html>
