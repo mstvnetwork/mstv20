@@ -1,295 +1,132 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-      <title>MSTV Network</title>
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <meta name="description" content="MSTV Network offers a variety of live TV channels including music, movies, and more. Watch your favorite channels online for free.">
-    <meta name="keywords" content="live TV, MSTV Network, free TV, live channels, streaming, music, bollywood, saga music">
-    <meta name="robots" content="index, follow">
-    <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website">
-    <meta property="og:title" content="MSTV Network">
-    <meta property="og:description" content="Stream live TV channels including music, movies, and more on MSTV Network.">
-    <meta property="og:image" content="https://raw.githubusercontent.com">
-    <meta property="og:url" content="https://mstvnet.netlify.app">
-    <!-- Twitter -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="MSTV Network">
-    <meta name="twitter:description" content="Stream live TV channels including music, movies, and more on MSTV Network.">
-    <meta name="twitter:image" content="https://raw.githubusercontent.com">
-    <meta name="twitter:url" content="https://mstvnet.netlify.app">
-
-    <!-- JSON-LD Schema.org -->
-    <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "WebPage",
-        "name": "MSTV Network",
-        "description": "Stream live TV channels including music, movies, and more.",
-        "url": "https://mstvnet.netlify.app",
-        "publisher": {
-            "@type": "Organization",
-            "name": "MSTV Network",
-            "logo": {
-                "@type": "ImageObject",
-                "url": "https://raw.githubusercontent.com"
-            }
-        }
-    }
-    </script>
-
-
-<!-- HLS Library -->
-<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>MSTV Network</title>
 
 <style>
-/* Reset & Base */
-*,
-*::before,
-*::after { box-sizing: border-box; }
-
-html, body {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  min-height: 100%;
-  font-family: 'Poppins', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-  background: #0F1115;
-  color: #E0E0E0;
+*{box-sizing:border-box}
+html,body{
+  margin:0;
+  padding:0;
+  width:100%;
+  min-height:100%;
+  font-family:system-ui,-apple-system,BlinkMacSystemFont,sans-serif;
+  background:#0F1115;
+  color:#E0E0E0
 }
-
-body { display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
-
-/* Container */
-.container { flex: 1; width: 95%; max-width: 1200px; padding: 2vh 2vw; display: flex; flex-direction: column; align-items: center; }
-
-/* Header */
-.title-3d {
-  font-size: clamp(2rem, 6vw, 3.5rem);
-  font-weight: 800;
-  text-align: center;
-  margin: 4vh 0 2vh;
-  color: #00FFC8;
-  text-shadow: 2px 2px 8px #0ff, 0 0 12px #00b3b3;
-  letter-spacing: 2px;
+body{display:flex;flex-direction:column;align-items:center}
+.container{
+  flex:1;
+  width:95%;
+  max-width:1200px;
+  padding:2vh 2vw;
+  display:flex;
+  flex-direction:column;
+  align-items:center
 }
-
-/* Scrolling Banner */
-.scrolling-container {
-  width: 100%;
-  overflow: hidden;
-  background: #1A1D20;
-  border-radius: 12px;
-  padding: 1.5vh 0;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-  margin-bottom: 3vh;
+.title-3d{
+  font-size:clamp(2rem,6vw,3.5rem);
+  font-weight:800;
+  margin:4vh 0 2vh;
+  color:#00FFC8;
+  text-align:center
 }
-
-.scrolling-content {
-  display: inline-flex;
-  align-items: center;
-  gap: 40px;
-  padding-left: 100%;
-  white-space: nowrap;
-  animation: scroll-text 30s linear infinite;
-  font-size: 1.1em;
-  color: #00FFC8;
-  font-weight: 500;
+.channel-selector-text{
+  font-size:clamp(1.4rem,4vw,2rem);
+  margin-bottom:2vh
 }
-
-@keyframes scroll-text {
-  0% { transform: translateX(0%); }
-  100% { transform: translateX(-100%); }
+select{
+  padding:0.8em 1.5em;
+  font-size:1.1em;
+  background:#1A1D20;
+  color:#00FFC8;
+  border:2px solid #00FFC8;
+  border-radius:12px;
+  width:90%;
+  max-width:400px
 }
-
-/* Channel Selector */
-.channel-selector-text {
-  text-align: center;
-  font-size: clamp(1.5rem, 4vw, 2rem);
-  margin-bottom: 2vh;
-  font-weight: 600;
-  color: #FFFFFF;
+.player-container{
+  position:relative;
+  width:90%;
+  max-width:1100px;
+  aspect-ratio:16/9;
+  margin-bottom:2vh;
+  border-radius:16px;
+  overflow:hidden;
+  background:#1A1D20
 }
-
-.channel-selection {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 2vh;
-}
-
-select {
-  padding: 0.8em 1.5em;
-  font-size: 1.2em;
-  background: #1A1D20;
-  color: #00FFC8;
-  border: 2px solid #00FFC8;
-  border-radius: 12px;
-  outline: none;
-  width: 90%;
-  max-width: 400px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-select:hover {
-  background: #101214;
-  border-color: #00FFB3;
-  box-shadow: 0 0 12px #00FFC8AA;
-}
-
-/* Player Container */
-.player-container {
-  position: relative;
-  width: 90%;
-  max-width: 1100px;
-  aspect-ratio: 16 / 9;
-  margin-bottom: 3vh;
-  border-radius: 16px;
-  overflow: hidden;
-  background: #1A1D20;
-  box-shadow: 0 12px 28px rgba(0,0,0,0.6);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.player-container:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 16px 36px rgba(0,0,0,0.8);
-}
-
 .player-container iframe,
-.player-container video {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  border-radius: 16px;
-  object-fit: contain; /* preserves 16:9 in fullscreen without cropping */
-  background: black;
+.player-container video{
+  position:absolute;
+  width:100%;
+  height:100%;
+  top:0;
+  left:0;
+  display:none;
+  background:black
 }
-
-#placeholder-image {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  border-radius: 16px;
-  object-fit: cover;
+#placeholder-image{
+  position:absolute;
+  width:100%;
+  height:100%;
+  object-fit:cover
 }
-
-/* Live Stamp */
-.live-stamp {
-  position: absolute;
-  top: 1.5vw;
-  left: 1.5vw;
-  background: #E50914;
-  color: white;
-  font-weight: 700;
-  font-size: clamp(14px,1.5vw,20px);
-  padding: 0.4vw 1.6vw;
-  border-radius: 0.8vw;
-  box-shadow: 0 0.5vw 1vw rgba(0,0,0,0.4);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  letter-spacing: 0.1vw;
-  z-index: 999;
+.loading-indicator{
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  background:rgba(0,0,0,0.7);
+  padding:12px 24px;
+  border-radius:8px;
+  display:none
 }
-
-/* Loading */
-.loading-indicator {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 1.3em;
-  background: rgba(0,0,0,0.7);
-  color: #00FFC8;
-  padding: 14px 28px;
-  border-radius: 10px;
-  display: none;
-  z-index: 15;
-  text-align: center;
-  box-shadow: 0 4px 12px rgba(0,255,200,0.3);
+.live-stamp{
+  position:absolute;
+  top:10px;
+  left:10px;
+  background:#E50914;
+  color:white;
+  padding:6px 12px;
+  font-size:14px;
+  border-radius:6px;
+  display:none
 }
-
-/* Footer */
-.site-footer {
-  background: #0F1115;
-  text-align: center;
-  padding: 2vh 2vw;
-  color: #90EE90;
-  flex-shrink: 0;
-}
-
-.site-footer h2 {
-  color: #00FFC8;
-  font-size: 1.5rem;
-  margin-bottom: 12px;
-}
-
-.site-footer p { margin: 10px 0; line-height: 1.6; }
-
-.site-footer .copyright { color: #FFD700; }
-
-.site-footer a {
-  color: #00FFC8;
-  text-decoration: none;
-  transition: color 0.3s ease;
-}
-
-.site-footer a:hover { color: #FFD700; }
-
-/* Responsive */
-@media (max-width:768px) {
-  .player-container { width: 95%; margin-bottom: 2vh; }
-  .title-3d { font-size: clamp(1.8rem, 7vw, 2.8rem); }
-  .channel-selector-text { font-size: clamp(1.2rem, 5vw, 1.6rem); }
-  .scrolling-content { font-size: 0.95rem; gap: 20px; }
-  .live-stamp { padding: 0.3vw 1vw; font-size: clamp(12px,2.5vw,16px); }
+#channel-message{
+  margin-top:12px;
+  font-size:14px;
+  text-align:center;
+  color:#00FFC8
 }
 </style>
 </head>
 <body>
 
 <div class="container">
-
   <div class="title-3d">AAINA DTH FREE</div>
 
-  <div class="scrolling-container">
-    <div class="scrolling-content">
-      🌍 AAINA DTH FREE – Your Gateway to Free Live TV! Music, Movies, Drama & More, Anytime, Anywhere! | 50+ Free Channels, 24/7 Entertainment, Zero Subscription, 100% Fun!
-    </div>
-  </div>
-
   <div class="channel-selector-text">Select Channel</div>
-  <div class="channel-selection">
-    <select id="channel-select">
-      <option value="">👉📺📺📺</option>
-    </select>
-  </div>
+
+  <select id="channel-select">
+    <option value="">👉 Select Channel</option>
+  </select>
 
   <div class="player-container" id="player-container">
-    <iframe id="media-player" allow="autoplay; encrypted-media; picture-in-picture" sandbox="allow-scripts allow-same-origin allow-presentation"></iframe>
-    <video id="video-player" autoplay playsinline muted></video>
-    <img id="placeholder-image" src="Design-Studio-2025-01-22%20(1).png" alt="Stream Placeholder" />
-    <div class="live-stamp" id="live-stamp" style="display:none;">MSTV NETWORK</div>
+    <iframe id="media-player" allow="autoplay; encrypted-media; picture-in-picture"
+      sandbox="allow-scripts allow-same-origin allow-presentation"></iframe>
+
+    <video id="video-player" playsinline muted></video>
+
+    <img id="placeholder-image" src="Design-Studio-2025-01-22%20(1).png" alt="Stream Placeholder">
+
+    <div class="live-stamp" id="live-stamp">LIVE</div>
     <div class="loading-indicator" id="loading">Loading stream...</div>
   </div>
 
+  <div id="channel-message"></div>
 </div>
-
-<!-- Footer Section -->
-<footer class="site-footer">
-  <div class="container">
-    <h2>About Us</h2>
-    <p>MSTV Network is the winner of 7 international and national awards for innovation in mobile and web TV streaming. Headquartered in Texas, USA. All content is sourced from publicly available platforms. We do not host or stream content directly.</p>
-    <p class="copyright">&copy; 2026 MSTV Network. All rights reserved.</p>
-  </div>
-</footer>
 
 <script>
 const select = document.getElementById('channel-select');
@@ -298,98 +135,120 @@ const iframePlayer = document.getElementById('media-player');
 const placeholder = document.getElementById('placeholder-image');
 const loading = document.getElementById('loading');
 const liveStamp = document.getElementById('live-stamp');
-const playerContainer = document.getElementById('player-container');
+const messageBox = document.getElementById('channel-message');
 
 let hlsInstance = null;
 let channelsData = [];
-let lastKnownJsonContent = null;
+
 const JSON_URL = "./channels.json";
 
-function showLoading(show) { loading.style.display = show ? 'block' : 'none'; }
+function showLoading(show){
+  loading.style.display = show ? 'block' : 'none';
+}
 
-function stopAllPlayback() {
-  if (hlsInstance) { hlsInstance.destroy(); hlsInstance = null; }
-  videoPlayer.pause(); videoPlayer.style.display = 'none';
-  iframePlayer.src = ''; iframePlayer.style.display = 'none';
+function stopAllPlayback(){
+  if(hlsInstance){
+    hlsInstance.destroy();
+    hlsInstance = null;
+  }
+  videoPlayer.pause();
+  videoPlayer.removeAttribute('src');
+  videoPlayer.load();
+  videoPlayer.style.display = 'none';
+
+  iframePlayer.src = '';
+  iframePlayer.style.display = 'none';
+
   liveStamp.style.display = 'none';
 }
 
-function triggerFullscreen(element) {
-  if (!element) return;
-  if (element.requestFullscreen) element.requestFullscreen();
-  else if (element.webkitRequestFullscreen) element.webkitRequestFullscreen();
-  else if (element.msRequestFullscreen) element.msRequestFullscreen();
+let hlsScriptLoaded = false;
+
+function loadHlsScript(){
+  return new Promise(resolve=>{
+    if(hlsScriptLoaded) return resolve();
+    const script=document.createElement('script');
+    script.src="https://cdn.jsdelivr.net/npm/hls.js@latest";
+    script.onload=()=>{
+      hlsScriptLoaded=true;
+      resolve();
+    };
+    document.body.appendChild(script);
+  });
 }
 
-function playChannel(channel) {
-  showLoading(true);
-  placeholder.style.display = 'none';
+async function playChannel(channel){
   stopAllPlayback();
+  placeholder.style.display='none';
+  showLoading(true);
 
-  if (!channel) { placeholder.style.display = 'block'; showLoading(false); return; }
+  if(!channel){
+    placeholder.style.display='block';
+    showLoading(false);
+    messageBox.textContent='';
+    return;
+  }
 
-  if(channel.type==='hls' && videoPlayer){
-        videoPlayer.style.display='block';
-        videoPlayer.muted = true;
-        videoPlayer.controls = true;
-        videoPlayer.autoplay = true;
+  messageBox.textContent = channel.message || '';
 
+  if(channel.type==='hls'){
+    videoPlayer.style.display='block';
+    videoPlayer.controls=true;
+    videoPlayer.muted=true;
+    videoPlayer.autoplay=true;
 
-    if (typeof Hls !== 'undefined' && Hls.isSupported()) {
-      hlsInstance = new Hls();
+    if(videoPlayer.canPlayType('application/vnd.apple.mpegurl')){
+      videoPlayer.src=channel.url;
+      videoPlayer.play().then(()=>{
+        showLoading(false);
+        liveStamp.style.display='block';
+      }).catch(()=>showLoading(false));
+    }else{
+      await loadHlsScript();
+      hlsInstance=new Hls({enableWorker:true,lowLatencyMode:true});
       hlsInstance.loadSource(channel.url);
       hlsInstance.attachMedia(videoPlayer);
-      hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => {
-        videoPlayer.play().then(() => {
+      hlsInstance.on(Hls.Events.MANIFEST_PARSED,()=>{
+        videoPlayer.play().then(()=>{
           showLoading(false);
-          liveStamp.style.display = 'block';
-        });
-      });
-    } else if (videoPlayer.canPlayType('application/vnd.apple.mpegurl')) {
-      videoPlayer.src = channel.url;
-      videoPlayer.play().then(() => {
-        showLoading(false);
-        liveStamp.style.display = 'block';
+          liveStamp.style.display='block';
+        }).catch(()=>showLoading(false));
       });
     }
-  } else if (channel.type === 'iframe') {
-    iframePlayer.src = channel.url; iframePlayer.style.display = 'block';
-    showLoading(false); liveStamp.style.display = 'block';
+  }
+  else if(channel.type==='iframe'){
+    iframePlayer.src=channel.url;
+    iframePlayer.style.display='block';
+    showLoading(false);
+    liveStamp.style.display='block';
   }
 }
 
-// Fetch channels JSON
-async function fetchChannelsJson() {
-  try {
-    const response = await fetch(`${JSON_URL}?t=${Date.now()}`);
-    if (!response.ok) throw new Error('Fetch failed');
-    const json = await response.json();
-    const jsonString = JSON.stringify(json);
+async function fetchChannelsJson(){
+  try{
+    const response=await fetch(JSON_URL);
+    if(!response.ok) throw new Error();
+    channelsData=await response.json();
 
-    if (lastKnownJsonContent !== jsonString) {
-      lastKnownJsonContent = jsonString;
-      channelsData = json;
-      select.innerHTML = '<option value="">👉📺📺📺</option>';
-      channelsData.forEach((channel, index) => {
-        const option = document.createElement('option');
-        option.value = index;
-        option.textContent = channel.name;
-        select.appendChild(option);
-      });
-    }
-  } catch (e) { console.error('JSON Error:', e); }
+    select.innerHTML='<option value="">👉 Select Channel</option>';
+    channelsData.forEach((ch,i)=>{
+      const opt=document.createElement('option');
+      opt.value=i;
+      opt.textContent=ch.name;
+      select.appendChild(opt);
+    });
+  }catch(e){
+    console.error('JSON load error',e);
+  }
 }
 
-// Channel change handler
-select.addEventListener('change', () => {
-  triggerFullscreen(playerContainer);
-  const index = select.value;
-  playChannel(index === '' ? null : channelsData[index]);
+select.addEventListener('change',()=>{
+  const index=select.value;
+  playChannel(index===''?null:channelsData[index]);
 });
 
 fetchChannelsJson();
-setInterval(fetchChannelsJson, 15000);
 </script>
+
 </body>
 </html>
-
