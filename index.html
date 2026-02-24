@@ -11,6 +11,35 @@ body{margin:0;padding:0;font-family:sans-serif;background:#0F1115;color:#E0E0E0;
 select{padding:0.8em 1.5em;font-size:1.2em;background:#1A1D20;color:#00FFC8;border:2px solid #00FFC8;border-radius:12px;cursor:pointer}
 .player-container{position:relative;width:90%;max-width:1100px;aspect-ratio:16/9;background:#000;margin:2vh 0;border-radius:12px;overflow:hidden}
 iframe,video{width:100%;height:100%;position:absolute;top:0;left:0;display:none;background:black}
+  #placeholder-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 16px;
+  object-fit: cover;
+}
+
+/* Live Stamp */
+.live-stamp {
+  position: absolute;
+  top: 1.5vw;
+  left: 1.5vw;
+  background: #E50914;
+  color: white;
+  font-weight: 700;
+  font-size: clamp(14px,1.5vw,20px);
+  padding: 0.4vw 1.6vw;
+  border-radius: 0.8vw;
+  box-shadow: 0 0.5vw 1vw rgba(0,0,0,0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  letter-spacing: 0.1vw;
+  z-index: 999;
+}
+
 .loading{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:#00FFC8;font-size:1.3em;display:none}
 .message-box{color:#FFD700;margin-top:1vh;font-size:1.1em;text-align:center}
 </style>
@@ -29,6 +58,8 @@ iframe,video{width:100%;height:100%;position:absolute;top:0;left:0;display:none;
     <video id="video-player" playsinline controls></video>
     <div class="loading" id="loading">Loading...</div>
   </div>
+
+  <img id="placeholder-image" src="Design-Studio-2025-01-22%20(1).png" alt="Stream Placeholder" />
 
   <div class="message-box" id="message-box"></div>
 </div>
