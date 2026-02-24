@@ -19,7 +19,10 @@ iframe,video{width:100%;height:100%;position:absolute;top:0;left:0;display:none;
 
 <div class="container">
   <h1>MSTV Network</h1>
-  <select id="channel-select"><option value="">Go to our new link, gh hh</option></select>
+  <select id="channel-select">
+  <option value="">Go to our new link</option>
+  <option disabled>https://mstvnet.netlify.app</option>
+  </select>
 
   <div class="player-container">
     <iframe id="iframe-player" sandbox="allow-scripts allow-same-origin allow-presentation"></iframe>
@@ -31,7 +34,7 @@ iframe,video{width:100%;height:100%;position:absolute;top:0;left:0;display:none;
 </div>
 
 <script>
-const WORKER_URL = "https://zee5.mchoudhry482.workers.dev";
+const WORKER_URL = "";
 
 const select = document.getElementById("channel-select");
 const iframePlayer = document.getElementById("iframe-player");
