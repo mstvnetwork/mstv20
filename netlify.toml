@@ -1,6 +1,21 @@
+# Shemaroo Proxy
 [[redirects]]
   from = "/shemaroo/*"
   to = "https://airtelapp.shemaroo.com"
+  status = 200
+  force = true
+
+# Apne.co Proxy
+[[redirects]]
+  from = "/apne/*"
+  to = "https://apne.co"
+  status = 200
+  force = true
+
+# Tulnit Proxy
+[[redirects]]
+  from = "/tulnit/*"
+  to = "https://tulnit.com"
   status = 200
   force = true
 
@@ -9,5 +24,4 @@
   [headers.values]
     Access-Control-Allow-Origin = "*"
     Access-Control-Allow-Methods = "GET, POST, OPTIONS"
-    Access-Control-Allow-Headers = "Content-Type"
 
