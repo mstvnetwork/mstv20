@@ -1,15 +1,25 @@
-const { app, BrowserWindow, session } = require('electron');
-function createWindow() {
-  const win = new BrowserWindow({
-    width: 1200, height: 800,
-    webPreferences: { nodeIntegration: true, webSecurity: false }
-  });
-  session.defaultSession.webRequest.onBeforeSendHeaders((details, callback) => {
-    details.requestHeaders['Referer'] = 'https://www.shemaroome.com';
-    details.requestHeaders['Origin'] = 'https://www.shemaroome.com';
-    callback({ cancel: false, requestHeaders: details.requestHeaders });
-  });
-  win.loadFile('index.html');
+// The proxied URL pointing to your Netlify redirect
+const streamUrl = '/shemaroo/smil:shemarootvadp.smil/playlist.m3u8&id=2092&type=mp4';
+
+const video = document.getElementById('video'); // Make sure your index.html has <video id="video"></video>
+
+if (Hls.isSupported()) {
+    const hls = new Hls({
+        xhrSetup: function (xhr, url) {
+            xhr.withCredentials = false; // Required for some proxied streams
+        }
+    });
+    hls.loadSource(streamUrl);
+    hls.attachMedia(video);
+    hls.on(Hls.Events.MANIFEST_PARSED, function () {
+        video.play();
+    });
+} 
+// For Safari/iOS which has native HLS support
+else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+    video.src = streamUrl;
+    video.addEventListener('loadedmetadata', function () {
+        video.play();
+    });
 }
-app.whenReady().then(createWindow);
 
