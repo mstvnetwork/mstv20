@@ -3,49 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Multi-Site Stream Tester</title>
-    <!-- Stable CDN for Video.js CSS -->
-    <link href="https://cdn.jsdelivr.net" rel="stylesheet" />
+    <title>Universal Stream Tester</title>
     <style>
         body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; padding: 20px; background: #121212; color: white; }
         .controls { margin-bottom: 20px; width: 100%; max-width: 640px; display: flex; gap: 10px; }
         input { flex-grow: 1; padding: 12px; border-radius: 6px; background: #1e1e1e; color: white; border: 1px solid #333; }
         button { padding: 10px 24px; background: #007bff; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
-        .video-container { width: 100%; max-width: 800px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .video-container { width: 100%; max-width: 800px; aspect-ratio: 16/9; background: #000; border-radius: 8px; overflow: hidden; }
+        video { width: 100%; height: 100%; }
     </style>
 </head>
 <body>
 
-    <h2>Stream Tester (Proxy Enabled)</h2>
+    <h2>Stream Tester (HLS.js Edition)</h2>
     <div class="controls">
-        <input type="text" id="videoUrl" placeholder="Paste URL (Shemaroo, Apne, or Tulnit)...">
+        <input type="text" id="videoUrl" placeholder="Paste URL (Shemaroo, Apne, Tulnit)...">
         <button onclick="loadVideo()">PLAY</button>
     </div>
 
     <div class="video-container">
-        <video id="my-video" class="video-js vjs-default-skin vjs-16-9 vjs-big-play-centered" controls preload="auto"></video>
+        <video id="video" controls></video>
     </div>
 
-    <!-- Stable CDN for Video.js Library -->
-    <script src="https://cdn.jsdelivr.net"></script>
+    <!-- Using a very stable CDN for HLS.js -->
+    <script src="hls.min.js"></script>
+
 
     <script>
-        // Check if Video.js loaded correctly
-        var player;
-        try {
-            player = videojs('my-video');
-        } catch (e) {
-            console.error("Video.js failed to initialize:", e);
-        }
+        var video = document.getElementById('video');
+        var hls = new Hls();
 
         function loadVideo() {
             var inputUrl = document.getElementById('videoUrl').value.trim();
             if (!inputUrl) return alert("Please paste a URL");
-            if (!player) return alert("Player library not loaded. Check your connection.");
+            if (typeof Hls === 'undefined') return alert("HLS library failed to load. Check your internet.");
 
             let finalUrl = inputUrl;
 
-            // Proxy logic to bypass CORS
+            // Apply Netlify Proxy Logic
             if (inputUrl.includes("://airtelapp.shemaroo.com")) {
                 finalUrl = inputUrl.replace("https://://airtelapp.shemaroo.com", "/shemaroo/");
             } else if (inputUrl.includes("apne.co/")) {
@@ -54,12 +49,21 @@
                 finalUrl = inputUrl.replace("https://://tulnit.com", "/tulnit/");
             }
 
-            console.log("Loading path:", finalUrl);
+            console.log("Loading URL:", finalUrl);
 
-            var type = finalUrl.includes(".m3u8") ? "application/x-mpegURL" : "video/mp4";
-            
-            player.src({ src: finalUrl, type: type });
-            player.play().catch(e => console.log("Playback failed. Stream might be offline."));
+            if (Hls.isSupported()) {
+                hls.destroy(); // Clear previous stream
+                hls = new Hls();
+                hls.loadSource(finalUrl);
+                hls.attachMedia(video);
+                hls.on(Hls.Events.MANIFEST_PARSED, function() {
+                    video.play();
+                });
+            } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                // For Safari
+                video.src = finalUrl;
+                video.play();
+            }
         }
     </script>
 </body>
