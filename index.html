@@ -3,63 +3,74 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kiwi Stream Tester</title>
-    <!-- Include HLS.js Library -->
+    <title>Netlify Edge Stream Tester</title>
     <script src="https://cdn.jsdelivr.net"></script>
     <style>
-        body { font-family: sans-serif; background: #1a1a1a; color: white; text-align: center; padding: 20px; }
-        video { width: 100%; max-width: 800px; border: 2px solid #444; border-radius: 8px; background: black; }
-        input { width: 80%; padding: 10px; margin: 10px 0; border-radius: 5px; border: none; }
-        button { padding: 10px 20px; background: #27ae60; color: white; border: none; border-radius: 5px; cursor: pointer; }
-        #status { color: #e74c3c; margin-top: 10px; font-weight: bold; }
+        body { font-family: sans-serif; background: #0f172a; color: white; text-align: center; padding: 20px; }
+        .container { max-width: 800px; margin: auto; background: #1e293b; padding: 20px; border-radius: 12px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+        video { width: 100%; border-radius: 8px; background: black; margin-top: 20px; }
+        input { width: 90%; padding: 12px; margin: 10px 0; border-radius: 6px; border: 1px solid #475569; background: #0f172a; color: white; }
+        button { padding: 12px 24px; background: #3b82f6; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        button:hover { background: #2563eb; }
+        #status { margin-top: 15px; font-size: 14px; color: #94a3b8; }
     </style>
 </head>
 <body>
 
-    <h2>M3U8 Stream Tester</h2>
-    
-    <input type="text" id="streamUrl" placeholder="Paste your .m3u8 link here..." 
-           value="https://airtelapp.shemaroo.com/shemarootv/smil:shemarootvadp.smil/playlist.m3u8&id=2092&type=mp4">
-    <br>
-    <button onclick="loadStream()">Play Stream</button>
+    <div class="container">
+        <h2>Netlify Proxy Player</h2>
+        <p>Testing: Shemaroo TV (Airtel)</p>
+        
+        <input type="text" id="streamUrl" 
+               value="https://airtelapp.shemaroo.com">
+        <br>
+        <button onclick="initPlayer()">Play via Netlify Proxy</button>
 
-    <div id="status"></div>
-    <br>
-    <video id="video" controls></video>
+        <div id="status">Status: Ready</div>
+        <video id="video" controls autoplay></video>
+    </div>
 
     <script>
-        function loadStream() {
-            var video = document.getElementById('video');
-            var url = document.getElementById('streamUrl').value.trim();
-            var status = document.getElementById('status');
-            status.innerText = "";
+        function initPlayer() {
+            const video = document.getElementById('video');
+            const status = document.getElementById('status');
+            const rawUrl = document.getElementById('streamUrl').value.trim();
+            
+            // This builds the path to your Edge Function: https://your-site.netlify.app...
+            const proxyUrl = window.location.origin + "/proxy?url=" + encodeURIComponent(rawUrl);
 
-            if (!url) {
-                status.innerText = "Error: Please paste a URL.";
-                return;
-            }
+            status.innerText = "Connecting to Netlify Edge...";
 
             if (Hls.isSupported()) {
-                var hls = new Hls();
-                hls.loadSource(url);
-                hls.attachMedia(video);
-                hls.on(Hls.Events.MANIFEST_PARSED, function() {
-                    video.play();
-                });
-                hls.on(Hls.Events.ERROR, function (event, data) {
-                    if (data.fatal) {
-                        status.innerText = "Stream Error: Likely a CORS or Referer block.";
+                const hls = new Hls({
+                    // This tells Hls.js to use the proxy for ALL internal fragments (.ts files)
+                    xhrSetup: function(xhr, url) {
+                        // If the segment doesn't already go through your proxy, force it
+                        if (!url.includes(window.location.origin)) {
+                            const proxiedUrl = window.location.origin + "/proxy?url=" + encodeURIComponent(url);
+                            xhr.open('GET', proxiedUrl, true);
+                        }
                     }
                 });
-            } 
-            else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-                // For Safari/iOS which supports HLS natively
-                video.src = url;
-                video.addEventListener('loadedmetadata', function() {
+
+                hls.loadSource(proxyUrl);
+                hls.attachMedia(video);
+                
+                hls.on(Hls.Events.MANIFEST_PARSED, () => {
+                    status.innerText = "Playing: " + rawUrl;
                     video.play();
                 });
-            } else {
-                status.innerText = "Error: Your browser does not support HLS.";
+
+                hls.on(Hls.Events.ERROR, (event, data) => {
+                    if (data.fatal) {
+                        status.innerText = "Error: Proxy returned " + data.response?.code || "Unknown";
+                        console.error("HLS Error:", data);
+                    }
+                });
+            } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                // For Safari/iOS
+                video.src = proxyUrl;
+                video.play();
             }
         }
     </script>
