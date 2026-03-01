@@ -3,15 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Video URL Tester</title>
-    <!-- Video.js Base CSS -->
+    <title>Video URL Tester (CORS Bypass)</title>
     <link href="https://vjs.zencdn.net" rel="stylesheet" />
     <style>
         body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; padding: 20px; background: #f4f4f9; }
         .controls { margin-bottom: 20px; width: 100%; max-width: 640px; display: flex; gap: 10px; }
         input { flex-grow: 1; padding: 10px; border: 1px solid #ccc; border-radius: 4px; }
         button { padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
-        button:hover { background: #0056b3; }
         .video-container { width: 100%; max-width: 800px; }
     </style>
 </head>
@@ -19,44 +17,39 @@
 
     <h2>Video URL Tester</h2>
     <div class="controls">
-        <input type="text" id="videoUrl" placeholder="Paste MP4 or M3U8 URL here...">
+        <input type="text" id="videoUrl" placeholder="Paste Shemaroo or MP4 URL...">
         <button onclick="loadVideo()">Play URL</button>
     </div>
 
     <div class="video-container">
         <video id="my-video" class="video-js vjs-default-skin vjs-big-play-centered" controls preload="auto" width="800" height="450">
-            <p class="vjs-no-js">To view this video please enable JavaScript.</p>
         </video>
     </div>
 
-    <!-- Video.js Library -->
     <script src="https://vjs.zencdn.net"></script>
 
     <script>
-        // Initialize the player
         var player = videojs('my-video');
 
         function loadVideo() {
             var url = document.getElementById('videoUrl').value.trim();
-            if (!url) {
-                alert("Please enter a valid URL");
-                return;
+            if (!url) return alert("Please enter a URL");
+
+            // AUTOMATIC CORS BYPASS:
+            // If the URL is from Shemaroo, route it through our working Netlify Proxy
+            if (url.includes("://airtelapp.shemaroo.com")) {
+                console.log("Shemaroo URL detected. Applying Proxy...");
+                url = url.replace("https://://airtelapp.shemaroo.com", "/shemaroo/");
             }
 
-            // Determine type based on extension
-            var type = "video/mp4";
-            if (url.includes(".m3u8")) {
-                type = "application/x-mpegURL";
-            }
+            var type = url.includes(".m3u8") ? "application/x-mpegURL" : "video/mp4";
 
-            // Update player source and play
             player.src({ src: url, type: type });
-            player.load();
             player.play().catch(function(error) {
                 console.error("Playback failed:", error);
-                alert("Error: Check if the URL is valid and allows cross-origin (CORS) access.");
             });
         }
     </script>
 </body>
 </html>
+
