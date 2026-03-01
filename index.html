@@ -1,49 +1,26 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Live Stream Player - T Sports BD</title>
-    <!-- Use HLS.js for cross-browser M3U8 support -->
-    <script src="https://cdn.jsdelivr.net"></script>
-    <style>
-        body { background: #111; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .video-container { width: 80%; max-width: 900px; border: 2px solid #333; }
-        video { width: 100%; height: auto; }
-    </style>
+    <title>HLS Video Player</title>
+    <!-- Include the Hls.js library from a CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 </head>
 <body>
+    <video id="video" controls autoplay muted style="width: 100%; max-width: 640px;"></video>
 
-<div class="video-container">
-    <video id="video" controls poster="https://abusaeeidx.github.io/Tv-Channel-Logo/CricHD/V2.0/new/tsportsbd.png"></video>
-</div>
+    <script>
+      var video = document.getElementById('video');
+      var videoSrc = 'http://192.101.68.100:49893/ghLs2zdZSnFvSS0000545c313e3e996b33209da8ec/index.m3u8?token=4028bc332d502518763731deff7ae23d';
 
-<script>
-    const video = document.getElementById('video');
-    const streamUrl = 'https://public.kliv.fun/zs2020/Sony/stream.php?id=2';
-    
-    // Check if HLS.js is supported
-    if (Hls.isSupported()) {
-        const hls = new Hls({
-            // Custom loader to handle Referer/Origin if the server allows
-            xhrSetup: function (xhr, url) {
-                // Note: Standard browsers may block setting 'Referer' or 'Origin' directly
-                // This works best if you are running this from the allowed domain or a proxy
-                xhr.withCredentials = true; 
-            }
-        });
-        hls.loadSource(streamUrl);
+      if (Hls.isSupported()) {
+        var hls = new Hls();
+        hls.loadSource(videoSrc);
         hls.attachMedia(video);
-        hls.on(Hls.Events.MANIFEST_PARSED, function() {
-            video.play();
-        });
-    } 
-    // For Safari which has native HLS support
-    else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-        video.src = streamUrl;
-        video.addEventListener('loadedmetadata', function() {
-            video.play();
-        });
-    }
-</script>
+      } 
+      // For Safari, which supports HLS natively
+      else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+        video.src = videoSrc;
+      }
+    </script>
 </body>
 </html>
