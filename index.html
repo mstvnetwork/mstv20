@@ -1,16 +1,14 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Netlify Edge Stream Tester</title>
-    <!-- Use the Full Path -->
-    <script src="https://cdn.jsdelivr.net"></script>
+    
+    <!-- FIX: Integrated your HLS.js Library correctly -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.5.20/hls.min.js" integrity="sha512-yQzohCknrQkYGB82MKUj2tk/XxXIH8jthzZpy89adgms47b9ydFW6UK2f3eEXIZm0pe3lbhrWfxZOHuIGHSJ0w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
     <style>
-       /* Your CSS here */
-    </style>
-</head>
- <style>
         body { font-family: sans-serif; background: #0f172a; color: white; text-align: center; padding: 20px; }
         .container { max-width: 800px; margin: auto; background: #1e293b; padding: 20px; border-radius: 12px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
         video { width: 100%; border-radius: 8px; background: black; margin-top: 20px; }
@@ -26,13 +24,14 @@
         <h2>Netlify Proxy Player</h2>
         <p>Testing: Shemaroo TV (Airtel)</p>
         
+        <!-- Input for the original source URL -->
         <input type="text" id="streamUrl" 
                value="https://si.videoapne.to/hls/,bdohxv6a7bboxuzvta574givq2t5iijnzpg4iqkw5bwqgfuxeo3iyr7imfeq,.urlset/master.m3u8">
         <br>
         <button onclick="initPlayer()">Play via Netlify Proxy</button>
 
         <div id="status">Status: Ready</div>
-        <video id="video" controls autoplay></video>
+        <video id="video" controls playsinline></video>
     </div>
 
     <script>
@@ -41,40 +40,42 @@
             const status = document.getElementById('status');
             const rawUrl = document.getElementById('streamUrl').value.trim();
             
-            // This builds the path to your Edge Function: https://your-site.netlify.app...
-            const proxyUrl = window.location.origin + "/proxy?url=" + encodeURIComponent(rawUrl);
+            // Your Edge Function endpoint
+            const proxyBase = window.location.origin + "/proxy?url=";
+            const initialManifest = proxyBase + encodeURIComponent(rawUrl);
 
             status.innerText = "Connecting to Netlify Edge...";
 
             if (Hls.isSupported()) {
                 const hls = new Hls({
-                    // This tells Hls.js to use the proxy for ALL internal fragments (.ts files)
+                    // CRITICAL: This intercepts requests for chunks (.ts files) 
+                    // and forces them through your Netlify Edge Function
                     xhrSetup: function(xhr, url) {
-                        // If the segment doesn't already go through your proxy, force it
                         if (!url.includes(window.location.origin)) {
-                            const proxiedUrl = window.location.origin + "/proxy?url=" + encodeURIComponent(url);
+                            const proxiedUrl = proxyBase + encodeURIComponent(url);
                             xhr.open('GET', proxiedUrl, true);
                         }
                     }
                 });
 
-                hls.loadSource(proxyUrl);
+                hls.loadSource(initialManifest);
                 hls.attachMedia(video);
                 
                 hls.on(Hls.Events.MANIFEST_PARSED, () => {
-                    status.innerText = "Playing: " + rawUrl;
-                    video.play();
+                    status.innerText = "Streaming via Edge Proxy...";
+                    video.play().catch(e => console.log("Autoplay blocked, user interaction needed."));
                 });
 
                 hls.on(Hls.Events.ERROR, (event, data) => {
+                    console.error("HLS error:", data);
                     if (data.fatal) {
-                        status.innerText = "Error: Proxy returned " + data.response?.code || "Unknown";
-                        console.error("HLS Error:", data);
+                        status.innerText = "Error: Proxy unreachable or Stream expired.";
                     }
                 });
-            } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-                // For Safari/iOS
-                video.src = proxyUrl;
+            } 
+            else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                // Support for Safari/iOS
+                video.src = initialManifest;
                 video.play();
             }
         }
