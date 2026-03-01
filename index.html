@@ -2,70 +2,48 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Universal Stream Tester</title>
+    <title>Live Stream Player - T Sports BD</title>
+    <!-- Use HLS.js for cross-browser M3U8 support -->
+    <script src="https://cdn.jsdelivr.net"></script>
     <style>
-        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; padding: 20px; background: #121212; color: white; }
-        .controls { margin-bottom: 20px; width: 100%; max-width: 640px; display: flex; gap: 10px; }
-        input { flex-grow: 1; padding: 12px; border-radius: 6px; background: #1e1e1e; color: white; border: 1px solid #333; }
-        button { padding: 10px 24px; background: #007bff; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
-        .video-container { width: 100%; max-width: 800px; aspect-ratio: 16/9; background: #000; border-radius: 8px; overflow: hidden; }
-        video { width: 100%; height: 100%; }
+        body { background: #111; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .video-container { width: 80%; max-width: 900px; border: 2px solid #333; }
+        video { width: 100%; height: auto; }
     </style>
 </head>
 <body>
 
-    <h2>Stream Tester (HLS.js Edition)</h2>
-    <div class="controls">
-        <input type="text" id="videoUrl" placeholder="Paste URL (Shemaroo, Apne, Tulnit)...">
-        <button onclick="loadVideo()">PLAY</button>
-    </div>
+<div class="video-container">
+    <video id="video" controls poster="https://abusaeeidx.github.io/Tv-Channel-Logo/CricHD/V2.0/new/tsportsbd.png"></video>
+</div>
 
-    <div class="video-container">
-        <video id="video" controls></video>
-    </div>
-
-    <!-- Using a very stable CDN for HLS.js -->
-    <script src="hls.min.js"></script>
-
-
-    <script>
-        var video = document.getElementById('video');
-        var hls = new Hls();
-
-        function loadVideo() {
-            var inputUrl = document.getElementById('videoUrl').value.trim();
-            if (!inputUrl) return alert("Please paste a URL");
-            if (typeof Hls === 'undefined') return alert("HLS library failed to load. Check your internet.");
-
-            let finalUrl = inputUrl;
-
-            // Apply Netlify Proxy Logic
-            if (inputUrl.includes("://airtelapp.shemaroo.com")) {
-                finalUrl = inputUrl.replace("https://://airtelapp.shemaroo.com", "/shemaroo/");
-            } else if (inputUrl.includes("apne.co/")) {
-                finalUrl = inputUrl.replace("https://apne.co", "/apne/");
-            } else if (inputUrl.includes("://tulnit.com")) {
-                finalUrl = inputUrl.replace("https://://tulnit.com", "/tulnit/");
+<script>
+    const video = document.getElementById('video');
+    const streamUrl = 'https://biz3.dlolcast.com:7059/hls/bdgtv.m3u8?md6=o3q5cyeCQ7SWp1pkBb49Jg&expires=1757519523';
+    
+    // Check if HLS.js is supported
+    if (Hls.isSupported()) {
+        const hls = new Hls({
+            // Custom loader to handle Referer/Origin if the server allows
+            xhrSetup: function (xhr, url) {
+                // Note: Standard browsers may block setting 'Referer' or 'Origin' directly
+                // This works best if you are running this from the allowed domain or a proxy
+                xhr.withCredentials = true; 
             }
-
-            console.log("Loading URL:", finalUrl);
-
-            if (Hls.isSupported()) {
-                hls.destroy(); // Clear previous stream
-                hls = new Hls();
-                hls.loadSource(finalUrl);
-                hls.attachMedia(video);
-                hls.on(Hls.Events.MANIFEST_PARSED, function() {
-                    video.play();
-                });
-            } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-                // For Safari
-                video.src = finalUrl;
-                video.play();
-            }
-        }
-    </script>
+        });
+        hls.loadSource(streamUrl);
+        hls.attachMedia(video);
+        hls.on(Hls.Events.MANIFEST_PARSED, function() {
+            video.play();
+        });
+    } 
+    // For Safari which has native HLS support
+    else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+        video.src = streamUrl;
+        video.addEventListener('loadedmetadata', function() {
+            video.play();
+        });
+    }
+</script>
 </body>
 </html>
-
