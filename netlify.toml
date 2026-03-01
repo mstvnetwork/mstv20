@@ -1,7 +1,6 @@
+[[edge_functions]]
+  path = "/proxy"
+  function = "proxy"
+
 [build]
   publish = "."
-  command = "echo 'Building...'"
-
-[[edge_functions]]
-  function = "proxy"
-  path = "/proxy"
