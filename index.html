@@ -1,26 +1,74 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>HLS Video Player</title>
-    <!-- Include the Hls.js library from a CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <meta charset="UTF-8">
+    <title>Star Gold Test - MSTV</title>
+     <script src="shaka.js"></script>
+    <style>
+        body { margin: 0; background: #000; color: #fff; font-family: sans-serif; text-align: center; }
+        video { width: 100%; max-width: 800px; background: #111; margin-top: 20px; }
+        #log { color: #00ffA0; margin-top: 10px; font-size: 14px; }
+    </style>
 </head>
 <body>
-    <video id="video" controls autoplay muted style="width: 100%; max-width: 640px;"></video>
+    <h2>TESTING: STAR GOLD STREAMS</h2>
+    <video id="video" controls autoplay crossorigin="anonymous"></video>
+    <div id="log">Initializing Player...</div>
 
     <script>
-      var video = document.getElementById('video');
-      var videoSrc = 'http://192.101.68.100:49893/ghLs2zdZSnFvSS0000545c313e3e996b33209da8ec/index.m3u8?token=4028bc332d502518763731deff7ae23d';
+        // Stream array: add new streams here as needed
+        const streamList = [
+            {
+                
+            { name: "Star Gold Proxy", type: "hls", url: "http://192.101.68.100:49893/ghLs2zdZSnFvSS0000545c313e3e996b33209da8ec/index.m3u8?token=4028bc332d502518763731deff7ae23d';" }
+         
+        ];
 
-      if (Hls.isSupported()) {
-        var hls = new Hls();
-        hls.loadSource(videoSrc);
-        hls.attachMedia(video);
-      } 
-      // For Safari, which supports HLS natively
-      else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-        video.src = videoSrc;
-      }
+        // Automatically pick last path segment
+        const pathSegments = window.location.pathname.split("/").filter(Boolean);
+        const lastSegment = pathSegments[pathSegments.length - 1];
+        let index = parseInt(lastSegment, 10) - 1;
+
+        // If out of range or invalid, default to first stream
+        if (isNaN(index) || index < 0 || index >= streamList.length) {
+            index = 0;
+        }
+
+        const stream = streamList[index];
+
+        async function startTest() {
+            const log = document.getElementById('log');
+            const video = document.getElementById('video');
+
+            if (typeof shaka === 'undefined') {
+                log.innerText = "ERROR: shaka.js not found!";
+                return;
+            }
+
+            shaka.polyfill.installAll();
+            const player = new shaka.Player(video);
+
+            player.addEventListener('error', (event) => {
+                log.innerText = "PLAYBACK ERROR: " + event.detail.code;
+                console.error("Shaka Error:", event.detail);
+            });
+
+            try {
+                log.innerText = "Loading: " + stream.name;
+
+                if (stream.type === "dash" && stream.drm) {
+                    player.configure({ drm: stream.drm });
+                }
+
+                await player.load(stream.url);
+                log.innerText = "✅ STREAM LOADED SUCCESSFULLY: " + stream.name;
+            } catch (e) {
+                log.innerText = "❌ LOAD FAILED: " + e.code;
+                console.error(e);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', startTest);
     </script>
 </body>
 </html>
