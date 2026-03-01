@@ -1,4 +1,3 @@
-// Do NOT use standard Node.js imports. Deno/Netlify doesn't need them.
 export default async (request: Request) => {
   const url = new URL(request.url).searchParams.get("url");
 
@@ -8,14 +7,14 @@ export default async (request: Request) => {
 
   try {
     const response = await fetch(url);
-    const proxiedResponse = new Response(response.body, response);
+    const newResponse = new Response(response.body, response);
     
-    // CRITICAL: These headers allow hls.js to read the video
-    proxiedResponse.headers.set("Access-Control-Allow-Origin", "*");
-    proxiedResponse.headers.set("Content-Type", "application/vnd.apple.mpegurl");
+    // Required for hls.js to bypass CORS
+    newResponse.headers.set("Access-Control-Allow-Origin", "*");
+    newResponse.headers.set("Content-Type", "application/vnd.apple.mpegurl");
     
-    return proxiedResponse;
+    return newResponse;
   } catch (err) {
-    return new Response("Edge Proxy Error", { status: 500 });
+    return new Response("Proxy Error", { status: 500 });
   }
 };
