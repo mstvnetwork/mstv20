@@ -1,6 +1,13 @@
-[[edge_functions]]
-  path = "/proxy"
-  function = "proxy"
+[[redirects]]
+  from = "/shemaroo/*"
+  to = "https://airtelapp.shemaroo.com"
+  status = 200
+  force = true
 
-[build]
-  publish = "."
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Access-Control-Allow-Origin = "*"
+    Access-Control-Allow-Methods = "GET, POST, OPTIONS"
+    Access-Control-Allow-Headers = "Content-Type"
+
