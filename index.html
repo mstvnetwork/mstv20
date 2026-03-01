@@ -1,290 +1,99 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-      <title>MSTV Network</title>
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <meta name="description" content="MSTV Network offers a variety of live TV channels including music, movies, and more. Watch your favorite channels online for free.">
-    <meta name="keywords" content="live TV, MSTV Network, free TV, live channels, streaming, music, bollywood, saga music">
-    <meta name="robots" content="index, follow">
-    <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website">
-    <meta property="og:title" content="MSTV Network">
-    <meta property="og:description" content="Stream live TV channels including music, movies, and more on MSTV Network.">
-    <meta property="og:image" content="https://raw.githubusercontent.com">
-    <meta property="og:url" content="https://mstvnet.netlify.app">
-    <!-- Twitter -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="MSTV Network">
-    <meta name="twitter:description" content="Stream live TV channels including music, movies, and more on MSTV Network.">
-    <meta name="twitter:image" content="https://raw.githubusercontent.com">
-    <meta name="twitter:url" content="https://mstvnet.netlify.app">
+    <style>
+        :root { --primary: #00ffA0; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: #000; display: flex; align-items: center; justify-content: center; overflow: hidden; }
 
-    <!-- JSON-LD Schema.org -->
-    <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "WebPage",
-        "name": "MSTV Network",
-        "description": "Stream live TV channels including music, movies, and more.",
-        "url": "https://mstvnet.netlify.app",
-        "publisher": {
-            "@type": "Organization",
-            "name": "MSTV Network",
-            "logo": {
-                "@type": "ImageObject",
-                "url": "https://raw.githubusercontent.com"
-            }
+        .viewport {
+            width: 90vw; max-width: 1000px; aspect-ratio: 16 / 9; 
+            overflow: hidden; position: relative;
+            border: 4px solid var(--primary); border-radius: 12px;
+            background: #000;
         }
-    }
-    </script>
 
+        #captureFrame {
+            position: absolute;
+            width: 130%; height: 150%; 
+            top: -30px; left: -15%; 
+            border: none;
+            /* Allow clicks initially so you can select the device */
+            pointer-events: auto; 
+            z-index: 1;
+        }
 
-<!-- HLS Library -->
-<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+        /* THE SMART SHIELD */
+        #lockLayer {
+            position: absolute;
+            top: 0; left: 0; 
+            width: 100%; height: 100%;
+            z-index: 9999; 
+            /* Starts transparent so clicks hit the iframe */
+            background: rgba(0,0,0,0.01); 
+            /* 'none' allows the first 4 clicks to pass through to the video */
+            pointer-events: none; 
+            cursor: pointer;
+        }
 
-<style>
-/* Reset & Base */
-*,
-*::before,
-*::after { box-sizing: border-box; }
+        /* The 'Locked' state that blocks everything */
+        #lockLayer.active {
+            pointer-events: all !important;
+            cursor: default;
+        }
 
-html, body {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  min-height: 100%;
-  font-family: 'Poppins', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-  background: #0F1115;
-  color: #E0E0E0;
-}
-
-body { display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
-
-/* Container */
-.container { flex: 1; width: 95%; max-width: 1200px; padding: 2vh 2vw; display: flex; flex-direction: column; align-items: center; }
-
-/* Header */
-.title-3d {
-  font-size: clamp(2rem, 6vw, 3.5rem);
-  font-weight: 800;
-  text-align: center;
-  margin: 4vh 0 2vh;
-  color: #00FFC8;
-  text-shadow: 2px 2px 8px #0ff, 0 0 12px #00b3b3;
-  letter-spacing: 2px;
-}
-
-/* Scrolling Banner */
-.scrolling-container {
-  width: 100%;
-  overflow: hidden;
-  background: #1A1D20;
-  border-radius: 12px;
-  padding: 1.5vh 0;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-  margin-bottom: 3vh;
-}
-
-.scrolling-content {
-  display: inline-flex;
-  align-items: center;
-  gap: 40px;
-  padding-left: 100%;
-  white-space: nowrap;
-  animation: scroll-text 30s linear infinite;
-  font-size: 1.1em;
-  color: #00FFC8;
-  font-weight: 500;
-}
-
-@keyframes scroll-text {
-  0% { transform: translateX(0%); }
-  100% { transform: translateX(-100%); }
-}
-
-/* Channel Selector */
-.channel-selector-text {
-  text-align: center;
-  font-size: clamp(1.5rem, 4vw, 2rem);
-  margin-bottom: 2vh;
-  font-weight: 600;
-  color: #FFFFFF;
-}
-
-.channel-selection {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 2vh;
-}
-
-select {
-  padding: 0.8em 1.5em;
-  font-size: 1.2em;
-  background: #1A1D20;
-  color: #00FFC8;
-  border: 2px solid #00FFC8;
-  border-radius: 12px;
-  outline: none;
-  width: 90%;
-  max-width: 400px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-select:hover {
-  background: #101214;
-  border-color: #00FFB3;
-  box-shadow: 0 0 12px #00FFC8AA;
-}
-
-/* Player Container */
-.player-container {
-  position: relative;
-  width: 90%;
-  max-width: 1100px;
-  aspect-ratio: 16 / 9;
-  margin-bottom: 3vh;
-  border-radius: 16px;
-  overflow: hidden;
-  background: #1A1D20;
-  box-shadow: 0 12px 28px rgba(0,0,0,0.6);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.player-container:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 16px 36px rgba(0,0,0,0.8);
-}
-
-.player-container iframe,
-.player-container video {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  border-radius: 16px;
-  object-fit: contain; /* preserves 16:9 in fullscreen without cropping */
-  background: black;
-}
-
-#placeholder-image {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  border-radius: 16px;
-  object-fit: cover;
-}
-
-/* Live Stamp */
-.live-stamp {
-  position: absolute;
-  top: 1.5vw;
-  left: 1.5vw;
-  background: #E50914;
-  color: white;
-  font-weight: 700;
-  font-size: clamp(14px,1.5vw,20px);
-  padding: 0.4vw 1.6vw;
-  border-radius: 0.8vw;
-  box-shadow: 0 0.5vw 1vw rgba(0,0,0,0.4);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  letter-spacing: 0.1vw;
-  z-index: 999;
-}
-
-/* Loading */
-.loading-indicator {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 1.3em;
-  background: rgba(0,0,0,0.7);
-  color: #00FFC8;
-  padding: 14px 28px;
-  border-radius: 10px;
-  display: none;
-  z-index: 15;
-  text-align: center;
-  box-shadow: 0 4px 12px rgba(0,255,200,0.3);
-}
-
-/* Footer */
-.site-footer {
-  background: #0F1115;
-  text-align: center;
-  padding: 2vh 2vw;
-  color: #90EE90;
-  flex-shrink: 0;
-}
-
-.site-footer h2 {
-  color: #00FFC8;
-  font-size: 1.5rem;
-  margin-bottom: 12px;
-}
-
-.site-footer p { margin: 10px 0; line-height: 1.6; }
-
-.site-footer .copyright { color: #FFD700; }
-
-.site-footer a {
-  color: #00FFC8;
-  text-decoration: none;
-  transition: color 0.3s ease;
-}
-
-.site-footer a:hover { color: #FFD700; }
-
-/* Responsive */
-@media (max-width:768px) {
-  .player-container { width: 95%; margin-bottom: 2vh; }
-  .title-3d { font-size: clamp(1.8rem, 7vw, 2.8rem); }
-  .channel-selector-text { font-size: clamp(1.2rem, 5vw, 1.6rem); }
-  .scrolling-content { font-size: 0.95rem; gap: 20px; }
-  .live-stamp { padding: 0.3vw 1vw; font-size: clamp(12px,2.5vw,16px); }
-}
-</style>
+        .click-hint {
+            position: absolute; bottom: 10px; right: 15px;
+            color: var(--primary); font-family: sans-serif; font-size: 12px;
+            z-index: 10000; pointer-events: none; opacity: 0.7;
+        }
+    </style>
 </head>
 <body>
 
-<div class="container">
+    <div class="viewport" id="playerWrapper">
+        <div id="lockLayer"></div>
+        <div id="status" class="click-hint">▶️ Click on screen to play</div>
 
-  <div class="title-3d">WE HAVE MOVED</div>
+        <iframe id="captureFrame" 
+                src="https://tulnit.com/live/bollywood-colors/" 
+                scrolling="no" 
+                sandbox="allow-forms allow-scripts allow-same-origin">
+        </iframe>
+    </div>
 
-  
-
-  
-  <div class="player-container" id="player-container">
-    <iframe id="media-player" allow="autoplay; encrypted-media; picture-in-picture" sandbox="allow-scripts allow-same-origin allow-presentation"></iframe>
-    <video id="video-player" autoplay playsinline muted></video>
-    <img id="placeholder-image" src="Design-Studio-2026-02-24 (1).png" alt="Stream Placeholder" />
-    <div class="live-stamp" id="live-stamp" style="display:none;">MSTV NETWORK</div>
-    <div class="loading-indicator" id="loading">Loading stream...</div>
-  </div>
-
-</div>
-
-<!-- Footer Section -->
-<footer class="site-footer">
-  <div class="container">
-    <h2>About Us</h2>
-    <p>MSTV Network is the winner of 7 international and national awards for innovation in mobile and web TV streaming. Headquartered in Texas, USA. All content is sourced from publicly available platforms. We do not host or stream content directly.</p>
-    <p class="copyright">&copy; 2026 MSTV Network. All rights reserved.</p>
-  </div>
-</footer>
     <script>
-        const placeholder = document.getElementById('placeholder-image');
+        let clickCount = 0;
+        const maxClicks = 4;
+        const shield = document.getElementById('lockLayer');
+        const wrapper = document.getElementById('playerWrapper');
+        const status = document.getElementById('status');
 
-   
-</script>
+        // We listen to the wrapper to count clicks hitting the iframe
+        wrapper.addEventListener('click', function() {
+            clickCount++;
+            
+            let remaining = maxClicks - clickCount;
+            if (remaining > 0) {
+                status.innerText = `Setup Mode: ${remaining} clicks left`;
+            }
+
+            // Once the limit is reached, activate the permanent shield
+            if (clickCount >= maxClicks) {
+                lockPlayer();
+            }
+        });
+
+        function lockPlayer() {
+            shield.classList.add('active');
+            status.innerText = "CONTROLS LOCKED";
+            setTimeout(() => { status.style.opacity = "0"; }, 3000); // Fade out hint
+            console.log("Maximum clicks reached. Shield Activated.");
+        }
+        
+        // Safety Lock: If they don't click 4 times but the video is playing, 
+        // lock it anyway after 15 seconds to prevent tampering.
+        setTimeout(lockPlayer, 15000);
+    </script>
+
 </body>
 </html>
-
