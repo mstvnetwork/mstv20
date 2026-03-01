@@ -1,8 +1,7 @@
-# This tells Netlify to connect the /proxy URL to your script
-[[edge_functions]]
-  path = "/proxy"
-  function = "proxy"
-
-# Optional: Ensures your assets are handled correctly
 [build]
   publish = "."
+  command = "echo 'Building...'"
+
+[[edge_functions]]
+  function = "proxy"
+  path = "/proxy"
