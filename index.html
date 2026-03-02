@@ -5,10 +5,41 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>M3UPlay Embed Test</title>
     <style>
-        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; background: #121212; color: white; padding: 20px; }
-        .video-container { position: relative; width: 100%; max-width: 800px; padding-bottom: 56.25%; height: 0; overflow: hidden; background: #000; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
-        .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
-        h1 { margin-bottom: 20px; font-size: 1.5rem; }
+        body { 
+            font-family: sans-serif; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            background: #111; 
+            color: #fff;
+            margin: 0;
+            padding: 20px;
+        } 
+        
+        .video-container { 
+            position: relative; 
+            width: 100%; 
+            max-width: 800px; 
+            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+            height: 0; 
+            overflow: hidden;
+            background: #000;
+            border: 1px solid #333;
+        } 
+        
+        .video-container iframe { 
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            border: 0; 
+        }
+
+        h1 { 
+            margin-bottom: 20px; 
+            font-size: 1.5em; 
+        }
     </style>
 </head>
 <body>
@@ -16,14 +47,14 @@
     <h1>Stream Preview</h1>
 
     <div class="video-container">
-        <iframe 
-            src="https://m3uplay.com/leo/watch.php?id=279" 
-            allow="autoplay; encrypted-media" 
+        <iframe
+            src="https://m3uplay.com/leo/watch.php?id=279"
+            allow="autoplay; encrypted-media"
             allowfullscreen>
         </iframe>
     </div>
 
-    <p style="margin-top: 20px; color: #888;">If the player is blank, the provider may have blocked embedding on local files.</p>
+    <p style="margin-top: 20px; color: #888;">If the player is blank, the provider may have blocked embedding.</p>
 
 </body>
 </html>
