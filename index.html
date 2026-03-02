@@ -2,73 +2,28 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Star Gold Test - MSTV</title>
-     <script src="shaka.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>M3UPlay Embed Test</title>
     <style>
-        body { margin: 0; background: #000; color: #fff; font-family: sans-serif; text-align: center; }
-        video { width: 100%; max-width: 800px; background: #111; margin-top: 20px; }
-        #log { color: #00ffA0; margin-top: 10px; font-size: 14px; }
+        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; background: #121212; color: white; padding: 20px; }
+        .video-container { position: relative; width: 100%; max-width: 800px; padding-bottom: 56.25%; height: 0; overflow: hidden; background: #000; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+        .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
+        h1 { margin-bottom: 20px; font-size: 1.5rem; }
     </style>
 </head>
 <body>
-    <h2>TESTING: STAR GOLD STREAMS</h2>
-    <video id="video" controls autoplay crossorigin="anonymous"></video>
-    <div id="log">Initializing Player...</div>
 
-    <script>
-        // Stream array: add new streams here as needed
-        const streamList = [
-            {
-                
-            { name: "Star Gold Proxy", type: "hls", url: "http://192.101.68.100:49893/ghLs2zdZSnFvSS0000545c313e3e996b33209da8ec/index.m3u8?token=4028bc332d502518763731deff7ae23d';" }
-         
-        ];
+    <h1>Stream Preview</h1>
 
-        // Automatically pick last path segment
-        const pathSegments = window.location.pathname.split("/").filter(Boolean);
-        const lastSegment = pathSegments[pathSegments.length - 1];
-        let index = parseInt(lastSegment, 10) - 1;
+    <div class="video-container">
+        <iframe 
+            src="https://m3uplay.com/leo/watch.php?id=1477" 
+            allow="autoplay; encrypted-media" 
+            allowfullscreen>
+        </iframe>
+    </div>
 
-        // If out of range or invalid, default to first stream
-        if (isNaN(index) || index < 0 || index >= streamList.length) {
-            index = 0;
-        }
+    <p style="margin-top: 20px; color: #888;">If the player is blank, the provider may have blocked embedding on local files.</p>
 
-        const stream = streamList[index];
-
-        async function startTest() {
-            const log = document.getElementById('log');
-            const video = document.getElementById('video');
-
-            if (typeof shaka === 'undefined') {
-                log.innerText = "ERROR: shaka.js not found!";
-                return;
-            }
-
-            shaka.polyfill.installAll();
-            const player = new shaka.Player(video);
-
-            player.addEventListener('error', (event) => {
-                log.innerText = "PLAYBACK ERROR: " + event.detail.code;
-                console.error("Shaka Error:", event.detail);
-            });
-
-            try {
-                log.innerText = "Loading: " + stream.name;
-
-                if (stream.type === "dash" && stream.drm) {
-                    player.configure({ drm: stream.drm });
-                }
-
-                await player.load(stream.url);
-                log.innerText = "✅ STREAM LOADED SUCCESSFULLY: " + stream.name;
-            } catch (e) {
-                log.innerText = "❌ LOAD FAILED: " + e.code;
-                console.error(e);
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', startTest);
-    </script>
 </body>
 </html>
